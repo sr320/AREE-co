@@ -2,7 +2,7 @@
 
 **Status:** Association evidence only; not a validated biomarker.
 
-- Candidate score: 0.462
+- Candidate score: 0.44
 - Ranking category: Emerging candidate requiring replication
 - Species context: Crassostrea gigas
 - Ortholog/reference context: not resolved

@@ -6,6 +6,24 @@ from aree.harmonize.identifiers import mapping_score
 from aree.paths import root_path
 
 
+# Relative importance of each scoring component. Values are normalized by their
+# sum at scoring time, so the weighted evidence score always falls in [0, 1]
+# regardless of the individual magnitudes chosen here.
+SCORE_WEIGHTS = {
+    "n_studies": 0.18,
+    "total_sample_size": 0.08,
+    "effect_magnitude": 0.12,
+    "significance": 0.12,
+    "direction_consistency": 0.14,
+    "phenotype_relevance": 0.10,
+    "context_breadth": 0.08,
+    "assay_diversity": 0.10,
+    "mapping_confidence": 0.05,
+    "data_quality": 0.08,
+}
+_WEIGHT_TOTAL = sum(SCORE_WEIGHTS.values())
+
+
 def _bounded(value, maximum):
     return min(float(value) / maximum, 1.0)
 
@@ -37,19 +55,20 @@ def score_candidates(evidence_path=None, meta_path=None, output_path=None):
             match = meta[meta["feature_id_standardized"] == feature]
             if not match.empty:
                 heterogeneity_penalty = min(match["i2_percent"].max() / 100.0, 1.0) * 0.15
-        score = (
-            0.18 * _bounded(n_studies, 4)
-            + 0.08 * _bounded(total_n, 100)
-            + 0.12 * effect_magnitude
-            + 0.12 * _significance_score(best_q)
-            + 0.14 * direction_consistency
-            + 0.10 * phenotype_relevance
-            + 0.08 * _bounded(group["tissue"].nunique() + group["life_stage"].nunique(), 5)
-            + 0.10 * _bounded(assay_diversity, 3)
-            + 0.05 * mapping_conf
-            + 0.08 * data_quality
-            - heterogeneity_penalty
-        )
+        components = {
+            "n_studies": _bounded(n_studies, 4),
+            "total_sample_size": _bounded(total_n, 100),
+            "effect_magnitude": effect_magnitude,
+            "significance": _significance_score(best_q),
+            "direction_consistency": direction_consistency,
+            "phenotype_relevance": phenotype_relevance,
+            "context_breadth": _bounded(group["tissue"].nunique() + group["life_stage"].nunique(), 5),
+            "assay_diversity": _bounded(assay_diversity, 3),
+            "mapping_confidence": mapping_conf,
+            "data_quality": data_quality,
+        }
+        weighted = sum(SCORE_WEIGHTS[key] * components[key] for key in SCORE_WEIGHTS) / _WEIGHT_TOTAL
+        score = weighted - heterogeneity_penalty
         if n_studies >= 2 and direction_consistency >= 0.67 and phenotype_relevance >= 0.5:
             category = "High-priority cross-study candidate"
         elif assay_diversity >= 2:
