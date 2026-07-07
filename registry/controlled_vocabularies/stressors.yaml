@@ -1,0 +1,13 @@
+stressors:
+  - temperature
+  - ocean_acidification_pH
+  - salinity
+  - hypoxia
+  - pathogen_challenge
+  - harmful_algal_bloom_exposure
+  - nutritional_limitation
+  - freshwater_exposure
+  - pollutant_exposure
+  - handling_or_transport_stress
+  - multi_stressor_exposure
+

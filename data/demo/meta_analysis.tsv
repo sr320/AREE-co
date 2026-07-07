@@ -1,0 +1,5 @@
+feature_id_standardized	feature_type	phenotype	stressor	n_effects	n_studies	pooled_effect	pooled_standard_error	p_value	q	i2_percent	tau2	direction_consistency	study_ids
+CGI_99999	gene	thermal_tolerance	temperature	1	1	1.2	0.45	0.00766076113517955	0.0	0.0	0.0	1.0	CGIG_HEAT_RNASEQ_001
+NCBI:LOC105317001	gene	thermal_tolerance	temperature	1	1	1.45	0.31	2.9050776597649985e-06	0.0	0.0	0.0	1.0	CGIG_HEAT_RNASEQ_001
+NCBI:LOC105317002	gene	thermal_tolerance	temperature	1	1	0.9	0.28	0.0013076948081092166	0.0	0.0	0.0	1.0	CGIG_HEAT_RNASEQ_001
+NCBI:LOC105317003	gene	thermal_tolerance	temperature	1	1	-0.7	0.25	0.005110260660855737	0.0	0.0	0.0	1.0	CGIG_HEAT_RNASEQ_001

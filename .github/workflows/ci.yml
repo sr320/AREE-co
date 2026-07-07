@@ -1,0 +1,22 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -e ".[dev]"
+      - run: pytest
+      - run: aree validate-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
+      - run: aree harmonize-demo
+      - run: aree meta-analyze --phenotype thermal_tolerance --feature-type gene
+      - run: aree build-evidence-cards --phenotype survival
+      - run: aree build-demo-report
+

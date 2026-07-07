@@ -1,0 +1,17 @@
+phenotypes:
+  - survival
+  - mortality
+  - thermal_tolerance
+  - growth_under_stress
+  - pathogen_load
+  - disease_susceptibility
+  - disease_resistance
+  - reproductive_performance
+  - larval_viability
+  - metabolic_resilience
+  - recovery_following_stress
+  - immune_responsiveness
+  - acidification_tolerance
+  - salinity_tolerance
+  - hypoxia_tolerance
+

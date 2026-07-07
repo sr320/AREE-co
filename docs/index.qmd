@@ -1,0 +1,22 @@
+---
+title: "Aquaculture Resilience Evidence Engine"
+format: html
+---
+
+AREE converts public aquaculture omics studies into harmonized, comparable evidence for resilience-associated biomarker discovery.
+
+The MVP focuses on *Crassostrea gigas* and demonstrates study registration, processed-result harmonization, cross-study meta-analysis, candidate scoring, and evidence-card generation using simulated data.
+
+## Run the Demo
+
+```bash
+aree harmonize-demo
+aree meta-analyze --phenotype thermal_tolerance --feature-type gene
+aree build-evidence-cards --phenotype survival
+aree build-demo-report
+```
+
+## Guardrail
+
+AREE identifies associations and evidence convergence. It does not claim that single-study significant features are validated biomarkers.
+

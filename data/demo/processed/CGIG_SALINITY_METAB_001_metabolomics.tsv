@@ -1,0 +1,4 @@
+sample_comparison	feature_id_original	feature_type	molecular_direction	effect_size	effect_size_type	standard_error	p_value	adjusted_p_value	analysis_method	quality_flags
+low_salinity_vs_control	MZ_301	metabolite	higher	0.75	log2_abundance_ratio	0.29	0.009	0.040	wilcoxon_demo	annotation_inferred
+low_salinity_vs_control	MZ_404	metabolite	lower	-0.88	log2_abundance_ratio	0.40	0.030	0.140	wilcoxon_demo	unresolved_metabolite
+

@@ -1,0 +1,6 @@
+sample_comparison	feature_id_original	feature_type	molecular_direction	effect_size	effect_size_type	standard_error	p_value	adjusted_p_value	analysis_method	quality_flags
+heat_vs_control	CGI_10001	gene	up	1.45	log2_fold_change	0.31	0.0004	0.008	DESeq2_demo	none
+heat_vs_control	CGI_10002	gene	up	0.90	log2_fold_change	0.28	0.004	0.030	DESeq2_demo	none
+heat_vs_control	CGI_10003	gene	down	-0.70	log2_fold_change	0.25	0.012	0.060	DESeq2_demo	none
+heat_vs_control	CGI_99999	gene	up	1.20	log2_fold_change	0.45	0.020	0.090	DESeq2_demo	imperfect_identifier_mapping
+

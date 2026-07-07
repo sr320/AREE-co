@@ -1,0 +1,4 @@
+sample_comparison	feature_id_original	feature_type	molecular_direction	effect_size	effect_size_type	standard_error	p_value	adjusted_p_value	analysis_method	quality_flags
+low_pH_vs_control	DMR_0007	genomic_region	hypermethylated	0.18	methylation_difference	0.06	0.002	0.030	DSS_demo	nearest_gene_annotation
+low_pH_vs_control	CGI_10004	genomic_region	hypomethylated	-0.12	methylation_difference	0.05	0.020	0.100	DSS_demo	none
+

@@ -1,0 +1,44 @@
+study_id: CGIG_EXAMPLE_001
+doi: null
+accessions:
+  bioproject: null
+  geo: null
+  sra: null
+  ena: null
+  proteomexchange: null
+citation: "Replace with verified citation."
+species: "Crassostrea gigas"
+strain_population_family: null
+genome_assembly: "cgigas_uk_roslin_v1"
+annotation_version: "NCBI RefSeq annotation release placeholder"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "juvenile"
+experimental_treatment: "original treatment label"
+control_condition: "original control label"
+stressor_class: "temperature"
+exposure:
+  intensity: "28 C"
+  duration: "24 h"
+  timing: "acute"
+phenotype: "thermal_tolerance"
+phenotype_direction: "higher survival under heat is favorable"
+phenotype_units: "percent survival"
+resilience_classification: "resilience_associated"
+sample_size: 12
+biological_replication: "6 control and 6 exposed biological replicates"
+platform: "Illumina"
+data_availability:
+  raw: true
+  processed: true
+  status: "public"
+quality_control_status: "not_started"
+analysis_status: "registered"
+provenance:
+  source_links:
+    - "https://example.org/replace"
+  curator: "AREE demo"
+  curation_date: "2026-07-06"
+limitations:
+  - "Template only; not a real study."
+

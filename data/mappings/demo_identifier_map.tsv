@@ -1,0 +1,12 @@
+feature_id_original	feature_id_standardized	ortholog_reference	mapping_confidence
+CGI_10001	NCBI:LOC105317001	ORTHO_HEATSHOCK_A	exact
+CGI_10002	NCBI:LOC105317002	ORTHO_IMMUNE_B	exact
+CGI_10003	NCBI:LOC105317003	ORTHO_SHELL_C	one-to-one ortholog
+CGI_10004	NCBI:LOC105317004	ORTHO_METAB_D	one-to-many ortholog
+CGI_99999	CGI_99999		inferred
+DMR_0007	NCBI:LOC105317003	ORTHO_SHELL_C	one-to-one ortholog
+P12345	NCBI:LOC105317002	ORTHO_IMMUNE_B	one-to-one ortholog
+P67890	NCBI:LOC105317004	ORTHO_METAB_D	many-to-one ortholog
+MZ_301	glutathione_related_feature	ORTHO_METAB_D	inferred
+MZ_404	unknown_metabolite_404		unresolved
+

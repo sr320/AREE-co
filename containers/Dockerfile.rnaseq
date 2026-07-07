@@ -1,0 +1,4 @@
+FROM ubuntu:22.04
+LABEL org.opencontainers.image.title="AREE RNA-seq scaffold"
+RUN apt-get update && apt-get install -y --no-install-recommends fastqc multiqc salmon r-base && rm -rf /var/lib/apt/lists/*
+

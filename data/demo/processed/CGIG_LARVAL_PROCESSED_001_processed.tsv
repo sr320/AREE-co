@@ -1,0 +1,4 @@
+sample_comparison	feature_id_original	feature_type	molecular_direction	effect_size	effect_size_type	standard_error	p_value	adjusted_p_value	analysis_method	quality_flags
+multistressor_vs_control	CGI_10001	gene	up	0.65	standardized_mean_difference	0.32	0.040	0.150	public_supplement_demo	processed_only_limited_metadata
+multistressor_vs_control	CGI_10003	gene	down	-1.05	standardized_mean_difference	0.41	0.011	0.070	public_supplement_demo	suggestive_phenotype
+

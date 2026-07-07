@@ -1,0 +1,15 @@
+manifest_id: aree_demo_manifest
+simulated: true
+workflow_version: 0.1.0
+generated_by: AREE MVP scaffold
+inputs:
+  - data/demo/processed/CGIG_HEAT_RNASEQ_001_rnaseq.tsv
+  - data/demo/processed/CGIG_HEAT_RNASEQ_002_rnaseq.tsv
+  - data/demo/processed/CGIG_OA_METHYL_001_methylation.tsv
+  - data/demo/processed/CGIG_PATH_PROTEO_001_proteomics.tsv
+  - data/demo/processed/CGIG_SALINITY_METAB_001_metabolomics.tsv
+  - data/demo/processed/CGIG_LARVAL_PROCESSED_001_processed.tsv
+warnings:
+  - Synthetic data only.
+  - Processed-result mode does not substitute for raw-data reanalysis.
+

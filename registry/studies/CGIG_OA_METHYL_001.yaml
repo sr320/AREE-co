@@ -1,0 +1,28 @@
+study_id: CGIG_OA_METHYL_001
+doi: null
+accessions: {bioproject: "SIM-BIOPROJECT-OA-METHYL-001", geo: null, sra: null, ena: "SIM-ENA-OA-METHYL-001", proteomexchange: null}
+citation: "Simulated C. gigas ocean acidification methylation study for AREE MVP."
+species: "Crassostrea gigas"
+strain_population_family: "hatchery juvenile cohort"
+genome_assembly: "cgigas_uk_roslin_v1"
+annotation_version: "demo_annotation_v1"
+assay_type: "methylation"
+tissue: "mantle"
+life_stage: "juvenile"
+experimental_treatment: "pH 7.4 seawater"
+control_condition: "pH 8.1 seawater"
+stressor_class: "ocean_acidification_pH"
+exposure: {intensity: "pH 7.4", duration: "21 d", timing: "chronic"}
+phenotype: "acidification_tolerance"
+phenotype_direction: "maintained growth and shell formation is favorable"
+phenotype_units: "growth rate"
+resilience_classification: "resilience_associated"
+sample_size: 18
+biological_replication: "9 control and 9 exposed biological replicates"
+platform: "Illumina bisulfite sequencing"
+data_availability: {raw: true, processed: true, status: "simulated_public_demo"}
+quality_control_status: "simulated_pass"
+analysis_status: "demo_harmonized"
+provenance: {source_links: ["https://example.org/aree-demo/oa-methylation"], curator: "AREE demo", curation_date: "2026-07-06"}
+limitations: ["Synthetic DMR-level data mapped to nearest genes."]
+

@@ -1,0 +1,28 @@
+study_id: CGIG_HEAT_RNASEQ_001
+doi: null
+accessions: {bioproject: "SIM-BIOPROJECT-HEAT-001", geo: "SIM-GEO-HEAT-001", sra: null, ena: null, proteomexchange: null}
+citation: "Simulated C. gigas heat challenge RNA-seq study for AREE MVP."
+species: "Crassostrea gigas"
+strain_population_family: "mixed-family juvenile cohort"
+genome_assembly: "cgigas_uk_roslin_v1"
+annotation_version: "demo_annotation_v1"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "juvenile"
+experimental_treatment: "acute 32 C heat exposure"
+control_condition: "ambient 18 C seawater"
+stressor_class: "temperature"
+exposure: {intensity: "32 C", duration: "24 h", timing: "acute"}
+phenotype: "thermal_tolerance"
+phenotype_direction: "higher survival under heat is favorable"
+phenotype_units: "percent survival"
+resilience_classification: "resilience_associated"
+sample_size: 24
+biological_replication: "12 control and 12 exposed biological replicates"
+platform: "Illumina NovaSeq"
+data_availability: {raw: true, processed: true, status: "simulated_public_demo"}
+quality_control_status: "simulated_pass"
+analysis_status: "demo_harmonized"
+provenance: {source_links: ["https://example.org/aree-demo/heat-rnaseq"], curator: "AREE demo", curation_date: "2026-07-06"}
+limitations: ["Synthetic data; no biological claim should be inferred."]
+

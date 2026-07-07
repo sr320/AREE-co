@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AREE study registration",
+  "type": "object",
+  "required": [
+    "study_id",
+    "citation",
+    "species",
+    "accessions",
+    "assay_type",
+    "tissue",
+    "life_stage",
+    "experimental_treatment",
+    "control_condition",
+    "stressor_class",
+    "phenotype",
+    "phenotype_direction",
+    "resilience_classification",
+    "sample_size",
+    "biological_replication",
+    "data_availability",
+    "quality_control_status",
+    "analysis_status",
+    "provenance",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "study_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "doi": {"type": ["string", "null"]},
+    "accessions": {
+      "type": "object",
+      "additionalProperties": {"type": ["string", "null"]}
+    },
+    "citation": {"type": "string"},
+    "species": {"type": "string"},
+    "strain_population_family": {"type": ["string", "null"]},
+    "genome_assembly": {"type": ["string", "null"]},
+    "annotation_version": {"type": ["string", "null"]},
+    "assay_type": {"type": "string"},
+    "tissue": {"type": "string"},
+    "life_stage": {"type": "string"},
+    "experimental_treatment": {"type": "string"},
+    "control_condition": {"type": "string"},
+    "stressor_class": {"type": "string"},
+    "exposure": {
+      "type": "object",
+      "required": ["intensity", "duration", "timing"],
+      "properties": {
+        "intensity": {"type": ["string", "number", "null"]},
+        "duration": {"type": ["string", "null"]},
+        "timing": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "phenotype": {"type": "string"},
+    "phenotype_direction": {"type": "string"},
+    "phenotype_units": {"type": ["string", "null"]},
+    "resilience_classification": {
+      "type": "string",
+      "enum": [
+        "resilience_associated",
+        "stress_response",
+        "disease_associated",
+        "environmental_exposure",
+        "suggestive"
+      ]
+    },
+    "sample_size": {"type": "integer", "minimum": 1},
+    "biological_replication": {"type": "string"},
+    "platform": {"type": ["string", "null"]},
+    "data_availability": {
+      "type": "object",
+      "required": ["raw", "processed", "status"],
+      "properties": {
+        "raw": {"type": "boolean"},
+        "processed": {"type": "boolean"},
+        "status": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "quality_control_status": {"type": "string"},
+    "analysis_status": {"type": "string"},
+    "provenance": {
+      "type": "object",
+      "required": ["source_links", "curator", "curation_date"],
+      "properties": {
+        "source_links": {"type": "array", "items": {"type": "string"}},
+        "curator": {"type": "string"},
+        "curation_date": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
+

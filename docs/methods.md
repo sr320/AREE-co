@@ -1,0 +1,6 @@
+# Methods
+
+AREE registers public aquaculture omics studies using a machine-readable schema that captures accessions, organism, genome version, assay, sample context, exposure, phenotype, data availability, quality status, and limitations. Processed study results are harmonized into a shared evidence table that preserves original identifiers and adds standardized identifiers with mapping confidence. Evidence records include effect sizes, standard errors, significance values, phenotype and stressor terms, analysis method, provenance, checksums, and workflow version.
+
+Comparable evidence is grouped by standardized feature, feature type, phenotype, and stressor. Random-effects meta-analysis is used when multiple effects are available, with heterogeneity reported through Q, tau-squared, and I-squared statistics. Candidate biomarkers are prioritized using a transparent score based on independent studies, sample size, effect magnitude, adjusted significance, directional consistency, phenotype relevance, assay diversity, mapping confidence, data quality, and heterogeneity. Evidence cards summarize candidate context, supporting studies, assay layers, direction of association, limitations, and recommended validation steps.
+

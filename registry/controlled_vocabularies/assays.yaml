@@ -1,0 +1,8 @@
+assays:
+  - rnaseq
+  - methylation
+  - proteomics
+  - metabolomics
+  - genomics
+  - processed_results_only
+

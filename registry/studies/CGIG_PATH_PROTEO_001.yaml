@@ -1,0 +1,28 @@
+study_id: CGIG_PATH_PROTEO_001
+doi: null
+accessions: {bioproject: null, geo: null, sra: null, ena: null, proteomexchange: "SIM-PXD-PATH-001"}
+citation: "Simulated C. gigas pathogen challenge proteomics study for AREE MVP."
+species: "Crassostrea gigas"
+strain_population_family: "adult field-collected oysters"
+genome_assembly: "cgigas_uk_roslin_v1"
+annotation_version: "demo_annotation_v1"
+assay_type: "proteomics"
+tissue: "hemolymph"
+life_stage: "adult"
+experimental_treatment: "Vibrio-like pathogen challenge"
+control_condition: "mock challenge"
+stressor_class: "pathogen_challenge"
+exposure: {intensity: "10^6 CFU mL-1 equivalent", duration: "48 h", timing: "acute infection"}
+phenotype: "disease_resistance"
+phenotype_direction: "lower pathogen load and survival are favorable"
+phenotype_units: "pathogen load and survival index"
+resilience_classification: "disease_associated"
+sample_size: 16
+biological_replication: "8 control and 8 challenged biological replicates"
+platform: "LC-MS/MS"
+data_availability: {raw: false, processed: true, status: "simulated_processed_only"}
+quality_control_status: "processed_qc_available"
+analysis_status: "demo_harmonized"
+provenance: {source_links: ["https://example.org/aree-demo/pathogen-proteomics"], curator: "AREE demo", curation_date: "2026-07-06"}
+limitations: ["Synthetic processed-only study; raw spectra unavailable in demo."]
+

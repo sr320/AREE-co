@@ -1,0 +1,5 @@
+sample_comparison	feature_id_original	feature_type	molecular_direction	effect_size	effect_size_type	standard_error	p_value	adjusted_p_value	analysis_method	quality_flags
+heat_selected_vs_unselected	CGI_10001	gene	up	1.10	log2_fold_change	0.35	0.003	0.025	edgeR_demo	none
+heat_selected_vs_unselected	CGI_10002	gene	down	-0.55	log2_fold_change	0.30	0.050	0.120	edgeR_demo	conflicting_direction
+heat_selected_vs_unselected	CGI_10004	gene	up	0.80	log2_fold_change	0.34	0.018	0.070	edgeR_demo	none
+

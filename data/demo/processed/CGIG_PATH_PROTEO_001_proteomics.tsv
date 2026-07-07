@@ -1,0 +1,4 @@
+sample_comparison	feature_id_original	feature_type	molecular_direction	effect_size	effect_size_type	standard_error	p_value	adjusted_p_value	analysis_method	quality_flags
+pathogen_vs_mock	P12345	protein	higher	0.95	log2_abundance_ratio	0.27	0.001	0.018	limma_demo	none
+pathogen_vs_mock	P67890	protein	lower	-0.60	log2_abundance_ratio	0.33	0.048	0.110	limma_demo	processed_only
+

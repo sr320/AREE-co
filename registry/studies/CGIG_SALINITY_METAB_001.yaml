@@ -1,0 +1,28 @@
+study_id: CGIG_SALINITY_METAB_001
+doi: null
+accessions: {bioproject: null, geo: null, sra: null, ena: null, proteomexchange: null}
+citation: "Simulated C. gigas salinity stress metabolomics study for AREE MVP."
+species: "Crassostrea gigas"
+strain_population_family: "juvenile hatchery cohort"
+genome_assembly: null
+annotation_version: null
+assay_type: "metabolomics"
+tissue: "whole_body"
+life_stage: "juvenile"
+experimental_treatment: "low salinity 10 PSU"
+control_condition: "ambient salinity 28 PSU"
+stressor_class: "salinity"
+exposure: {intensity: "10 PSU", duration: "7 d", timing: "subacute"}
+phenotype: "salinity_tolerance"
+phenotype_direction: "growth maintenance under low salinity is favorable"
+phenotype_units: "growth index"
+resilience_classification: "resilience_associated"
+sample_size: 14
+biological_replication: "7 control and 7 exposed biological replicates"
+platform: "LC-MS metabolomics"
+data_availability: {raw: false, processed: true, status: "simulated_processed_only"}
+quality_control_status: "simulated_pass_with_annotation_uncertainty"
+analysis_status: "demo_harmonized"
+provenance: {source_links: ["https://example.org/aree-demo/salinity-metabolomics"], curator: "AREE demo", curation_date: "2026-07-06"}
+limitations: ["Synthetic metabolite annotations include confidence uncertainty."]
+

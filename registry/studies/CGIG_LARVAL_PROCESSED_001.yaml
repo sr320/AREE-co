@@ -1,0 +1,28 @@
+study_id: CGIG_LARVAL_PROCESSED_001
+doi: null
+accessions: {bioproject: "SIM-BIOPROJECT-LARVAL-001", geo: null, sra: null, ena: null, proteomexchange: null}
+citation: "Simulated C. gigas larval performance processed-results-only study for AREE MVP."
+species: "Crassostrea gigas"
+strain_population_family: "larval cohort"
+genome_assembly: "cgigas_uk_roslin_v1"
+annotation_version: "demo_annotation_v1"
+assay_type: "processed_results_only"
+tissue: "larvae"
+life_stage: "larva"
+experimental_treatment: "combined high temperature and low pH"
+control_condition: "ambient temperature and pH"
+stressor_class: "multi_stressor_exposure"
+exposure: {intensity: "28 C plus pH 7.6", duration: "5 d", timing: "developmental"}
+phenotype: "larval_viability"
+phenotype_direction: "higher settlement and survival are favorable"
+phenotype_units: "viability index"
+resilience_classification: "suggestive"
+sample_size: 12
+biological_replication: "6 control and 6 exposed biological replicates"
+platform: "processed table from publication supplement"
+data_availability: {raw: false, processed: true, status: "simulated_processed_only"}
+quality_control_status: "limited_metadata"
+analysis_status: "demo_harmonized"
+provenance: {source_links: ["https://example.org/aree-demo/larval-processed"], curator: "AREE demo", curation_date: "2026-07-06"}
+limitations: ["Synthetic processed-only study; phenotype definition is broad and suggestive."]
+
