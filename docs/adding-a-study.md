@@ -21,3 +21,8 @@ aree register-study registry/studies/STUDY_ID.yaml
 
 Use raw-data reanalysis when public FASTQ, spectra, or feature-level raw files are available and licensing permits reuse. Use processed-results harmonization when only publication supplements or repository-derived result tables are available.
 
+Write real-study evidence outside the synthetic demo directory:
+
+```bash
+aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --output data/harmonized/evidence.tsv
+```

@@ -1,0 +1,50 @@
+study_id: CGIG_HEAT_RNASEQ_PRJNA516762
+doi: "10.1186/s12864-019-6003-8"
+accessions:
+  bioproject: "PRJNA516762"
+  sra: "SRP181984"
+  pmcid: "PMC6688261"
+  pmid: "31395030"
+citation: "Liu Y, Li L, Huang B, Wang W, Zhang G. RNAi based transcriptome suggests genes potentially regulated by HSF1 in the Pacific oyster Crassostrea gigas under thermal stress. BMC Genomics. 2019;20:639."
+species: "Crassostrea gigas"
+strain_population_family: "Cultured Shentanggou, Qingdao population; genetic background not reported"
+genome_assembly: "GCA_000297895.1"
+annotation_version: null
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "juvenile"
+experimental_treatment: "35 C seawater heat shock for 2 h without HSF1 RNAi"
+control_condition: "Untreated control after 1 week acclimation at 12 +/- 1 C"
+stressor_class: "temperature"
+exposure:
+  intensity: "35 C"
+  duration: "2 h"
+  timing: "acute"
+phenotype: "thermal_tolerance"
+phenotype_direction: "Organism-level thermal-tolerance direction was not measured; molecular heat-response direction only"
+phenotype_units: null
+resilience_classification: "stress_response"
+sample_size: 30
+biological_replication: "Direct heat-versus-control contrast: 3 pooled RNA-seq libraries per condition, each pooling 5 individuals (30 individuals total; 6 libraries)"
+platform: "Illumina HiSeq X Ten, 150 bp paired-end"
+data_availability:
+  raw: true
+  processed: true
+  status: "public_raw_and_processed"
+quality_control_status: "Publication-reported QC and 75.18-76.51% alignment; not independently reanalyzed"
+analysis_status: "processed_results_harmonized"
+provenance:
+  source_links:
+    - "https://doi.org/10.1186/s12864-019-6003-8"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA516762"
+    - "https://www.ncbi.nlm.nih.gov/sra/?term=SRP181984"
+    - "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6688261/supplementaryFiles?includeInlineImage=false"
+  curator: "AREE contributors"
+  curation_date: "2026-08-27"
+limitations:
+  - "This intake represents molecular heat-stress response, not a direct survival or organism-level thermal-tolerance measurement."
+  - "Each RNA-seq library pooled gill RNA from five oysters, so individual-level variability is unavailable."
+  - "The published processed supplement contains only significant genes (FDR <= 0.05 and fold change >= 1.5), not the complete tested-gene universe."
+  - "The supplement reports log2 fold change and FDR but not raw p-values or standard errors, preventing inverse-variance meta-analysis from these processed results alone."
+  - "The study used legacy assembly GCA_000297895.1 and CGI identifiers; current-release identifier mapping has not yet been completed."
+  - "The HSF1 RNAi-only and RNAi-plus-heat contrasts are preserved in the source workbook but excluded from this first direct heat-versus-control intake."

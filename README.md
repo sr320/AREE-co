@@ -44,6 +44,12 @@ aree build-evidence-cards --phenotype survival
 aree build-demo-report
 ```
 
+For real studies, keep evidence separate from the synthetic demo table:
+
+```bash
+aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --output data/harmonized/evidence.tsv
+```
+
 Optional interfaces:
 
 ```bash
@@ -137,4 +143,3 @@ Suggested first public *C. gigas* dataset classes to curate:
 10. Multi-stressor exposure study combining temperature with pH, hypoxia, or pathogen challenge.
 
 Do not invent accession numbers during curation. Add only accessions verified from primary repositories or publications.
-

@@ -32,8 +32,12 @@ def register_study(path: str):
 
 
 @app.command("harmonize")
-def harmonize(study: str = typer.Option(...), input: str = typer.Option(...)):
-    output = harmonize_processed(study, input)
+def harmonize(
+    study: str = typer.Option(...),
+    input: str = typer.Option(...),
+    output: str = typer.Option(None, "--output"),
+):
+    output = harmonize_processed(study, input, output_path=output)
     typer.echo("harmonized evidence written to {}".format(output))
 
 
