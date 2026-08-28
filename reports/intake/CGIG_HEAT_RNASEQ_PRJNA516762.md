@@ -15,13 +15,14 @@
 - All reported directions agree with the sign of the published log2 fold change.
 - FDR range: `3.0261e-86` to `0.049902`; all records satisfy the publication's FDR threshold.
 - Raw p-values and standard errors are not available in the supplement and remain null in AREE.
-- All 150 legacy `CGI_*` or newly assembled identifiers remain unresolved against the current demo mapping and must not yet be treated as cross-study standardized features.
+- Mapping release `cgigas_cgi_to_ncbi_gene_rs2024_06_v1` resolves 60 of 150 features (40.0%) to 60 unique NCBI Gene IDs in RefSeq annotation `GCF_963853765.1-RS_2024_06`; all resolved mappings are conservatively labeled `inferred`.
+- Among the 112 published `CGI_*` identifiers, 60 (53.6%) resolve. The other 90 total features retain their original identifiers with confidence `unresolved` and must not be collapsed across studies.
 
 ## Largest published effects
 
 | Direction | Feature | log2 fold change | FDR |
 | --- | --- | ---: | ---: |
-| Up | `CGI_10002387` | 4.3219 | 3.0261e-86 |
+| Up | `CGI_10002387` (`NCBI:GeneID:105327207`) | 4.3219 | 3.0261e-86 |
 | Up | `CGI_10002823` | 2.0048 | 1.1331e-10 |
 | Up | `CGI_10009093` | 1.8845 | 2.3745e-14 |
 | Up | `CGI_10002068` | 1.8766 | 1.5230e-09 |
@@ -38,4 +39,4 @@ These are significant molecular heat-response associations from a pooled, single
 
 ## Next analytical step
 
-Build a versioned mapping from the legacy `CGI_*` identifiers used with assembly `GCA_000297895.1` to the current *C. gigas* gene annotation. After mapping, curate an independent thermal-challenge study with compatible effect estimates. Random-effects meta-analysis should wait until at least two independent studies have standardized identifiers and usable uncertainty estimates.
+Curate an independent thermal-challenge study with compatible feature identifiers and effect uncertainty. For the 90 unresolved features, add sequence- or transcript-level mapping evidence rather than relaxing the coordinate thresholds. Random-effects meta-analysis should wait until at least two independent studies have standardized identifiers and usable uncertainty estimates; this supplement does not report standard errors.

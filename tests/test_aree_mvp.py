@@ -51,6 +51,51 @@ def test_identifier_mapping_confidence_assignment():
     assert unresolved["mapping_confidence"] == "unresolved"
 
 
+def test_explicit_mapping_release_is_preserved(tmp_path):
+    import pandas as pd
+
+    mapping_path = tmp_path / "mapping.tsv"
+    pd.DataFrame(
+        [
+            {
+                "feature_id_original": "CGI_10001",
+                "feature_id_standardized": "NCBI:GeneID:123",
+                "ortholog_reference": "",
+                "mapping_confidence": "inferred",
+                "mapping_release": "test_release_v1",
+                "mapping_evidence": "test_evidence",
+            }
+        ]
+    ).to_csv(mapping_path, sep="\t", index=False)
+    output = tmp_path / "evidence.tsv"
+    harmonize_processed(
+        "CGIG_HEAT_RNASEQ_001",
+        ROOT / "data/demo/processed/CGIG_HEAT_RNASEQ_001_rnaseq.tsv",
+        output,
+        mapping_path,
+    )
+    evidence = pd.read_csv(output, sep="\t")
+    mapped = evidence[evidence["feature_id_original"] == "CGI_10001"].iloc[0]
+    assert mapped["feature_id_standardized"] == "NCBI:GeneID:123"
+    assert mapped["mapping_release"] == "test_release_v1"
+    assert mapped["mapping_evidence"] == "test_evidence"
+
+
+def test_real_study_mapping_release_is_unique_and_conservative():
+    import pandas as pd
+
+    mapping = pd.read_csv(
+        ROOT / "data/mappings/cgigas_cgi_to_ncbi_gene_rs2024_06_v1.tsv",
+        sep="\t",
+    )
+    resolved = mapping[mapping["mapping_confidence"] == "inferred"]
+    assert len(mapping) == 150
+    assert mapping["feature_id_original"].is_unique
+    assert len(resolved) == 60
+    assert resolved["feature_id_standardized"].is_unique
+    assert resolved["feature_id_standardized"].str.startswith("NCBI:GeneID:").all()
+
+
 def test_harmonize_processed_outputs_provenance(tmp_path):
     output = tmp_path / "evidence.tsv"
     path = harmonize_processed(
@@ -111,4 +156,3 @@ def test_demo_report_build(tmp_path):
     report = build_demo_report(output_path=tmp_path / "report.md")
     assert report.exists()
     assert "AREE Demo Report" in report.read_text()
-

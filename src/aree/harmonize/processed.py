@@ -33,14 +33,14 @@ def checksum(path):
     return digest.hexdigest()
 
 
-def harmonize_processed(study_id, input_path, output_path=None):
+def harmonize_processed(study_id, input_path, output_path=None, mapping_path=None):
     study = load_study(study_id)
     table = pd.read_csv(input_path, sep="\t")
     missing = [column for column in REQUIRED_PROCESSED_COLUMNS if column not in table.columns]
     if missing:
         raise ValueError("Processed result table is missing columns: {}".format(", ".join(missing)))
 
-    mapping = load_mapping()
+    mapping = load_mapping(mapping_path)
     input_checksum = checksum(input_path)
     records = []
     for idx, row in table.iterrows():
@@ -57,6 +57,8 @@ def harmonize_processed(study_id, input_path, output_path=None):
             "annotation_version": study.get("annotation_version"),
             "ortholog_reference": mapped["ortholog_reference"],
             "mapping_confidence": mapped["mapping_confidence"],
+            "mapping_release": mapped.get("mapping_release"),
+            "mapping_evidence": mapped.get("mapping_evidence"),
             "molecular_direction": row["molecular_direction"],
             "effect_size": float(row["effect_size"]),
             "effect_size_type": row["effect_size_type"],
@@ -101,4 +103,3 @@ def harmonize_demo():
         study_id = path.name.rsplit("_", 1)[0]
         harmonize_processed(study_id, path)
     return root_path("data", "demo", "harmonized_evidence.tsv")
-

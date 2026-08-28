@@ -13,6 +13,8 @@
     "genome_assembly",
     "annotation_version",
     "mapping_confidence",
+    "mapping_release",
+    "mapping_evidence",
     "molecular_direction",
     "effect_size",
     "effect_size_type",
@@ -48,6 +50,8 @@
       "type": "string",
       "enum": ["exact", "one-to-one ortholog", "one-to-many ortholog", "many-to-one ortholog", "inferred", "unresolved"]
     },
+    "mapping_release": {"type": ["string", "null"]},
+    "mapping_evidence": {"type": ["string", "null"]},
     "molecular_direction": {"type": "string", "enum": ["up", "down", "higher", "lower", "hypermethylated", "hypomethylated", "mixed", "unknown"]},
     "effect_size": {"type": "number"},
     "effect_size_type": {"type": "string"},
@@ -70,4 +74,3 @@
     "date_generated": {"type": "string"}
   }
 }
-

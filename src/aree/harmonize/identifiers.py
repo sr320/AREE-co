@@ -31,11 +31,16 @@ def map_identifier(original_id, mapping=None):
     ortholog_reference = hit.get("ortholog_reference")
     if pd.isna(ortholog_reference):
         ortholog_reference = None
-    return {
+    result = {
         "feature_id_standardized": hit["feature_id_standardized"],
         "ortholog_reference": ortholog_reference,
         "mapping_confidence": hit["mapping_confidence"],
     }
+    for field in ("mapping_release", "mapping_evidence"):
+        value = hit.get(field)
+        if value is not None and not pd.isna(value):
+            result[field] = value
+    return result
 
 
 def mapping_score(confidence):

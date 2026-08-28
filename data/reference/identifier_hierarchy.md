@@ -11,3 +11,6 @@ AREE preserves original feature identifiers and adds standardized identifiers us
 
 Mapping confidence values are: `exact`, `one-to-one ortholog`, `one-to-many ortholog`, `many-to-one ortholog`, `inferred`, and `unresolved`.
 
+Every harmonized record also carries `mapping_release` and `mapping_evidence`.
+These fields may be null for legacy/demo maps, but production mappings should
+identify the versioned release and the rule or evidence supporting the outcome.

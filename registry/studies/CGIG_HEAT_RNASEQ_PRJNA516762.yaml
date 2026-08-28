@@ -46,5 +46,5 @@ limitations:
   - "Each RNA-seq library pooled gill RNA from five oysters, so individual-level variability is unavailable."
   - "The published processed supplement contains only significant genes (FDR <= 0.05 and fold change >= 1.5), not the complete tested-gene universe."
   - "The supplement reports log2 fold change and FDR but not raw p-values or standard errors, preventing inverse-variance meta-analysis from these processed results alone."
-  - "The study used legacy assembly GCA_000297895.1 and CGI identifiers; current-release identifier mapping has not yet been completed."
+  - "The study used legacy assembly GCA_000297895.1 and CGI/newGene identifiers; mapping release cgigas_cgi_to_ncbi_gene_rs2024_06_v1 conservatively resolves 60 of 150 features to unique current NCBI Gene IDs, while 90 remain unresolved."
   - "The HSF1 RNAi-only and RNAi-plus-heat contrasts are preserved in the source workbook but excluded from this first direct heat-versus-control intake."

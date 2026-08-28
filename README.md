@@ -47,7 +47,7 @@ aree build-demo-report
 For real studies, keep evidence separate from the synthetic demo table:
 
 ```bash
-aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --output data/harmonized/evidence.tsv
+aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --mapping data/mappings/MAPPING_RELEASE.tsv --output data/harmonized/evidence.tsv
 ```
 
 Optional interfaces:

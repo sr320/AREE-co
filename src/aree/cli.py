@@ -36,8 +36,9 @@ def harmonize(
     study: str = typer.Option(...),
     input: str = typer.Option(...),
     output: str = typer.Option(None, "--output"),
+    mapping: str = typer.Option(None, "--mapping"),
 ):
-    output = harmonize_processed(study, input, output_path=output)
+    output = harmonize_processed(study, input, output_path=output, mapping_path=mapping)
     typer.echo("harmonized evidence written to {}".format(output))
 
 
