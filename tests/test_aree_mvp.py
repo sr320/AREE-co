@@ -110,6 +110,44 @@ def test_prjna694496_workflow_sheets_and_tx2gene_are_schema_safe(tmp_path):
     ]
 
 
+def test_salmon_qc_summary_follows_design_order(tmp_path):
+    import csv
+    import json
+
+    from scripts.summarize_salmon_qc import summarize_salmon_qc
+
+    design = tmp_path / "design.csv"
+    design.write_text(
+        "sample,condition,replicate,run_accession\n"
+        "selected_A,selected,A,SRR1\n"
+    )
+    metadata_dir = tmp_path / "salmon" / "selected_A" / "aux_info"
+    metadata_dir.mkdir(parents=True)
+    (metadata_dir / "meta_info.json").write_text(
+        json.dumps(
+            {
+                "salmon_version": "1.10.3",
+                "library_types": ["IU"],
+                "num_processed": 100,
+                "num_mapped": 75,
+                "percent_mapped": 75.0,
+                "num_decoy_fragments": 5,
+                "frag_length_mean": 250.0,
+                "frag_length_sd": 40.0,
+                "seq_bias_correct": True,
+                "gc_bias_correct": True,
+            }
+        )
+    )
+    output = summarize_salmon_qc(tmp_path / "salmon", design, tmp_path / "qc.tsv")
+    with output.open(newline="") as handle:
+        rows = list(csv.DictReader(handle, delimiter="\t"))
+    assert rows[0]["sample"] == "selected_A"
+    assert rows[0]["library_type"] == "IU"
+    assert rows[0]["mapping_rate_percent"] == "75.000000"
+    assert rows[0]["decoy_rate_percent"] == "5.000000"
+
+
 def test_identifier_mapping_confidence_assignment():
     exact = map_identifier("CGI_10001")
     unresolved = map_identifier("NOT_IN_MAP")

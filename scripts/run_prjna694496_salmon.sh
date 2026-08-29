@@ -74,6 +74,11 @@ tail -n +2 "$SAMPLESHEET" | while IFS=, read -r sample fastq_1 fastq_2 strandedn
     --output "$sample_quant"
 done
 
+python "$SCRIPT_DIR/summarize_salmon_qc.py" \
+  --quant-dir "$QUANT_DIR" \
+  --design-sheet "$DESIGN_SHEET" \
+  --output "$QUANT_DIR/salmon_qc_summary.tsv"
+
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" \
   "$QUANT_DIR" \
   "$DESIGN_SHEET" \
