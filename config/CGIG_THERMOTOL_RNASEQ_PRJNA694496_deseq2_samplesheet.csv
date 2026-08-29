@@ -1,0 +1,7 @@
+sample,condition,replicate,run_accession
+selected_A,selected,A,SRR13576947
+selected_B,selected,B,SRR13576945
+selected_C,selected,C,SRR13576944
+control_A,control,A,SRR13576943
+control_B,control,B,SRR13576942
+control_C,control,C,SRR13576946

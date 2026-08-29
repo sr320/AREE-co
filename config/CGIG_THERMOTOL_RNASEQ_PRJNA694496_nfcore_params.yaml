@@ -1,0 +1,14 @@
+input: "config/CGIG_THERMOTOL_RNASEQ_PRJNA694496_nfcore_samplesheet.csv"
+outdir: "results/rnaseq/CGIG_THERMOTOL_RNASEQ_PRJNA694496"
+fasta: "data/reference/GCF_963853765.1/GCF_963853765.1_genomic.fna.gz"
+gff: "data/reference/GCF_963853765.1/GCF_963853765.1_genomic.gff.gz"
+igenomes_ignore: true
+pseudo_aligner: "salmon"
+skip_alignment: true
+skip_trimming: true
+extra_salmon_quant_args: "--seqBias --gcBias"
+seq_platform: "ILLUMINA"
+multiqc_title: "AREE PRJNA694496 selected versus control larval RNA-seq"
+max_cpus: 8
+max_memory: "24.GB"
+max_time: "48.h"

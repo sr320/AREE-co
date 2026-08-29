@@ -44,6 +44,72 @@ def test_required_provenance_fields_present():
     assert study["provenance"]["curation_date"]
 
 
+def test_second_real_study_manifest_matches_published_run_totals():
+    import pandas as pd
+
+    study = validate_study_file(
+        ROOT / "registry/studies/CGIG_THERMOTOL_RNASEQ_PRJNA694496.yaml"
+    )
+    manifest = pd.read_csv(
+        ROOT / "data/manifests/CGIG_THERMOTOL_RNASEQ_PRJNA694496_runs.tsv",
+        sep="\t",
+    )
+    assert study["analysis_status"] == "raw_reanalysis_manifest_ready"
+    assert len(manifest) == 6
+    assert manifest["run_accession"].is_unique
+    assert manifest["condition"].value_counts().to_dict() == {"selected": 3, "control": 3}
+    assert manifest["read_count"].sum() == 132413989
+    assert manifest[["fastq_1_bytes", "fastq_2_bytes"]].to_numpy().sum() == 16252181463
+    assert manifest["assignment_evidence"].str.contains("exactly match").all()
+
+
+def test_fastq_preflight_uses_nearest_existing_ancestor(tmp_path):
+    from scripts.prepare_prjna694496_fastqs import nearest_existing_ancestor
+
+    nested_destination = tmp_path / "not-yet-created" / "fastq"
+    assert nearest_existing_ancestor(nested_destination) == tmp_path.resolve()
+
+
+def test_prjna694496_workflow_sheets_and_tx2gene_are_schema_safe(tmp_path):
+    import csv
+    import gzip
+
+    from scripts.prepare_gcf963853765_reference import build_tx2gene
+    from scripts.prepare_prjna694496_fastqs import (
+        load_manifest,
+        write_design_samplesheet,
+        write_nfcore_samplesheet,
+    )
+
+    rows = load_manifest(
+        ROOT / "data/manifests/CGIG_THERMOTOL_RNASEQ_PRJNA694496_runs.tsv"
+    )
+    nfcore = tmp_path / "nfcore.csv"
+    design = tmp_path / "design.csv"
+    write_nfcore_samplesheet(rows, tmp_path / "fastq", nfcore)
+    write_design_samplesheet(rows, design)
+    with nfcore.open(newline="") as handle:
+        nfcore_rows = list(csv.DictReader(handle))
+    with design.open(newline="") as handle:
+        design_rows = list(csv.DictReader(handle))
+    assert list(nfcore_rows[0]) == ["sample", "fastq_1", "fastq_2", "strandedness"]
+    assert list(design_rows[0]) == ["sample", "condition", "replicate", "run_accession"]
+
+    gff = tmp_path / "mini.gff.gz"
+    with gzip.open(gff, "wt") as handle:
+        handle.write(
+            "NC_1\tGnomon\tmRNA\t1\t10\t.\t+\t.\t"
+            "ID=rna-XM_1.1;Dbxref=GeneID:123,GenBank:XM_1.1;"
+            "gene=example;transcript_id=XM_1.1\n"
+        )
+    tx2gene = tmp_path / "tx2gene.tsv"
+    build_tx2gene(gff, tx2gene)
+    assert tx2gene.read_text().splitlines() == [
+        "transcript_id\tgene_id\tgene_symbol",
+        "XM_1.1\tNCBI:GeneID:123\texample",
+    ]
+
+
 def test_identifier_mapping_confidence_assignment():
     exact = map_identifier("CGI_10001")
     unresolved = map_identifier("NOT_IN_MAP")

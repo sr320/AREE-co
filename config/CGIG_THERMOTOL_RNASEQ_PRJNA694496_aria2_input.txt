@@ -1,0 +1,16 @@
+https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR135/047/SRR13576947/SRR13576947_2.fastq.gz
+  dir=/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/fastq
+  out=SRR13576947_2.fastq.gz.fresh
+  checksum=md5=fd730cfef1c4a7e60a0a46b9900ae1d8
+https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR135/044/SRR13576944/SRR13576944_2.fastq.gz
+  dir=/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/fastq
+  out=SRR13576944_2.fastq.gz.fresh
+  checksum=md5=62f1c67f06cce59e9bfa244f8acc00f9
+https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR135/043/SRR13576943/SRR13576943_1.fastq.gz
+  dir=/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/fastq
+  out=SRR13576943_1.fastq.gz.fresh
+  checksum=md5=048b0060ba40625d0378650cce7eceff
+https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR135/042/SRR13576942/SRR13576942_1.fastq.gz
+  dir=/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/fastq
+  out=SRR13576942_1.fastq.gz.fresh
+  checksum=md5=4b73473c25cff46fe833c52beec947a1

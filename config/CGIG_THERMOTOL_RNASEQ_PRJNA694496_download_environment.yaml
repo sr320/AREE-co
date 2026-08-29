@@ -1,0 +1,5 @@
+name: aree-prjna694496-download
+channels:
+  - conda-forge
+dependencies:
+  - aria2=1.37.0

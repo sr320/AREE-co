@@ -1,0 +1,53 @@
+study_id: CGIG_THERMOTOL_RNASEQ_PRJNA694496
+doi: "10.3389/fphys.2021.663023"
+accessions:
+  bioproject: "PRJNA694496"
+  sra: "SRP303795"
+  associated_wgs_bioproject: "PRJNA697824"
+  biosample: "SAMN17525955"
+  pmcid: "PMC8100323"
+  pmid: "33967834"
+citation: "Tan Y, Cong R, Qi H, Wang L, Zhang G, Pan Y, Li L. Transcriptomics Analysis and Re-sequencing Reveal the Mechanism Underlying the Thermotolerance of an Artificial Selection Population of the Pacific Oyster. Front Physiol. 2021;12:663023."
+species: "Crassostrea gigas"
+strain_population_family: "F2 thermotolerance-selected population versus non-selected control population derived from Shentanggou, Qingdao founders; 30 dams and 30 sires contributed to each population"
+genome_assembly: null
+annotation_version: null
+assay_type: "rnaseq"
+tissue: "whole_larva"
+life_stage: "umbo_larva"
+experimental_treatment: "F2 population after two generations of artificial selection using 42 C heat shock for 1 h; larvae sampled at ambient hatchery conditions"
+control_condition: "F2 non-selected control population; larvae sampled at ambient hatchery conditions"
+stressor_class: "temperature"
+exposure:
+  intensity: "42 C for 1 h applied during population selection; RNA-seq larvae were not acutely heat-shocked"
+  duration: "two generations of selection"
+  timing: "ancestral/population selection followed by constitutive larval RNA-seq"
+phenotype: "thermal_tolerance"
+phenotype_direction: "Selected population had higher post-heat-shock survival (78.05% versus 66.34%) and field summer survival (73% versus 62%)"
+phenotype_units: "percent survival"
+resilience_classification: "resilience_associated"
+sample_size: 6
+biological_replication: "RNA-seq: 3 selected-population and 3 control-population larval libraries; number of larvae pooled per library was not reported"
+platform: "Illumina HiSeq X Ten, paired-end approximately 150 bp"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_summary_only"
+quality_control_status: "Publication reports 132,413,989 clean read pairs, mean Q30 92.90%, and mean GC 40.15%; run-to-group assignment verified from exact read-count matches; raw reads not yet reanalyzed"
+analysis_status: "raw_reanalysis_manifest_ready"
+provenance:
+  source_links:
+    - "https://doi.org/10.3389/fphys.2021.663023"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA694496"
+    - "https://www.ncbi.nlm.nih.gov/sra/?term=SRP303795"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA694496"
+    - "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8100323/supplementaryFiles?includeInlineImage=false"
+  curator: "AREE contributors"
+  curation_date: "2026-08-27"
+limitations:
+  - "The RNA-seq comparison is constitutive selected-versus-control expression at the larval stage, not an acute heat-versus-control contrast."
+  - "Thermotolerance survival was measured in related later-stage cohorts rather than the RNA-sequenced larval pools."
+  - "The publication reports 4,764 DEGs but does not provide the complete feature-level effect, p-value, or standard-error table in its supplementary archive."
+  - "The publication describes three replicates per group but does not report how many larvae were pooled into each RNA-seq library."
+  - "All six runs share one BioSample record, and its tissue field says gill despite the publication consistently describing whole umbo larvae; AREE follows the publication for tissue and records the discrepancy."
+  - "The source genome assembly and differential-expression software/threshold are not reported clearly enough for exact reproduction; AREE will reanalyze against a versioned current reference."
