@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 import pytest
 import yaml
@@ -14,6 +15,8 @@ from aree.validation.schemas import validate_study_file
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 
 def test_schema_validation_accepts_demo_study():
