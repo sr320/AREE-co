@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from aree.groups import column_groups, is_missing
 from aree.io import read_tsv
 from aree.paths import root_path
 
@@ -36,48 +37,63 @@ def poolable(evidence):
     return evidence["effect_size"].notna() & evidence["standard_error"].notna() & (evidence["standard_error"] > 0)
 
 
-def random_effects(group):
-    """DerSimonian-Laird pooling of one group, reporting any effects that could not be pooled."""
-    usable = poolable(group)
-    excluded = group[~usable]
+def _pool(effects, standard_errors, study_ids):
+    """DerSimonian-Laird pooling of one group's arrays, reporting effects that could not be pooled.
+
+    Sums are plain sequential sums, which are deterministic on every platform.
+    """
+    usable = [
+        not is_missing(effect) and not is_missing(se) and se > 0
+        for effect, se in zip(effects, standard_errors)
+    ]
+    excluded = sorted({study for study, ok in zip(study_ids, usable) if not ok})
     exclusion = {
-        "n_effects_excluded": len(excluded),
-        "excluded_study_ids": ";".join(sorted(excluded["study_id"].unique())),
+        "n_effects_excluded": usable.count(False),
+        "excluded_study_ids": ";".join(excluded),
     }
-    group = group[usable]
-    k = len(group)
+    yi = [float(effect) for effect, ok in zip(effects, usable) if ok]
+    # x * x, not x ** 2: pow() is not exactly rounded on every platform, multiplication is.
+    vi = [float(se) * float(se) for se, ok in zip(standard_errors, usable) if ok]
+    studies = sorted({study for study, ok in zip(study_ids, usable) if ok})
+    k = len(yi)
     if k == 0:
         # Keep the group visible: silently dropping it hides studies that lack standard errors.
         result = {column: float("nan") for column in RESULT_COLUMNS}
         result.update(n_effects=0, n_studies=0, study_ids="", pooling_status="no_standard_errors", **exclusion)
         return result
-    yi = group["effect_size"].astype(float)
-    vi = group["standard_error"].astype(float) ** 2
-    wi = 1.0 / vi
-    fixed = (wi * yi).sum() / wi.sum()
-    q = (wi * (yi - fixed) ** 2).sum()
-    c = wi.sum() - (wi**2).sum() / wi.sum()
+    wi = [1.0 / v for v in vi]
+    sum_w = sum(wi)
+    fixed = sum(w * y for w, y in zip(wi, yi)) / sum_w
+    q = sum(w * (y - fixed) * (y - fixed) for w, y in zip(wi, yi))
+    c = sum_w - sum(w * w for w in wi) / sum_w
     tau2 = max(0.0, (q - (k - 1)) / c) if k > 1 and c > 0 else 0.0
-    rei = 1.0 / (vi + tau2)
-    pooled = (rei * yi).sum() / rei.sum()
-    se = math.sqrt(1.0 / rei.sum())
+    rei = [1.0 / (v + tau2) for v in vi]
+    sum_re = sum(rei)
+    pooled = sum(r * y for r, y in zip(rei, yi)) / sum_re
+    se = math.sqrt(1.0 / sum_re)
     z = pooled / se if se > 0 else 0.0
-    p_value = _two_sided_p(z)
     i2 = max(0.0, (q - (k - 1)) / q) * 100.0 if q > 0 and k > 1 else 0.0
     return {
         "n_effects": k,
-        "n_studies": group["study_id"].nunique(),
+        "n_studies": len(studies),
         "pooled_effect": pooled,
         "pooled_standard_error": se,
-        "p_value": p_value,
+        "p_value": _two_sided_p(z),
         "q": q,
         "i2_percent": i2,
         "tau2": tau2,
-        "direction_consistency": max((yi > 0).mean(), (yi < 0).mean()),
-        "study_ids": ";".join(sorted(group["study_id"].unique())),
+        "direction_consistency": max(sum(y > 0 for y in yi), sum(y < 0 for y in yi)) / k,
+        "study_ids": ";".join(studies),
         "pooling_status": "pooled" if k > 1 else "single_effect",
         **exclusion,
     }
+
+
+def random_effects(group):
+    """DerSimonian-Laird pooling of one group, reporting any effects that could not be pooled."""
+    return _pool(
+        group["effect_size"].to_numpy(), group["standard_error"].to_numpy(), group["study_id"].to_numpy()
+    )
 
 
 GROUP_COLUMNS = ["feature_id_standardized", "feature_type", "effect_size_type", "phenotype", "stressor"]
@@ -86,9 +102,10 @@ GROUP_COLUMNS = ["feature_id_standardized", "feature_type", "effect_size_type", 
 def meta_analysis_table(evidence):
     """Pool effects per feature and context; only effects on the same scale (effect_size_type) are pooled."""
     rows = []
-    for keys, group in evidence.groupby(GROUP_COLUMNS):
+    groups = column_groups(evidence, GROUP_COLUMNS, ["effect_size", "standard_error", "study_id"])
+    for keys, columns in groups:
         row = dict(zip(GROUP_COLUMNS, keys))
-        row.update(random_effects(group))
+        row.update(_pool(columns["effect_size"], columns["standard_error"], columns["study_id"]))
         rows.append(row)
     return pd.DataFrame(rows, columns=GROUP_COLUMNS + RESULT_COLUMNS)
 

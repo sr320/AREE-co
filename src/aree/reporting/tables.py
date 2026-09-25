@@ -1,13 +1,15 @@
-def dataframe_to_markdown(df):
-    if df.empty:
+def rows_to_markdown(columns, rows):
+    if not rows:
         return "_No rows._"
-    columns = list(df.columns)
     lines = [
         "| " + " | ".join(columns) + " |",
         "| " + " | ".join(["---"] * len(columns)) + " |",
     ]
-    for _, row in df.iterrows():
-        values = [str(row[column]) for column in columns]
-        lines.append("| " + " | ".join(values) + " |")
+    for row in rows:
+        lines.append("| " + " | ".join(str(value) for value in row) + " |")
     return "\n".join(lines)
 
+
+def dataframe_to_markdown(df):
+    columns = list(df.columns)
+    return rows_to_markdown(columns, [[row[column] for column in columns] for _, row in df.iterrows()])
