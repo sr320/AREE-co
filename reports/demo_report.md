@@ -26,6 +26,19 @@ This report uses simulated demo evidence to demonstrate the MVP evidence-generat
 | survival | temperature | gene | 3 |
 | thermal_tolerance | temperature | gene | 4 |
 
+## Meta-analysis Coverage
+
+Only effects with a standard error can be pooled; effects without one are listed here rather than dropped silently.
+
+| study_id | effects | poolable_effects | not_poolable |
+| --- | --- | --- | --- |
+| CGIG_HEAT_RNASEQ_001 | 4 | 4 | 0 |
+| CGIG_HEAT_RNASEQ_002 | 3 | 3 | 0 |
+| CGIG_LARVAL_PROCESSED_001 | 2 | 2 | 0 |
+| CGIG_OA_METHYL_001 | 2 | 2 | 0 |
+| CGIG_PATH_PROTEO_001 | 2 | 2 | 0 |
+| CGIG_SALINITY_METAB_001 | 2 | 2 | 0 |
+
 ## Candidate Scores
 
 | candidate_id | score | category | n_studies | total_biological_sample_size | assay_diversity | direction_consistency | consistency_flag | best_adjusted_p_value | mean_mapping_confidence_score | known_limitations |

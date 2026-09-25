@@ -92,9 +92,10 @@ def score_table(evidence):
         data_quality = 1.0 - min((group["quality_flags"] != "none").mean(), 1.0) * 0.4
         best_q = group["adjusted_p_value"].min()
         heterogeneity_penalty = 0.0
-        match = meta[meta["feature_id_standardized"] == feature]
-        if not match.empty:
-            heterogeneity_penalty = min(match["i2_percent"].max() / 100.0, 1.0) * 0.15
+        # Groups with nothing poolable have no I2; they carry no heterogeneity information.
+        i2 = meta.loc[meta["feature_id_standardized"] == feature, "i2_percent"].dropna()
+        if not i2.empty:
+            heterogeneity_penalty = min(i2.max() / 100.0, 1.0) * 0.15
         components = {
             "n_studies": _bounded(n_studies, 4),
             "total_sample_size": _bounded(total_n, 100),

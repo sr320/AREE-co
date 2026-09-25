@@ -2,6 +2,7 @@ import typer
 
 from aree.harmonize.processed import harmonize_demo as harmonize_demo_data
 from aree.harmonize.processed import harmonize_processed
+from aree.io import read_tsv
 from aree.intake.registry import register_study as register_study_file
 from aree.meta_analysis.random_effects import run_meta_analysis
 from aree.prioritize.scoring import score_candidates
@@ -67,6 +68,16 @@ def meta_analyze(
         phenotype=phenotype, feature_type=feature_type, evidence_path=evidence, output_path=output
     )
     typer.echo("meta-analysis written to {}".format(output))
+    meta = read_tsv(output)
+    excluded = int(meta["n_effects_excluded"].sum())
+    if excluded:
+        studies = sorted({s for ids in meta["excluded_study_ids"].dropna() for s in ids.split(";") if s})
+        typer.echo(
+            "note: {} effects lack standard errors and were not pooled (studies: {}); "
+            "{} feature groups have nothing poolable".format(
+                excluded, ", ".join(studies), int((meta["pooling_status"] == "no_standard_errors").sum())
+            )
+        )
 
 
 @app.command("score-candidates")

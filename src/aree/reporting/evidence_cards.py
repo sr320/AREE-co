@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from aree.io import read_tsv
+from aree.meta_analysis.random_effects import poolable
 from aree.paths import root_path
 from aree.prioritize.scoring import score_table
 from aree.reporting.tables import dataframe_to_markdown
@@ -52,6 +53,9 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
             "- Direction of association: {}".format(directions),
             "- Identifier mapping confidence: {}".format(", ".join(sorted(group["mapping_confidence"].unique()))),
             "- Limitations: {}".format(limitations),
+            "- Effects without standard errors (not pooled in meta-analysis): {}".format(
+                ", ".join(sorted(group.loc[~poolable(group), "study_id"].unique())) or "none"
+            ),
             "",
             "## Effect Summary",
             "",

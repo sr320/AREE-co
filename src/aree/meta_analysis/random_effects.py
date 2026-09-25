@@ -18,6 +18,9 @@ RESULT_COLUMNS = [
     "tau2",
     "direction_consistency",
     "study_ids",
+    "pooling_status",
+    "n_effects_excluded",
+    "excluded_study_ids",
 ]
 
 
@@ -28,12 +31,26 @@ def _two_sided_p(z):
     return float("{:.12g}".format(math.erfc(abs(z) / math.sqrt(2.0))))
 
 
+def poolable(evidence):
+    """Mask of effects usable for inverse-variance pooling (effect size and a positive standard error)."""
+    return evidence["effect_size"].notna() & evidence["standard_error"].notna() & (evidence["standard_error"] > 0)
+
+
 def random_effects(group):
-    group = group.dropna(subset=["effect_size", "standard_error"]).copy()
-    group = group[group["standard_error"] > 0]
+    """DerSimonian-Laird pooling of one group, reporting any effects that could not be pooled."""
+    usable = poolable(group)
+    excluded = group[~usable]
+    exclusion = {
+        "n_effects_excluded": len(excluded),
+        "excluded_study_ids": ";".join(sorted(excluded["study_id"].unique())),
+    }
+    group = group[usable]
     k = len(group)
     if k == 0:
-        return None
+        # Keep the group visible: silently dropping it hides studies that lack standard errors.
+        result = {column: float("nan") for column in RESULT_COLUMNS}
+        result.update(n_effects=0, n_studies=0, study_ids="", pooling_status="no_standard_errors", **exclusion)
+        return result
     yi = group["effect_size"].astype(float)
     vi = group["standard_error"].astype(float) ** 2
     wi = 1.0 / vi
@@ -58,6 +75,8 @@ def random_effects(group):
         "tau2": tau2,
         "direction_consistency": max((yi > 0).mean(), (yi < 0).mean()),
         "study_ids": ";".join(sorted(group["study_id"].unique())),
+        "pooling_status": "pooled" if k > 1 else "single_effect",
+        **exclusion,
     }
 
 
@@ -68,12 +87,9 @@ def meta_analysis_table(evidence):
     """Pool effects per feature and context; only effects on the same scale (effect_size_type) are pooled."""
     rows = []
     for keys, group in evidence.groupby(GROUP_COLUMNS):
-        result = random_effects(group)
-        if result:
-            row = dict(zip(GROUP_COLUMNS, keys))
-            row.update(result)
-            rows.append(row)
-    # Keep headers even when nothing is poolable (e.g. no standard errors) so downstream reads succeed.
+        row = dict(zip(GROUP_COLUMNS, keys))
+        row.update(random_effects(group))
+        rows.append(row)
     return pd.DataFrame(rows, columns=GROUP_COLUMNS + RESULT_COLUMNS)
 
 

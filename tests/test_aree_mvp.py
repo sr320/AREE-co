@@ -344,6 +344,9 @@ def _evidence_rows(tmp_path, rows):
         "life_stage": "adult",
         "phenotype": "thermal_tolerance",
         "stressor": "temperature",
+        "molecular_direction": "up",
+        "species": "Crassostrea gigas",
+        "ortholog_reference": None,
     }
     path = tmp_path / "evidence.tsv"
     pd.DataFrame([dict(base, **row) for row in rows]).to_csv(path, sep="\t", index=False)
@@ -432,3 +435,39 @@ def test_filtered_cards_are_scored_from_the_evidence_they_show(tmp_path):
     for card in cards:
         candidate = card.read_text().splitlines()[0].replace("# Evidence Card: ", "")
         assert "- Candidate score: {}".format(expected[candidate]) in card.read_text()
+
+
+def test_effects_without_standard_errors_are_reported_not_dropped(tmp_path):
+    from aree.meta_analysis.random_effects import meta_analysis_table
+
+    evidence = pd.read_csv(_evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 1.0, "standard_error": 0.2},
+        {"feature_id_standardized": "G1", "study_id": "B", "effect_size": 2.0, "standard_error": None},
+        {"feature_id_standardized": "G2", "study_id": "B", "effect_size": 2.0, "standard_error": None},
+    ]), sep="\t")
+    table = meta_analysis_table(evidence).set_index("feature_id_standardized")
+    assert table.loc["G1", "pooling_status"] == "single_effect"
+    assert table.loc["G1", "n_effects_excluded"] == 1
+    assert table.loc["G1", "excluded_study_ids"] == "B"
+    assert table.loc["G2", "pooling_status"] == "no_standard_errors"
+    assert table.loc["G2", "n_effects"] == 0
+    assert pd.isna(table.loc["G2", "pooled_effect"])
+
+
+def test_unpoolable_evidence_is_scored_and_surfaced(tmp_path):
+    from typer.testing import CliRunner
+
+    from aree.cli import app
+
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G2", "study_id": "B", "effect_size": 2.0, "standard_error": None},
+    ])
+    scores = pd.read_csv(score_candidates(evidence_path=path, output_path=tmp_path / "s.tsv"), sep="\t")
+    assert scores["score"].notna().all()
+    result = CliRunner().invoke(app, ["meta-analyze", "--evidence", str(path), "--output", str(tmp_path / "m.tsv")])
+    assert result.exit_code == 0, result.output
+    assert "1 effects lack standard errors" in result.output and "studies: B" in result.output
+    report = build_demo_report(output_path=tmp_path / "r.md", evidence_path=path, scores_path=tmp_path / "s.tsv")
+    assert "| B | 1 | 0 | 1 |" in report.read_text()
+    cards = build_evidence_cards(evidence_path=path, output_dir=tmp_path / "cards")
+    assert "not pooled in meta-analysis): B" in cards[0].read_text()
