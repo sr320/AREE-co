@@ -234,10 +234,18 @@ def test_effect_size_meta_analysis_calculates_pooled_effect():
     assert result["pooled_effect"] > 1.0
 
 
+def test_meta_analysis_p_value_keeps_precision_for_large_effects():
+    import pandas as pd
+
+    group = pd.DataFrame({"effect_size": [10.0, 10.0], "standard_error": [0.5, 0.5], "study_id": ["A", "B"]})
+    p_value = random_effects(group)["p_value"]
+    assert 0.0 < p_value < 1e-150
+
+
 def test_demo_meta_analysis_and_scoring(tmp_path):
     evidence = harmonize_demo(tmp_path / "evidence.tsv")
     meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
-    scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores.tsv")
+    scores = score_candidates(evidence_path=evidence, output_path=tmp_path / "scores.tsv")
     assert meta.exists()
     assert scores.exists()
     assert "candidate_id" in scores.read_text()
@@ -245,16 +253,14 @@ def test_demo_meta_analysis_and_scoring(tmp_path):
 
 def test_candidate_score_reproducibility(tmp_path):
     evidence = harmonize_demo(tmp_path / "evidence.tsv")
-    meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
-    one = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores1.tsv").read_text()
-    two = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores2.tsv").read_text()
+    one = score_candidates(evidence_path=evidence, output_path=tmp_path / "scores1.tsv").read_text()
+    two = score_candidates(evidence_path=evidence, output_path=tmp_path / "scores2.tsv").read_text()
     assert one == two
 
 
 def test_evidence_card_generation(tmp_path):
     evidence = harmonize_demo(tmp_path / "evidence.tsv")
-    meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
-    scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores.tsv")
+    scores = score_candidates(evidence_path=evidence, output_path=tmp_path / "scores.tsv")
     cards = build_evidence_cards(evidence_path=evidence, scores_path=scores, output_dir=tmp_path / "cards")
     assert cards
     assert "not a validated biomarker" in cards[0].read_text()
@@ -262,8 +268,7 @@ def test_evidence_card_generation(tmp_path):
 
 def test_demo_report_build(tmp_path):
     evidence = harmonize_demo(tmp_path / "evidence.tsv")
-    meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
-    scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores.tsv")
+    scores = score_candidates(evidence_path=evidence, output_path=tmp_path / "scores.tsv")
     report = build_demo_report(output_path=tmp_path / "report.md", evidence_path=evidence, scores_path=scores)
     assert report.exists()
     assert "AREE Demo Report" in report.read_text()
@@ -313,7 +318,7 @@ def test_cli_downstream_commands_accept_real_evidence_paths(tmp_path):
         ["harmonize", "--study", "CGIG_HEAT_RNASEQ_PRJNA516762", "--input", str(source),
          "--mapping", str(ROOT / "data/mappings/cgigas_cgi_to_ncbi_gene_rs2024_06_v1.tsv"), "--output", str(evidence)],
         ["meta-analyze", "--evidence", str(evidence), "--output", str(tmp_path / "meta.tsv")],
-        ["build-evidence-cards", "--evidence", str(evidence), "--meta", str(tmp_path / "meta.tsv"),
+        ["build-evidence-cards", "--evidence", str(evidence),
          "--scores", str(tmp_path / "scores.tsv"), "--output-dir", str(tmp_path / "cards")],
         ["build-demo-report", "--evidence", str(evidence), "--scores", str(tmp_path / "scores.tsv"),
          "--output", str(tmp_path / "report.md")],
@@ -324,3 +329,176 @@ def test_cli_downstream_commands_accept_real_evidence_paths(tmp_path):
     scores = pd.read_csv(tmp_path / "scores.tsv", sep="\t")
     assert len(scores) == pd.read_csv(evidence, sep="\t")["feature_id_standardized"].nunique()
     assert list((tmp_path / "cards").glob("*.md"))
+
+
+def _evidence_rows(tmp_path, rows):
+    base = {
+        "feature_type": "gene",
+        "effect_size_type": "log2_fold_change",
+        "sample_size": 10,
+        "resilience_classification": "resilience_associated",
+        "mapping_confidence": "exact",
+        "quality_flags": "none",
+        "adjusted_p_value": 0.01,
+        "tissue": "gill",
+        "life_stage": "adult",
+        "phenotype": "thermal_tolerance",
+        "stressor": "temperature",
+        "molecular_direction": "up",
+        "species": "Crassostrea gigas",
+        "ortholog_reference": None,
+    }
+    path = tmp_path / "evidence.tsv"
+    pd.DataFrame([dict(base, **row) for row in rows]).to_csv(path, sep="\t", index=False)
+    return path
+
+
+def test_meta_analysis_never_pools_different_effect_scales(tmp_path):
+    from aree.meta_analysis.random_effects import meta_analysis_table
+
+    evidence = pd.read_csv(_evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 2.0, "standard_error": 0.2},
+        {"feature_id_standardized": "G1", "study_id": "B", "effect_size": 0.1, "standard_error": 0.02,
+         "effect_size_type": "methylation_difference"},
+    ]), sep="\t")
+    table = meta_analysis_table(evidence)
+    assert sorted(table["effect_size_type"]) == ["log2_fold_change", "methylation_difference"]
+    assert set(table["n_effects"]) == {1}
+
+
+def test_scoring_summarizes_effects_within_each_scale(tmp_path):
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 2.0, "standard_error": 0.2},
+        {"feature_id_standardized": "G1", "study_id": "B", "effect_size": -1.0, "standard_error": 0.2},
+        {"feature_id_standardized": "G1", "study_id": "C", "effect_size": 0.1, "standard_error": 0.02,
+         "effect_size_type": "methylation_difference"},
+    ])
+    from aree.prioritize.scoring import _typed_effect_summary
+
+    magnitude, direction = _typed_effect_summary(pd.read_csv(path, sep="\t"))
+    assert magnitude == pytest.approx(((1.5 / 2.5) + (0.1 / 2.5)) / 2)
+    # The lone methylation effect cannot show consistency, so only the split log2FC pair counts.
+    assert direction == pytest.approx(0.5)
+
+
+def test_one_effect_per_assay_is_not_high_priority(tmp_path):
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 1.0, "standard_error": 0.1},
+        {"feature_id_standardized": "G1", "study_id": "B", "effect_size": -0.2, "standard_error": 0.05,
+         "feature_type": "genomic_region", "effect_size_type": "methylation_difference"},
+    ])
+    scores = pd.read_csv(score_candidates(evidence_path=path, output_path=tmp_path / "s.tsv"), sep="\t")
+    row = scores.iloc[0]
+    assert pd.isna(row["direction_consistency"])
+    assert row["consistency_flag"] == "not replicated within an effect-size type"
+    assert row["category"] == "Multi-omics convergence candidate"
+
+
+def test_heterogeneity_penalty_comes_from_scored_evidence(tmp_path):
+    from aree.meta_analysis.random_effects import meta_analysis_table
+
+    def score_with_standard_error(se, name):
+        path = _evidence_rows(tmp_path, [
+            {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 1.0, "standard_error": se},
+            {"feature_id_standardized": "G1", "study_id": "B", "effect_size": 3.0, "standard_error": se},
+        ])
+        i2 = meta_analysis_table(pd.read_csv(path, sep="\t"))["i2_percent"].iloc[0]
+        score = pd.read_csv(score_candidates(evidence_path=path, output_path=tmp_path / name), sep="\t")["score"].iloc[0]
+        return i2, score
+
+    # Only the standard errors differ, and they feed no other score component,
+    # so the score gap is exactly the I2 penalty computed from this evidence.
+    i2_wide, score_wide = score_with_standard_error(10.0, "wide.tsv")
+    i2_tight, score_tight = score_with_standard_error(0.1, "tight.tsv")
+    assert i2_wide == 0.0 and i2_tight > 90.0
+    assert score_wide - score_tight == pytest.approx(i2_tight / 100.0 * 0.15, abs=1e-4)
+
+
+def test_scoring_phenotype_filter_limits_evidence(tmp_path):
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 1.0, "standard_error": 0.1},
+        {"feature_id_standardized": "G2", "study_id": "B", "effect_size": 1.0, "standard_error": 0.1,
+         "phenotype": "survival"},
+    ])
+    scores = pd.read_csv(score_candidates(evidence_path=path, output_path=tmp_path / "s.tsv", phenotype="survival"), sep="\t")
+    assert list(scores["candidate_id"]) == ["G2"]
+
+
+def test_filtered_cards_are_scored_from_the_evidence_they_show(tmp_path):
+    from aree.prioritize.scoring import score_table
+
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
+    cards = build_evidence_cards(phenotype="survival", evidence_path=evidence, output_dir=tmp_path / "cards")
+    table = pd.read_csv(evidence, sep="\t")
+    expected = score_table(table[table["phenotype"] == "survival"]).set_index("candidate_id")["score"]
+    assert len(cards) == len(expected)
+    for card in cards:
+        candidate = card.read_text().splitlines()[0].replace("# Evidence Card: ", "")
+        assert "- Candidate score: {}".format(expected[candidate]) in card.read_text()
+
+
+def test_effects_without_standard_errors_are_reported_not_dropped(tmp_path):
+    from aree.meta_analysis.random_effects import meta_analysis_table
+
+    evidence = pd.read_csv(_evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G1", "study_id": "A", "effect_size": 1.0, "standard_error": 0.2},
+        {"feature_id_standardized": "G1", "study_id": "B", "effect_size": 2.0, "standard_error": None},
+        {"feature_id_standardized": "G2", "study_id": "B", "effect_size": 2.0, "standard_error": None},
+    ]), sep="\t")
+    table = meta_analysis_table(evidence).set_index("feature_id_standardized")
+    assert table.loc["G1", "pooling_status"] == "single_effect"
+    assert table.loc["G1", "n_effects_excluded"] == 1
+    assert table.loc["G1", "excluded_study_ids"] == "B"
+    assert table.loc["G2", "pooling_status"] == "no_standard_errors"
+    assert table.loc["G2", "n_effects"] == 0
+    assert pd.isna(table.loc["G2", "pooled_effect"])
+
+
+def test_unpoolable_evidence_is_scored_and_surfaced(tmp_path):
+    from typer.testing import CliRunner
+
+    from aree.cli import app
+
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "G2", "study_id": "B", "effect_size": 2.0, "standard_error": None},
+    ])
+    scores = pd.read_csv(score_candidates(evidence_path=path, output_path=tmp_path / "s.tsv"), sep="\t")
+    assert scores["score"].notna().all()
+    result = CliRunner().invoke(app, ["meta-analyze", "--evidence", str(path), "--output", str(tmp_path / "m.tsv")])
+    assert result.exit_code == 0, result.output
+    assert "1 effects lack standard errors" in result.output and "studies: B" in result.output
+    report = build_demo_report(output_path=tmp_path / "r.md", evidence_path=path, scores_path=tmp_path / "s.tsv")
+    assert "| B | 1 | 0 | 1 |" in report.read_text()
+    cards = build_evidence_cards(evidence_path=path, output_dir=tmp_path / "cards")
+    assert "not pooled in meta-analysis): B" in cards[0].read_text()
+
+
+def test_card_filenames_are_portable():
+    from aree.reporting.evidence_cards import card_filename
+
+    assert card_filename("NCBI:LOC105317001") == "NCBI_LOC105317001.md"
+    assert card_filename("a/b\\c") == "a_b_c.md"
+    assert card_filename("CON") == "_CON.md"
+    assert card_filename("feature. ") == "feature.md"
+
+
+def test_rebuilding_cards_removes_stale_cards_only(tmp_path):
+    cards_dir = tmp_path / "cards"
+    cards_dir.mkdir()
+    (cards_dir / "OLD_GENE.md").write_text("# Evidence Card: OLD_GENE\n")
+    (cards_dir / "README.md").write_text("# Notes kept by a curator\n")
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
+    cards = build_evidence_cards(evidence_path=evidence, output_dir=cards_dir)
+    names = sorted(path.name for path in cards_dir.glob("*.md"))
+    assert names == sorted([path.name for path in cards] + ["README.md"])
+    assert not any(":" in name for name in names)
+
+
+def test_colliding_card_filenames_fail_before_writing(tmp_path):
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "NCBI:G1", "study_id": "A", "effect_size": 1.0, "standard_error": 0.1},
+        {"feature_id_standardized": "ncbi_g1", "study_id": "B", "effect_size": 1.0, "standard_error": 0.1},
+    ])
+    with pytest.raises(ValueError, match="same card file"):
+        build_evidence_cards(evidence_path=path, output_dir=tmp_path / "cards")
+    assert not list((tmp_path / "cards").glob("*.md"))

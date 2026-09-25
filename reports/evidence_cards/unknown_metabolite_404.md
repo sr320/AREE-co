@@ -2,16 +2,17 @@
 
 **Status:** Association evidence only; not a validated biomarker.
 
-- Candidate score: 0.44
+- Candidate score: 0.3734
 - Ranking category: Emerging candidate requiring replication
 - Species context: Crassostrea gigas
 - Ortholog/reference context: not resolved
 - Supporting studies: CGIG_SALINITY_METAB_001
 - Assay types represented: metabolite
 - Phenotype/stressor/tissue contexts: salinity_tolerance / salinity / whole_body
-- Direction of association: {'lower': 1}
+- Direction of association: lower: 1
 - Identifier mapping confidence: unresolved
 - Limitations: unresolved_metabolite
+- Effects without standard errors (not pooled in meta-analysis): none
 
 ## Effect Summary
 

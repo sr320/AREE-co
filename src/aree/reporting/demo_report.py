@@ -3,8 +3,21 @@ from pathlib import Path
 import pandas as pd
 
 from aree.io import read_tsv
+from aree.meta_analysis.random_effects import poolable
 from aree.paths import root_path
 from aree.reporting.tables import dataframe_to_markdown
+
+
+def meta_analysis_coverage(evidence):
+    usable = poolable(evidence)
+    coverage = (
+        evidence.assign(poolable=usable)
+        .groupby("study_id")
+        .agg(effects=("poolable", "size"), poolable_effects=("poolable", "sum"))
+        .reset_index()
+    )
+    coverage["not_poolable"] = coverage["effects"] - coverage["poolable_effects"]
+    return coverage
 
 
 def build_demo_report(output_path=None, registry_path=None, evidence_path=None, scores_path=None):
@@ -24,6 +37,12 @@ def build_demo_report(output_path=None, registry_path=None, evidence_path=None, 
         "## Evidence Counts",
         "",
         dataframe_to_markdown(evidence.groupby(["phenotype", "stressor", "feature_type"]).size().reset_index(name="records")),
+        "",
+        "## Meta-analysis Coverage",
+        "",
+        "Only effects with a standard error can be pooled; effects without one are listed here rather than dropped silently.",
+        "",
+        dataframe_to_markdown(meta_analysis_coverage(evidence)),
         "",
         "## Candidate Scores",
         "",

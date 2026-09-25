@@ -26,17 +26,30 @@ This report uses simulated demo evidence to demonstrate the MVP evidence-generat
 | survival | temperature | gene | 3 |
 | thermal_tolerance | temperature | gene | 4 |
 
+## Meta-analysis Coverage
+
+Only effects with a standard error can be pooled; effects without one are listed here rather than dropped silently.
+
+| study_id | effects | poolable_effects | not_poolable |
+| --- | --- | --- | --- |
+| CGIG_HEAT_RNASEQ_001 | 4 | 4 | 0 |
+| CGIG_HEAT_RNASEQ_002 | 3 | 3 | 0 |
+| CGIG_LARVAL_PROCESSED_001 | 2 | 2 | 0 |
+| CGIG_OA_METHYL_001 | 2 | 2 | 0 |
+| CGIG_PATH_PROTEO_001 | 2 | 2 | 0 |
+| CGIG_SALINITY_METAB_001 | 2 | 2 | 0 |
+
 ## Candidate Scores
 
 | candidate_id | score | category | n_studies | total_biological_sample_size | assay_diversity | direction_consistency | consistency_flag | best_adjusted_p_value | mean_mapping_confidence_score | known_limitations |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| NCBI:LOC105317001 | 0.6624 | High-priority cross-study candidate | 3 | 56 | 1 | 1.0 | reasonably consistent | 0.008 | 1.0 | none; processed_only_limited_metadata |
-| NCBI:LOC105317002 | 0.6333 | Multi-omics convergence candidate | 3 | 60 | 2 | 0.667 | conflicting or context-dependent | 0.018 | 0.933 | conflicting_direction; none |
-| NCBI:LOC105317004 | 0.6029 | Multi-omics convergence candidate | 3 | 54 | 3 | 0.667 | conflicting or context-dependent | 0.07 | 0.467 | none; processed_only |
-| NCBI:LOC105317003 | 0.6026 | Multi-omics convergence candidate | 3 | 54 | 2 | 0.667 | conflicting or context-dependent | 0.03 | 0.8 | nearest_gene_annotation; none; suggestive_phenotype |
-| CGI_99999 | 0.474 | Emerging candidate requiring replication | 1 | 24 | 1 | 1.0 | reasonably consistent | 0.09 | 0.2 | imperfect_identifier_mapping |
-| glutathione_related_feature | 0.4498 | Emerging candidate requiring replication | 1 | 14 | 1 | 1.0 | reasonably consistent | 0.04 | 0.2 | annotation_inferred |
-| unknown_metabolite_404 | 0.44 | Emerging candidate requiring replication | 1 | 14 | 1 | 1.0 | reasonably consistent | 0.14 | 0.0 | unresolved_metabolite |
+| NCBI:LOC105317001 | 0.6576 | High-priority cross-study candidate | 3 | 56 | 1 | 1.0 | reasonably consistent | 0.008 | 1.0 | none; processed_only_limited_metadata |
+| NCBI:LOC105317002 | 0.6128 | Multi-omics convergence candidate | 3 | 60 | 2 | 0.5 | conflicting or context-dependent | 0.018 | 0.933 | conflicting_direction; none |
+| NCBI:LOC105317004 | 0.5807 | Multi-omics convergence candidate | 3 | 54 | 3 | nan | not replicated within an effect-size type | 0.07 | 0.467 | none; processed_only |
+| NCBI:LOC105317003 | 0.5803 | Multi-omics convergence candidate | 3 | 54 | 2 | nan | not replicated within an effect-size type | 0.03 | 0.8 | nearest_gene_annotation; none; suggestive_phenotype |
+| CGI_99999 | 0.4073 | Emerging candidate requiring replication | 1 | 24 | 1 | nan | not replicated within an effect-size type | 0.09 | 0.2 | imperfect_identifier_mapping |
+| glutathione_related_feature | 0.3832 | Emerging candidate requiring replication | 1 | 14 | 1 | nan | not replicated within an effect-size type | 0.04 | 0.2 | annotation_inferred |
+| unknown_metabolite_404 | 0.3734 | Emerging candidate requiring replication | 1 | 14 | 1 | nan | not replicated within an effect-size type | 0.14 | 0.0 | unresolved_metabolite |
 
 ## Interpretation Guardrail
 

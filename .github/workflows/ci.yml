@@ -17,7 +17,12 @@ jobs:
       - run: aree validate-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
       - run: aree harmonize-demo
       - run: aree meta-analyze --phenotype thermal_tolerance --feature-type gene
-      - run: aree build-evidence-cards --phenotype survival
+      - run: aree score-candidates
+      - run: aree build-evidence-cards
       - run: aree build-demo-report
       - name: Demo outputs are reproducible
-        run: git diff --exit-code -- data/demo reports
+        # status (not diff) so new untracked outputs, e.g. a renamed card, also fail the check
+        run: |
+          git status --porcelain -- data/demo reports
+          git diff -- data/demo reports
+          test -z "$(git status --porcelain -- data/demo reports)"

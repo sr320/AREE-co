@@ -46,7 +46,8 @@ aree register-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
 aree harmonize --study CGIG_HEAT_RNASEQ_001 --input data/demo/processed/CGIG_HEAT_RNASEQ_001_rnaseq.tsv
 aree harmonize-demo
 aree meta-analyze --phenotype thermal_tolerance --feature-type gene
-aree build-evidence-cards --phenotype survival
+aree score-candidates
+aree build-evidence-cards
 aree build-demo-report
 ```
 
@@ -60,9 +61,13 @@ aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --map
 
 ```bash
 aree meta-analyze --evidence data/harmonized/evidence.tsv --output results/meta_analysis.tsv
-aree score-candidates --evidence data/harmonized/evidence.tsv --meta results/meta_analysis.tsv --output results/candidate_scores.tsv
-aree build-evidence-cards --evidence data/harmonized/evidence.tsv --meta results/meta_analysis.tsv --scores results/candidate_scores.tsv --output-dir results/evidence_cards
+aree score-candidates --evidence data/harmonized/evidence.tsv --output results/candidate_scores.tsv
+aree build-evidence-cards --evidence data/harmonized/evidence.tsv --scores results/candidate_scores.tsv --output-dir results/evidence_cards
 ```
+
+Scoring recomputes heterogeneity from the evidence it scores, so `meta_analysis.tsv` is for inspection only and a filtered or stale copy cannot change the ranking. Effects are pooled and summarized only within one `effect_size_type`; candidates remain one row per feature so cross-context and multi-omics convergence still count. Use `--phenotype`/`--stressor` on `score-candidates` for a context-specific ranking.
+
+`aree build-evidence-cards --phenotype PHENOTYPE` builds cards for one phenotype only. Card filenames are made safe for every OS (e.g. `NCBI:LOC105317001` → `NCBI_LOC105317001.md`), and each build removes previously generated cards that are no longer in scope, so the directory always matches its evidence.
 
 Rerunning `aree harmonize` on unchanged inputs leaves the evidence table byte-identical (`date_generated` is kept); it only changes when the records do.
 
