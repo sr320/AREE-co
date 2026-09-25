@@ -3,6 +3,8 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from aree.reporting.evidence_cards import card_filename
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -54,7 +56,7 @@ with tabs[2]:
         scores = pd.read_csv(scores_path, sep="\t")
         st.dataframe(scores, use_container_width=True)
         selected = st.selectbox("Evidence card", sorted(scores["candidate_id"].astype(str)))
-        card = ROOT / "reports" / "evidence_cards" / "{}.md".format(selected.replace("/", "_"))
+        card = ROOT / "reports" / "evidence_cards" / card_filename(selected)
         if card.exists():
             st.markdown(card.read_text())
     else:

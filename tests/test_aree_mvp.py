@@ -471,3 +471,34 @@ def test_unpoolable_evidence_is_scored_and_surfaced(tmp_path):
     assert "| B | 1 | 0 | 1 |" in report.read_text()
     cards = build_evidence_cards(evidence_path=path, output_dir=tmp_path / "cards")
     assert "not pooled in meta-analysis): B" in cards[0].read_text()
+
+
+def test_card_filenames_are_portable():
+    from aree.reporting.evidence_cards import card_filename
+
+    assert card_filename("NCBI:LOC105317001") == "NCBI_LOC105317001.md"
+    assert card_filename("a/b\\c") == "a_b_c.md"
+    assert card_filename("CON") == "_CON.md"
+    assert card_filename("feature. ") == "feature.md"
+
+
+def test_rebuilding_cards_removes_stale_cards_only(tmp_path):
+    cards_dir = tmp_path / "cards"
+    cards_dir.mkdir()
+    (cards_dir / "OLD_GENE.md").write_text("# Evidence Card: OLD_GENE\n")
+    (cards_dir / "README.md").write_text("# Notes kept by a curator\n")
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
+    cards = build_evidence_cards(evidence_path=evidence, output_dir=cards_dir)
+    names = sorted(path.name for path in cards_dir.glob("*.md"))
+    assert names == sorted([path.name for path in cards] + ["README.md"])
+    assert not any(":" in name for name in names)
+
+
+def test_colliding_card_filenames_fail_before_writing(tmp_path):
+    path = _evidence_rows(tmp_path, [
+        {"feature_id_standardized": "NCBI:G1", "study_id": "A", "effect_size": 1.0, "standard_error": 0.1},
+        {"feature_id_standardized": "ncbi_g1", "study_id": "B", "effect_size": 1.0, "standard_error": 0.1},
+    ])
+    with pytest.raises(ValueError, match="same card file"):
+        build_evidence_cards(evidence_path=path, output_dir=tmp_path / "cards")
+    assert not list((tmp_path / "cards").glob("*.md"))
