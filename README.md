@@ -4,6 +4,12 @@ AREE is an open, reproducible evidence-generation system for aquaculture resilie
 
 AREE is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw workflow scaffolds, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
 
+**Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, `data/demo/` tables, and `reports/`. To preview locally:
+
+```bash
+python scripts/build_site.py && quarto render _site_src
+```
+
 ## What Is Runnable Now
 
 - Study registration validation against JSON Schema.

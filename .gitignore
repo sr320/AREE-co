@@ -9,3 +9,5 @@ data/raw/
 data/reference/
 
 .Rproj.user
+_site/
+_site_src/
