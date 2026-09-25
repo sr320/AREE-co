@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from aree.groups import column_groups, is_missing, present
 from aree.harmonize.identifiers import mapping_score
 from aree.io import read_tsv
 from aree.meta_analysis.random_effects import meta_analysis_table
@@ -52,11 +53,30 @@ def _significance_score(q):
     return min(max(-math.log10(max(float(q), 1e-300)) / 10.0, 0.0), 1.0)
 
 
+SCORED_COLUMNS = [
+    "study_id",
+    "feature_type",
+    "sample_size",
+    "effect_size",
+    "effect_size_type",
+    "resilience_classification",
+    "mapping_confidence",
+    "quality_flags",
+    "adjusted_p_value",
+    "tissue",
+    "life_stage",
+]
+
+
+def _mean(values):
+    return sum(values) / len(values)
+
+
 def _majority_sign_fraction(effects):
-    return max((effects > 0).mean(), (effects < 0).mean())
+    return max(sum(effect > 0 for effect in effects), sum(effect < 0 for effect in effects)) / len(effects)
 
 
-def _typed_effect_summary(group):
+def _typed_effect_summary_arrays(effects, effect_types):
     """Effect magnitude and direction consistency computed within each effect_size_type.
 
     Effects on different scales (e.g. log2 fold change vs methylation difference) are never
@@ -64,38 +84,59 @@ def _typed_effect_summary(group):
     counts types with at least two effects, since a lone effect cannot agree or disagree with
     anything; it is NaN when no type is replicated.
     """
+    by_type = {}
+    for effect, effect_type in zip(effects, effect_types):
+        if not is_missing(effect_type):
+            by_type.setdefault(effect_type, []).append(float(effect))
     magnitudes, directions, weights = [], [], []
-    for _, typed in group.groupby("effect_size_type"):
-        magnitudes.append(min(typed["effect_size"].abs().mean() / 2.5, 1.0))
+    for effect_type in sorted(by_type):
+        typed = by_type[effect_type]
+        magnitudes.append(min(_mean([abs(effect) for effect in typed]) / 2.5, 1.0))
         if len(typed) >= 2:
-            directions.append(_majority_sign_fraction(typed["effect_size"]))
+            directions.append(_majority_sign_fraction(typed))
             weights.append(len(typed))
-    effect_magnitude = sum(magnitudes) / len(magnitudes)
+    effect_magnitude = _mean(magnitudes) if magnitudes else 0.0
     if not weights:
         return effect_magnitude, float("nan")
     direction_consistency = sum(d * w for d, w in zip(directions, weights)) / sum(weights)
     return effect_magnitude, direction_consistency
 
 
+def _typed_effect_summary(group):
+    return _typed_effect_summary_arrays(group["effect_size"].to_numpy(), group["effect_size_type"].to_numpy())
+
+
+def _first_per_study_total(study_ids, sample_sizes):
+    # Each study's sample size counts once (its first row), as drop_duplicates("study_id") did.
+    seen = {}
+    for study, size in zip(study_ids, sample_sizes):
+        seen.setdefault(study, size)
+    return sum(size for size in seen.values() if not is_missing(size))
+
+
 def score_table(evidence):
     # Heterogeneity comes from the same evidence being scored, never from a previously written
-    # (possibly filtered or stale) meta-analysis file.
-    meta = meta_analysis_table(evidence)
+    # (possibly filtered or stale) meta-analysis file. Groups with nothing poolable have no I2
+    # and carry no heterogeneity information.
+    meta = meta_analysis_table(evidence).dropna(subset=["i2_percent"])
+    max_i2 = meta.groupby("feature_id_standardized")["i2_percent"].max().to_dict()
     rows = []
-    for feature, group in evidence.groupby("feature_id_standardized"):
-        n_studies = group["study_id"].nunique()
-        assay_diversity = group["feature_type"].nunique()
-        total_n = group.drop_duplicates("study_id")["sample_size"].sum()
-        effect_magnitude, direction_consistency = _typed_effect_summary(group)
-        phenotype_relevance = (group["resilience_classification"] == "resilience_associated").mean()
-        mapping_conf = group["mapping_confidence"].map(mapping_score).mean()
-        data_quality = 1.0 - min((group["quality_flags"] != "none").mean(), 1.0) * 0.4
-        best_q = group["adjusted_p_value"].min()
+    for feature, group in column_groups(evidence, "feature_id_standardized", SCORED_COLUMNS):
+        n_studies = len(set(present(group["study_id"])))
+        assay_diversity = len(set(present(group["feature_type"])))
+        total_n = _first_per_study_total(group["study_id"], group["sample_size"])
+        effect_magnitude, direction_consistency = _typed_effect_summary_arrays(
+            group["effect_size"], group["effect_size_type"]
+        )
+        phenotype_relevance = _mean([value == "resilience_associated" for value in group["resilience_classification"]])
+        mapping_conf = _mean([mapping_score(value) for value in group["mapping_confidence"]])
+        data_quality = 1.0 - min(_mean([value != "none" for value in group["quality_flags"]]), 1.0) * 0.4
+        adjusted = present(group["adjusted_p_value"])
+        best_q = min(adjusted) if adjusted else float("nan")
         heterogeneity_penalty = 0.0
-        # Groups with nothing poolable have no I2; they carry no heterogeneity information.
-        i2 = meta.loc[meta["feature_id_standardized"] == feature, "i2_percent"].dropna()
-        if not i2.empty:
-            heterogeneity_penalty = min(i2.max() / 100.0, 1.0) * 0.15
+        if feature in max_i2:
+            heterogeneity_penalty = min(max_i2[feature] / 100.0, 1.0) * 0.15
+        context_breadth = len(set(present(group["tissue"]))) + len(set(present(group["life_stage"])))
         components = {
             "n_studies": _bounded(n_studies, 4),
             "total_sample_size": _bounded(total_n, 100),
@@ -104,7 +145,7 @@ def score_table(evidence):
             # Unreplicated evidence is neither rewarded nor penalized for direction.
             "direction_consistency": 0.5 if pd.isna(direction_consistency) else direction_consistency,
             "phenotype_relevance": phenotype_relevance,
-            "context_breadth": _bounded(group["tissue"].nunique() + group["life_stage"].nunique(), 5),
+            "context_breadth": _bounded(context_breadth, 5),
             "assay_diversity": _bounded(assay_diversity, 3),
             "mapping_confidence": mapping_conf,
             "data_quality": data_quality,
@@ -135,7 +176,7 @@ def score_table(evidence):
                 "consistency_flag": consistency_flag,
                 "best_adjusted_p_value": best_q,
                 "mean_mapping_confidence_score": round(mapping_conf, 3),
-                "known_limitations": "; ".join(sorted(set(group["quality_flags"].astype(str)))),
+                "known_limitations": "; ".join(sorted({str(value) for value in group["quality_flags"]})),
             }
         )
     out = pd.DataFrame(rows, columns=SCORE_COLUMNS)

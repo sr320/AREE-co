@@ -1,19 +1,35 @@
+from collections import Counter
 from pathlib import Path
 
-import pandas as pd
-
+from aree.groups import column_groups, is_missing, present
 from aree.io import read_tsv
 from aree.meta_analysis.random_effects import poolable
 from aree.paths import root_path
 from aree.prioritize.scoring import score_table
-from aree.reporting.tables import dataframe_to_markdown
+from aree.reporting.tables import rows_to_markdown
 
 
 CARD_HEADER = "# Evidence Card: "
+EFFECT_SUMMARY_COLUMNS = ["study_id", "feature_type", "effect_size", "standard_error", "adjusted_p_value"]
+CARD_COLUMNS = EFFECT_SUMMARY_COLUMNS + [
+    "molecular_direction",
+    "phenotype",
+    "stressor",
+    "tissue",
+    "species",
+    "ortholog_reference",
+    "mapping_confidence",
+    "quality_flags",
+    "_poolable",
+]
 _WINDOWS_UNSAFE = str.maketrans({character: "_" for character in '<>:"/\\|?*'})
 _WINDOWS_RESERVED = {"CON", "PRN", "AUX", "NUL"} | {"COM{}".format(i) for i in range(1, 10)} | {
     "LPT{}".format(i) for i in range(1, 10)
 }
+
+
+def _joined(values):
+    return ", ".join(sorted({str(value) for value in present(values)}))
 
 
 def card_filename(candidate_id):
@@ -60,27 +76,33 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
     scores = read_tsv(scores_path) if scores_path else score_table(evidence)
+    scores = scores.drop_duplicates("candidate_id")
+    score_lookup = dict(zip(scores["candidate_id"], zip(scores["score"], scores["category"])))
     _check_filename_collisions(evidence["feature_id_standardized"].unique())
+    usable = poolable(evidence).to_numpy()
     written = []
-    for candidate_id, group in evidence.groupby("feature_id_standardized"):
-        score_row = scores[scores["candidate_id"] == candidate_id]
-        score_text = "not scored"
-        category = "not scored"
-        if not score_row.empty:
-            score_text = str(score_row.iloc[0]["score"])
-            category = score_row.iloc[0]["category"]
-        # Explicit sort: value_counts orders ties differently across pandas versions.
-        counts = group["molecular_direction"].value_counts()
+    groups = column_groups(evidence.assign(_poolable=usable), "feature_id_standardized", CARD_COLUMNS)
+    for candidate_id, group in groups:
+        score_text, category = "not scored", "not scored"
+        if candidate_id in score_lookup:
+            score, category = score_lookup[candidate_id]
+            score_text = str(score)
+        # Explicit sort: counts must not depend on how a library orders ties.
+        counts = Counter(present(group["molecular_direction"]))
         directions = ", ".join(
             "{}: {}".format(name, count) for name, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
         )
-        studies = ", ".join(sorted(group["study_id"].unique()))
-        assays = ", ".join(sorted(group["feature_type"].unique()))
         contexts = "; ".join(
-            sorted(set(group["phenotype"] + " / " + group["stressor"] + " / " + group["tissue"]))
+            sorted(
+                {
+                    "{} / {} / {}".format(phenotype, stressor, tissue)
+                    for phenotype, stressor, tissue in zip(group["phenotype"], group["stressor"], group["tissue"])
+                    if not any(is_missing(part) for part in (phenotype, stressor, tissue))
+                }
+            )
         )
-        limitations = "; ".join(sorted(set(group["quality_flags"].astype(str))))
-        effect_summary = group[["study_id", "feature_type", "effect_size", "standard_error", "adjusted_p_value"]]
+        not_pooled = sorted({study for study, ok in zip(group["study_id"], group["_poolable"]) if not ok})
+        effect_rows = list(zip(*(group[column] for column in EFFECT_SUMMARY_COLUMNS)))
         body = [
             CARD_HEADER + str(candidate_id),
             "",
@@ -88,21 +110,23 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
             "",
             "- Candidate score: {}".format(score_text),
             "- Ranking category: {}".format(category),
-            "- Species context: {}".format(", ".join(sorted(group["species"].unique()))),
-            "- Ortholog/reference context: {}".format(", ".join(sorted(set(group["ortholog_reference"].dropna().astype(str)))) or "not resolved"),
-            "- Supporting studies: {}".format(studies),
-            "- Assay types represented: {}".format(assays),
+            "- Species context: {}".format(_joined(group["species"])),
+            "- Ortholog/reference context: {}".format(
+                ", ".join(sorted({str(value) for value in present(group["ortholog_reference"])})) or "not resolved"
+            ),
+            "- Supporting studies: {}".format(_joined(group["study_id"])),
+            "- Assay types represented: {}".format(_joined(group["feature_type"])),
             "- Phenotype/stressor/tissue contexts: {}".format(contexts),
             "- Direction of association: {}".format(directions),
-            "- Identifier mapping confidence: {}".format(", ".join(sorted(group["mapping_confidence"].unique()))),
-            "- Limitations: {}".format(limitations),
+            "- Identifier mapping confidence: {}".format(_joined(group["mapping_confidence"])),
+            "- Limitations: {}".format("; ".join(sorted({str(value) for value in group["quality_flags"]}))),
             "- Effects without standard errors (not pooled in meta-analysis): {}".format(
-                ", ".join(sorted(group.loc[~poolable(group), "study_id"].unique())) or "none"
+                ", ".join(not_pooled) or "none"
             ),
             "",
             "## Effect Summary",
             "",
-            dataframe_to_markdown(effect_summary),
+            rows_to_markdown(EFFECT_SUMMARY_COLUMNS, effect_rows),
             "",
             "## Recommended Next Validation Step",
             "",

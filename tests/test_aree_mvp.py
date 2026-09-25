@@ -502,3 +502,20 @@ def test_colliding_card_filenames_fail_before_writing(tmp_path):
     with pytest.raises(ValueError, match="same card file"):
         build_evidence_cards(evidence_path=path, output_dir=tmp_path / "cards")
     assert not list((tmp_path / "cards").glob("*.md"))
+
+
+def test_bulk_identifier_mapping_matches_single_lookups():
+    from aree.harmonize.identifiers import load_mapping, map_identifiers
+
+    mapping = load_mapping(ROOT / "data/mappings/cgigas_cgi_to_ncbi_gene_rs2024_06_v1.tsv")
+    ids = list(mapping["feature_id_original"].head(20)) + ["NOT_A_REAL_ID", mapping["feature_id_original"].iloc[0]]
+    assert map_identifiers(ids, mapping) == [map_identifier(original_id, mapping) for original_id in ids]
+
+
+def test_column_groups_matches_groupby_order_and_skips_missing_keys():
+    from aree.groups import column_groups
+
+    frame = pd.DataFrame({"key": ["b", "a", None, "b", "a"], "value": [1, 2, 3, 4, 5]})
+    groups = [(key, list(columns["value"])) for key, columns in column_groups(frame, "key", ["value"])]
+    expected = [(key, list(group["value"])) for key, group in frame.groupby("key")]
+    assert groups == expected == [("a", [2, 5]), ("b", [1, 4])]

@@ -7,7 +7,7 @@ import pandas as pd
 
 from aree import __version__
 from aree.io import read_tsv
-from aree.harmonize.identifiers import load_mapping, map_identifier
+from aree.harmonize.identifiers import load_mapping, map_identifiers
 from aree.intake.registry import load_study
 from aree.paths import REPO_ROOT, root_path
 from aree.validation.schemas import validate_evidence_records
@@ -83,8 +83,8 @@ def harmonize_processed(study_id, input_path, output_path=None, mapping_path=Non
     mapping = load_mapping(mapping_path)
     input_checksum = checksum(input_path)
     records = []
-    for idx, row in table.iterrows():
-        mapped = map_identifier(row["feature_id_original"], mapping)
+    mapped_ids = map_identifiers(table["feature_id_original"], mapping)
+    for (idx, row), mapped in zip(table.iterrows(), mapped_ids):
         record = {
             "evidence_id": "{}:{}".format(study_id, idx + 1),
             "study_id": study_id,
