@@ -4,7 +4,7 @@ AREE separates resilience-associated, stress-response, disease-associated, envir
 
 ## Meta-analysis
 
-Comparable effects are pooled by feature, feature type, phenotype, and stressor. Random-effects summaries report heterogeneity so contradictory findings remain visible.
+Comparable effects are pooled by feature, feature type, effect-size type, phenotype, and stressor; effects on different scales are never pooled. Random-effects summaries report heterogeneity so contradictory findings remain visible.
 
 ## Candidate Scores
 

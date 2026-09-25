@@ -4,18 +4,23 @@ import pandas as pd
 
 from aree.io import read_tsv
 from aree.paths import root_path
+from aree.prioritize.scoring import score_table
 from aree.reporting.tables import dataframe_to_markdown
 
 
 def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, output_dir=None):
+    """Write one card per feature.
+
+    Without ``scores_path`` the cards are scored in memory from exactly the (filtered) evidence
+    they display, so a phenotype filter never leaves a card showing a score from other contexts.
+    """
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
-    scores_path = scores_path or root_path("data", "demo", "candidate_scores.tsv")
     output_dir = Path(output_dir) if output_dir else root_path("reports", "evidence_cards")
     output_dir.mkdir(parents=True, exist_ok=True)
     evidence = read_tsv(evidence_path)
-    scores = read_tsv(scores_path)
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
+    scores = read_tsv(scores_path) if scores_path else score_table(evidence)
     written = []
     for candidate_id, group in evidence.groupby("feature_id_standardized"):
         score_row = scores[scores["candidate_id"] == candidate_id]

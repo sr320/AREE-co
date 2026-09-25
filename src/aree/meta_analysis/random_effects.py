@@ -58,6 +58,22 @@ def random_effects(group):
     }
 
 
+GROUP_COLUMNS = ["feature_id_standardized", "feature_type", "effect_size_type", "phenotype", "stressor"]
+
+
+def meta_analysis_table(evidence):
+    """Pool effects per feature and context; only effects on the same scale (effect_size_type) are pooled."""
+    rows = []
+    for keys, group in evidence.groupby(GROUP_COLUMNS):
+        result = random_effects(group)
+        if result:
+            row = dict(zip(GROUP_COLUMNS, keys))
+            row.update(result)
+            rows.append(row)
+    # Keep headers even when nothing is poolable (e.g. no standard errors) so downstream reads succeed.
+    return pd.DataFrame(rows, columns=GROUP_COLUMNS + RESULT_COLUMNS)
+
+
 def run_meta_analysis(phenotype=None, feature_type=None, evidence_path=None, output_path=None):
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
     evidence = read_tsv(evidence_path)
@@ -65,17 +81,6 @@ def run_meta_analysis(phenotype=None, feature_type=None, evidence_path=None, out
         evidence = evidence[evidence["phenotype"] == phenotype]
     if feature_type:
         evidence = evidence[evidence["feature_type"] == feature_type]
-    rows = []
-    group_cols = ["feature_id_standardized", "feature_type", "phenotype", "stressor"]
-    for keys, group in evidence.groupby(group_cols):
-        result = random_effects(group)
-        if result:
-            row = dict(zip(group_cols, keys))
-            row.update(result)
-            rows.append(row)
-    # Keep headers even when nothing is poolable (e.g. no standard errors) so downstream reads succeed.
-    out = pd.DataFrame(rows, columns=group_cols + RESULT_COLUMNS)
     output_path = Path(output_path) if output_path else root_path("data", "demo", "meta_analysis.tsv")
-    out.to_csv(output_path, sep="\t", index=False)
+    meta_analysis_table(evidence).to_csv(output_path, sep="\t", index=False)
     return output_path
-

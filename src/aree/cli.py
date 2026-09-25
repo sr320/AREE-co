@@ -72,10 +72,11 @@ def meta_analyze(
 @app.command("score-candidates")
 def score(
     evidence: str = typer.Option(None, "--evidence", help=EVIDENCE_HELP),
-    meta: str = typer.Option(None, "--meta", help="Meta-analysis TSV used for heterogeneity penalties."),
+    phenotype: str = typer.Option(None, help="Score only evidence for this phenotype."),
+    stressor: str = typer.Option(None, help="Score only evidence for this stressor."),
     output: str = typer.Option(None, "--output"),
 ):
-    output = score_candidates(evidence_path=evidence, meta_path=meta, output_path=output)
+    output = score_candidates(evidence_path=evidence, output_path=output, phenotype=phenotype, stressor=stressor)
     typer.echo("candidate scores written to {}".format(output))
 
 
@@ -83,11 +84,15 @@ def score(
 def build_evidence_cards(
     phenotype: str = typer.Option(None),
     evidence: str = typer.Option(None, "--evidence", help=EVIDENCE_HELP),
-    meta: str = typer.Option(None, "--meta", help="Meta-analysis TSV used for heterogeneity penalties."),
-    scores: str = typer.Option(None, "--scores", help="Candidate scores TSV to (re)write before building cards."),
+    scores: str = typer.Option(
+        None, "--scores", help="Also write the scores behind the cards to this TSV (default: score in memory)."
+    ),
     output_dir: str = typer.Option(None, "--output-dir"),
 ):
-    scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=scores)
+    # Cards are scored from the same phenotype-filtered evidence they show; the default
+    # candidate_scores.tsv is only written by score-candidates.
+    if scores:
+        scores = score_candidates(evidence_path=evidence, output_path=scores, phenotype=phenotype)
     paths = build_cards(phenotype=phenotype, evidence_path=evidence, scores_path=scores, output_dir=output_dir)
     typer.echo("wrote {} evidence cards".format(len(paths)))
 

@@ -12,6 +12,7 @@ The MVP focuses on *Crassostrea gigas* and demonstrates study registration, proc
 ```bash
 aree harmonize-demo
 aree meta-analyze --phenotype thermal_tolerance --feature-type gene
+aree score-candidates
 aree build-evidence-cards --phenotype survival
 aree build-demo-report
 ```
