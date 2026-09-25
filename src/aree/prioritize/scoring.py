@@ -1,7 +1,10 @@
 import math
 
+from pathlib import Path
+
 import pandas as pd
 
+from aree.io import read_tsv
 from aree.harmonize.identifiers import mapping_score
 from aree.paths import root_path
 
@@ -36,9 +39,9 @@ def _significance_score(q):
 
 def score_candidates(evidence_path=None, meta_path=None, output_path=None):
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
-    meta_path = meta_path or root_path("data", "demo", "meta_analysis.tsv")
-    evidence = pd.read_csv(evidence_path, sep="\t")
-    meta = pd.read_csv(meta_path, sep="\t") if meta_path.exists() else pd.DataFrame()
+    meta_path = Path(meta_path) if meta_path else root_path("data", "demo", "meta_analysis.tsv")
+    evidence = read_tsv(evidence_path)
+    meta = read_tsv(meta_path) if meta_path.exists() else pd.DataFrame()
     rows = []
     for feature, group in evidence.groupby("feature_id_standardized"):
         n_studies = group["study_id"].nunique()
@@ -95,7 +98,7 @@ def score_candidates(evidence_path=None, meta_path=None, output_path=None):
             }
         )
     out = pd.DataFrame(rows).sort_values(["score", "n_studies"], ascending=False)
-    output_path = output_path or root_path("data", "demo", "candidate_scores.tsv")
+    output_path = Path(output_path) if output_path else root_path("data", "demo", "candidate_scores.tsv")
     out.to_csv(output_path, sep="\t", index=False)
     return output_path
 

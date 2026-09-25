@@ -19,4 +19,5 @@ jobs:
       - run: aree meta-analyze --phenotype thermal_tolerance --feature-type gene
       - run: aree build-evidence-cards --phenotype survival
       - run: aree build-demo-report
-
+      - name: Demo outputs are reproducible
+        run: git diff --exit-code -- data/demo reports
