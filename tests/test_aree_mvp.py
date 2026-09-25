@@ -57,7 +57,10 @@ def test_second_real_study_manifest_matches_published_run_totals():
         ROOT / "data/manifests/CGIG_THERMOTOL_RNASEQ_PRJNA694496_runs.tsv",
         sep="\t",
     )
-    assert study["analysis_status"] == "raw_reanalysis_manifest_ready"
+    assert study["analysis_status"] == "raw_reanalysis_harmonized"
+    assert study["genome_assembly"] == "GCF_963853765.1"
+    assert study["annotation_version"] == "RS_2024_06"
+    assert study["data_availability"]["processed"] is True
     assert len(manifest) == 6
     assert manifest["run_accession"].is_unique
     assert manifest["condition"].value_counts().to_dict() == {"selected": 3, "control": 3}

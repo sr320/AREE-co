@@ -1,0 +1,26 @@
+{
+  "selected_higher": {
+    "requested_genes": 4353,
+    "failed_identifiers": 0,
+    "ambiguous_identifiers": 0,
+    "available_sources": [
+      "GO:BP",
+      "GO:CC",
+      "GO:MF"
+    ],
+    "gprofiler_version": "e114_eg62_p19_27110d83",
+    "timestamp": "2026-09-25T18:07:49.220694+00:00"
+  },
+  "selected_lower": {
+    "requested_genes": 4449,
+    "failed_identifiers": 0,
+    "ambiguous_identifiers": 0,
+    "available_sources": [
+      "GO:BP",
+      "GO:CC",
+      "GO:MF"
+    ],
+    "gprofiler_version": "e114_eg62_p19_27110d83",
+    "timestamp": "2026-09-25T18:07:53.720964+00:00"
+  }
+}

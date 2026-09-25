@@ -1,0 +1,9 @@
+metric	value
+genes_imported	32461
+genes_after_count_filter	19816
+genes_with_pvalue	19814
+genes_with_padj	19814
+significant_padj_lt_0.05	8802
+selected_higher	4353
+selected_lower	4449
+cooks_cutoff	18

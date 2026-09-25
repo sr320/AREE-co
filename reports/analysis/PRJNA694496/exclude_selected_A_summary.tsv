@@ -1,0 +1,11 @@
+metric	value
+excluded_sample	selected_A
+remaining_control_samples	3
+remaining_selected_samples	2
+genes_compared	19816
+effect_pearson_correlation	0.961502841022594
+same_direction_all	18650
+significant_full	8802
+significant_leave_one_out	11994
+full_significant_same_direction	8802
+full_significant_retained_at_fdr_0.05	8639

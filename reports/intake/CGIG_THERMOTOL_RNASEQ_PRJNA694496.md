@@ -115,9 +115,34 @@ does not establish that larval expression predicts individual survival.
 
 ## Completion condition
 
-The study becomes meta-analysis eligible only after raw reanalysis produces
-versioned gene-level effects and standard errors, QC passes, and at least one
-current Gene ID overlaps the first real-study release. Because the contrasts
-differ (constitutive selected-versus-control versus acute heat response), any
-pooled model must stratify by contrast class or explicitly model that
-moderator.
+The raw reanalysis completed against `GCF_963853765.1` / `RS_2024_06`. Salmon
+quantified all 132,413,989 read pairs across the six libraries, with mapping
+rates from 42.13% to 63.94%. DESeq2 retained 19,816 genes after count filtering
+and identified 8,802 at BH-adjusted p < 0.05: 4,353 higher and 4,449 lower in
+the selected population.
+
+PC1 explains 90.6% of variance and separates every selected library from every
+control. The three controls correlate at approximately 0.996; selected B and C
+correlate at 0.991. Selected A is displaced on PC2 and has six genes above the
+Cook's-distance threshold. A leave-one-out sensitivity model excluding selected
+A correlates 0.962 with the primary effects, preserves the direction of all
+8,802 primary significant genes, and retains 8,639 at adjusted p < 0.05.
+
+Of the 60 mapped significant genes in the first real-study release, 52 occur
+among the genes tested here and 33 are significant here. This overlap remains
+descriptive. The first study lacks standard errors and measures acute heat
+response in juvenile gill, while this study measures constitutive expression in
+selected whole larvae. Random-effects pooling remains inappropriate until an
+independent study supplies compatible effects, uncertainty, and contrast class.
+
+The complete analysis report, QC tables, figures, annotated gene results, and
+sensitivity comparison are under `reports/analysis/PRJNA694496/`.
+
+All 19,816 tested effects and standard errors are now present in
+`data/harmonized/evidence.tsv`, with exact GeneID mappings to
+`GCF_963853765.1-RS_2024_06`. Local RefSeq annotation and gene-biotype
+over-representation results accompany the analysis report. Version-matched
+g:Profiler analysis mapped every direction-specific RefSeq symbol and found 35
+significant GO terms among selected-higher genes and 108 among selected-lower
+genes. The oyster build supplied GO annotations but no KEGG, Reactome, or
+WikiPathways results.

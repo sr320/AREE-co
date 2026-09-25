@@ -1,0 +1,21 @@
+{
+  "date_generated": "2026-09-25",
+  "service_url": "https://biit.cs.ut.ee/gprofiler/api/gost/profile/",
+  "organism": "mggca963853765v1rs",
+  "reference_match": "GCF_963853765.1 / xbMagGiga1.1",
+  "query_identifier_type": "RefSeq gene symbol from the version-matched GFF",
+  "sources_requested": [
+    "GO:BP",
+    "GO:MF",
+    "GO:CC",
+    "KEGG",
+    "REAC",
+    "WP"
+  ],
+  "correction_method": "g_SCS",
+  "domain_scope": "custom",
+  "background_genes_with_pvalue": 19814,
+  "selected_higher_fdr_lt_0.05": 4353,
+  "selected_lower_fdr_lt_0.05": 4449,
+  "input_sha256": "79cb489e39fb81b6e84417a956aa1c7cf414b09bff4de4aba5ec8f68ea570e63"
+}

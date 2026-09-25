@@ -6,5 +6,6 @@ __pycache__/
 .DS_Store
 results/
 data/raw/
+data/reference/
 
 .Rproj.user

@@ -1,0 +1,7 @@
+sample	condition	normalization_factor_median	genes_above_cooks_cutoff
+selected_A	selected	1.49630061645577	6
+selected_B	selected	0.604460067265346	0
+selected_C	selected	0.694817473433647	0
+control_A	control	1.14431521695288	0
+control_B	control	1.16860117204036	0
+control_C	control	1.19973652498169	0

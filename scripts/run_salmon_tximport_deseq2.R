@@ -42,7 +42,10 @@ txi <- tximport(
   quant_files,
   type = "salmon",
   tx2gene = tx2gene[, c("transcript_id", "gene_id")],
-  ignoreTxVersion = FALSE
+  ignoreTxVersion = FALSE,
+  # Salmon was run without bootstraps; avoid requiring jsonlite solely to
+  # inspect inferential-replicate metadata that do not exist for this run.
+  dropInfReps = TRUE
 )
 
 samples$condition <- factor(samples$condition, levels = c("control", "selected"))
@@ -94,7 +97,9 @@ write.csv(correlations, file.path(output_dir, "sample_vst_correlations.csv"), qu
 cooks <- assays(dds)[["cooks"]]
 cooks_cutoff <- qf(0.99, 2, ncol(dds) - 2)
 sample_qc <- data.frame(sample = samples$sample, condition = samples$condition,
-                        size_factor = sizeFactors(dds),
+                        normalization_factor_median = apply(
+                          normalizationFactors(dds), 2, median, na.rm = TRUE
+                        ),
                         genes_above_cooks_cutoff = colSums(cooks > cooks_cutoff, na.rm = TRUE))
 write.table(sample_qc, file.path(output_dir, "sample_deseq2_qc.tsv"),
             sep = "\t", quote = FALSE, row.names = FALSE)
