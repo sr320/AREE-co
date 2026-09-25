@@ -21,8 +21,11 @@ RESULT_COLUMNS = [
 ]
 
 
-def _normal_cdf(x):
-    return 0.5 * (1.0 + math.erf(x / math.sqrt(2.0)))
+def _two_sided_p(z):
+    # erfc keeps precision for large |z| (1 - cdf underflows to 0). Rounding to 12 significant
+    # digits absorbs last-ulp differences between platform libm implementations, so written
+    # outputs are identical on macOS and Linux.
+    return float("{:.12g}".format(math.erfc(abs(z) / math.sqrt(2.0))))
 
 
 def random_effects(group):
@@ -42,7 +45,7 @@ def random_effects(group):
     pooled = (rei * yi).sum() / rei.sum()
     se = math.sqrt(1.0 / rei.sum())
     z = pooled / se if se > 0 else 0.0
-    p_value = 2.0 * (1.0 - _normal_cdf(abs(z)))
+    p_value = _two_sided_p(z)
     i2 = max(0.0, (q - (k - 1)) / q) * 100.0 if q > 0 and k > 1 else 0.0
     return {
         "n_effects": k,
