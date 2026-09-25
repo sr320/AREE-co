@@ -1,0 +1,87 @@
+"""Build current-reference processed evidence and mappings for PRJNA516762."""
+
+import argparse
+import csv
+import re
+from pathlib import Path
+
+from scripts.prepare_prjna694496_evidence import (
+    ANNOTATION_FIELDS,
+    MAPPING_FIELDS,
+    PROCESSED_FIELDS,
+    load_gff_annotations,
+)
+
+
+def prepare(results_path, gff_path, processed_path, mapping_path, annotation_path):
+    with results_path.open(newline="") as handle:
+        results = list(csv.DictReader(handle, delimiter="\t"))
+    required = {"feature_id_standardized", "log2FoldChange", "lfcSE", "pvalue", "padj"}
+    if not results or not required.issubset(results[0]):
+        raise ValueError("Gene results are empty or missing required DESeq2 columns")
+    if len({row["feature_id_standardized"] for row in results}) != len(results):
+        raise ValueError("Gene results contain duplicate standardized identifiers")
+    annotations = load_gff_annotations(gff_path)
+    for path in (processed_path, mapping_path, annotation_path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+    missing = []
+    with processed_path.open("w", newline="") as processed_handle, \
+            mapping_path.open("w", newline="") as mapping_handle, \
+            annotation_path.open("w", newline="") as annotation_handle:
+        processed_writer = csv.DictWriter(processed_handle, fieldnames=PROCESSED_FIELDS, delimiter="\t")
+        mapping_writer = csv.DictWriter(mapping_handle, fieldnames=MAPPING_FIELDS, delimiter="\t")
+        annotation_writer = csv.DictWriter(annotation_handle, fieldnames=ANNOTATION_FIELDS, delimiter="\t")
+        processed_writer.writeheader()
+        mapping_writer.writeheader()
+        annotation_writer.writeheader()
+        for row in results:
+            identifier = row["feature_id_standardized"]
+            if not re.fullmatch(r"NCBI:GeneID:\d+", identifier):
+                raise ValueError("Unexpected current-reference identifier: {}".format(identifier))
+            effect = float(row["log2FoldChange"])
+            flags = ["raw_reanalysis", "acute_heat_response", "pooled_libraries"]
+            if row["padj"] and float(row["padj"]) < 0.05:
+                flags.append("fdr_lt_0.05")
+            if not row["pvalue"] or not row["padj"]:
+                flags.append("deseq2_significance_unavailable")
+            processed_writer.writerow({
+                "sample_comparison": "heat_35C_2h_vs_control_12C",
+                "feature_id_original": identifier,
+                "feature_type": "gene",
+                "molecular_direction": "up" if effect > 0 else "down" if effect < 0 else "unknown",
+                "effect_size": row["log2FoldChange"],
+                "effect_size_type": "log2_fold_change",
+                "standard_error": row["lfcSE"],
+                "p_value": row["pvalue"],
+                "adjusted_p_value": row["padj"],
+                "analysis_method": "Salmon_1.10.3_tximport_1.30.0_DESeq2_1.42.0_unshrunk_effect",
+                "quality_flags": ";".join(flags),
+            })
+            mapping_writer.writerow({
+                "feature_id_original": identifier,
+                "feature_id_standardized": identifier,
+                "ortholog_reference": "",
+                "mapping_confidence": "exact",
+                "mapping_release": "GCF_963853765.1-RS_2024_06",
+                "mapping_evidence": "direct_gene_id_from_versioned_refseq_tx2gene",
+            })
+            annotation = annotations.get(identifier)
+            if annotation is None:
+                missing.append(identifier)
+            else:
+                annotation_writer.writerow(annotation)
+    if missing:
+        raise ValueError("{} tested GeneIDs absent from GFF; first: {}".format(len(missing), missing[0]))
+    print("wrote {} processed effects, exact mappings, and RefSeq annotations".format(len(results)))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--results", type=Path, required=True)
+    parser.add_argument("--gff", type=Path, required=True)
+    parser.add_argument("--processed", type=Path, required=True)
+    parser.add_argument("--mapping", type=Path, required=True)
+    parser.add_argument("--annotations", type=Path, required=True)
+    args = parser.parse_args()
+    prepare(args.results, args.gff, args.processed, args.mapping, args.annotations)
