@@ -234,6 +234,14 @@ def test_effect_size_meta_analysis_calculates_pooled_effect():
     assert result["pooled_effect"] > 1.0
 
 
+def test_meta_analysis_p_value_keeps_precision_for_large_effects():
+    import pandas as pd
+
+    group = pd.DataFrame({"effect_size": [10.0, 10.0], "standard_error": [0.5, 0.5], "study_id": ["A", "B"]})
+    p_value = random_effects(group)["p_value"]
+    assert 0.0 < p_value < 1e-150
+
+
 def test_demo_meta_analysis_and_scoring(tmp_path):
     evidence = harmonize_demo(tmp_path / "evidence.tsv")
     meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
