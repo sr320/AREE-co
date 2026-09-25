@@ -1,0 +1,86 @@
+[
+  {
+    "file": "SRR13576947_1.fastq.gz",
+    "expected_md5": "d021a089bb85c4c8b36a78b52d561a4f",
+    "expected_bytes": 1507760817,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576947_2.fastq.gz",
+    "expected_md5": "fd730cfef1c4a7e60a0a46b9900ae1d8",
+    "expected_bytes": 1589907698,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576945_1.fastq.gz",
+    "expected_md5": "9a2ca1f1eeccb5ea58b60d836af7afb6",
+    "expected_bytes": 1125976873,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576945_2.fastq.gz",
+    "expected_md5": "1223d7f9c44ccb38d9cc5ceb7abaead3",
+    "expected_bytes": 1185486621,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576944_1.fastq.gz",
+    "expected_md5": "60bb4d2a2834396c96f4e6035b8937c5",
+    "expected_bytes": 1203268112,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576944_2.fastq.gz",
+    "expected_md5": "62f1c67f06cce59e9bfa244f8acc00f9",
+    "expected_bytes": 1265946122,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576943_1.fastq.gz",
+    "expected_md5": "048b0060ba40625d0378650cce7eceff",
+    "expected_bytes": 1345730394,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576943_2.fastq.gz",
+    "expected_md5": "7637cdfe01c59abb0c835edbd5a9c1ba",
+    "expected_bytes": 1421367714,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576942_1.fastq.gz",
+    "expected_md5": "4b73473c25cff46fe833c52beec947a1",
+    "expected_bytes": 1344813456,
+    "status": "final_missing_completed_partial_md5_failed",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576942_2.fastq.gz",
+    "expected_md5": "87d29e1a9bbe4647aa338a25748b6926",
+    "expected_bytes": 1394139505,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576946_1.fastq.gz",
+    "expected_md5": "323d4b60f40fe292cce0421e710340f3",
+    "expected_bytes": 1405558142,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  },
+  {
+    "file": "SRR13576946_2.fastq.gz",
+    "expected_md5": "5aca8d2f429c5c529a5bcd481d0dfebe",
+    "expected_bytes": 1462226009,
+    "status": "size_and_md5_verified",
+    "verification_date": "2026-09-07"
+  }
+]

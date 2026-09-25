@@ -48,6 +48,7 @@ txi <- tximport(
 samples$condition <- factor(samples$condition, levels = c("control", "selected"))
 rownames(samples) <- samples$sample
 dds <- DESeqDataSetFromTximport(txi, colData = samples, design = ~ condition)
+genes_imported <- nrow(dds)
 keep <- rowSums(counts(dds) >= 10) >= 3
 dds <- dds[keep, ]
 dds <- DESeq(dds)
@@ -83,11 +84,48 @@ write.table(
 vst_data <- vst(dds, blind = FALSE)
 pca_data <- plotPCA(vst_data, intgroup = "condition", returnData = TRUE)
 write.csv(pca_data, file.path(output_dir, "sample_pca.csv"), row.names = FALSE)
+write.csv(data.frame(component = c("PC1", "PC2"),
+                     variance_fraction = attr(pca_data, "percentVar")),
+          file.path(output_dir, "sample_pca_variance.csv"), row.names = FALSE)
 correlations <- cor(assay(vst_data))
 write.csv(correlations, file.path(output_dir, "sample_vst_correlations.csv"), quote = FALSE)
 
+# Retain diagnostics for every library; flags require review, not automatic removal.
+cooks <- assays(dds)[["cooks"]]
+cooks_cutoff <- qf(0.99, 2, ncol(dds) - 2)
+sample_qc <- data.frame(sample = samples$sample, condition = samples$condition,
+                        size_factor = sizeFactors(dds),
+                        genes_above_cooks_cutoff = colSums(cooks > cooks_cutoff, na.rm = TRUE))
+write.table(sample_qc, file.path(output_dir, "sample_deseq2_qc.tsv"),
+            sep = "\t", quote = FALSE, row.names = FALSE)
+gene_qc <- data.frame(feature_id_standardized = rownames(dds),
+                      max_cooks = apply(cooks, 1, max, na.rm = TRUE))
+write.table(gene_qc, file.path(output_dir, "gene_cooks_distances.tsv"),
+            sep = "\t", quote = FALSE, row.names = FALSE)
+summary_table <- data.frame(
+  metric = c("genes_imported", "genes_after_count_filter", "genes_with_pvalue",
+             "genes_with_padj", "significant_padj_lt_0.05", "selected_higher", "selected_lower",
+             "cooks_cutoff"),
+  value = c(genes_imported, nrow(dds), sum(!is.na(result$pvalue)), sum(!is.na(result$padj)),
+            sum(result$padj < 0.05, na.rm = TRUE),
+            sum(result$padj < 0.05 & result$log2FoldChange > 0, na.rm = TRUE),
+            sum(result$padj < 0.05 & result$log2FoldChange < 0, na.rm = TRUE), cooks_cutoff))
+write.table(summary_table, file.path(output_dir, "analysis_summary.tsv"),
+            sep = "\t", quote = FALSE, row.names = FALSE)
+
 pdf(file.path(output_dir, "sample_pca.pdf"), width = 7, height = 5)
 print(plotPCA(vst_data, intgroup = "condition"))
+dev.off()
+
+png(file.path(output_dir, "sample_pca.png"), width = 1400, height = 1000, res = 180)
+print(plotPCA(vst_data, intgroup = "condition"))
+dev.off()
+png(file.path(output_dir, "selected_vs_control_MA.png"), width = 1400, height = 1000, res = 180)
+plotMA(result, main = "Selected versus control", alpha = 0.05)
+dev.off()
+png(file.path(output_dir, "sample_correlations.png"), width = 1200, height = 1200, res = 180)
+heatmap(correlations, symm = TRUE, margins = c(10, 10),
+        main = "VST sample correlations", scale = "none")
 dev.off()
 
 if (requireNamespace("apeglm", quietly = TRUE)) {

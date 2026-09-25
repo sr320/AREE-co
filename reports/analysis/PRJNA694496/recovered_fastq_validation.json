@@ -1,0 +1,13 @@
+{
+  "run_accession": "SRR13576942",
+  "validated_pairs": 21642163,
+  "status": "pass",
+  "validation": "All spot IDs paired; recovered mate 1 matches SRA extraction; extracted mate 2 matches ENA sequences and qualities.",
+  "ena_compressed_md5_equivalent": false,
+  "normalized_sha256": {
+    "/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/fastq/SRR13576942_1.fastq.gz.sra-recovered": "1eb1966479c0f7bd64cf38bba8723bfae2d1a4ce82bd328d2445469c9de36cda",
+    "/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/sra_extract/SRR13576942_1.fastq": "1eb1966479c0f7bd64cf38bba8723bfae2d1a4ce82bd328d2445469c9de36cda",
+    "/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/sra_extract/SRR13576942_2.fastq": "95f4d30b260cbe231801c5478041dbb4652bcd24b188300a2056081975e9e032",
+    "/Volumes/omics/scratch/AREE/CGIG_THERMOTOL_RNASEQ_PRJNA694496/fastq/SRR13576942_2.fastq.gz": "95f4d30b260cbe231801c5478041dbb4652bcd24b188300a2056081975e9e032"
+  }
+}

@@ -1,0 +1,11 @@
+sample_file	total_sequences	poor_quality_sequences	sequence_length	gc_percent	status_adapter_content	status_basic_statistics	status_overrepresented_sequences	status_per_base_n_content	status_per_base_sequence_content	status_per_base_sequence_quality	status_per_sequence_gc_content	status_per_sequence_quality_scores	status_sequence_duplication_levels	status_sequence_length_distribution
+SRR13576942_2.fastq.gz	21642163	0	92-150	41	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576943_2.fastq.gz	21776617	0	91-150	40	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576944_1.fastq.gz	22183461	0	93-150	38	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576944_2.fastq.gz	22183461	0	93-150	38	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576945_1.fastq.gz	20502956	0	94-150	39	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576945_2.fastq.gz	20502956	0	94-150	39	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576946_1.fastq.gz	22367076	0	93-150	41	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576946_2.fastq.gz	22367076	0	93-150	41	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576947_1.fastq.gz	23941716	0	94-150	39	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn
+SRR13576947_2.fastq.gz	23941716	0	94-150	39	pass	pass	warn	pass	fail	pass	fail	pass	fail	warn

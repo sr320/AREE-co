@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 1 || $# -gt 2 ]]; then
-  echo "usage: $0 ANALYSIS_ROOT [THREADS]" >&2
+if [[ $# -lt 1 || $# -gt 3 ]]; then
+  echo "usage: $0 ANALYSIS_ROOT [THREADS] [SAMPLESHEET]" >&2
   exit 2
 fi
 
@@ -15,7 +15,7 @@ FASTQ_DIR="$ANALYSIS_ROOT/fastq"
 QUANT_DIR="$ANALYSIS_ROOT/salmon"
 QC_DIR="$ANALYSIS_ROOT/fastqc"
 RESULTS_DIR="$ANALYSIS_ROOT/deseq2"
-SAMPLESHEET="$ANALYSIS_ROOT/nfcore_samplesheet.csv"
+SAMPLESHEET=${3:-"$ANALYSIS_ROOT/nfcore_samplesheet.csv"}
 DESIGN_SHEET="$ANALYSIS_ROOT/deseq2_samplesheet.csv"
 TX2GENE="$REFERENCE_DIR/GCF_963853765.1_tx2gene.tsv"
 GENTROME="$REFERENCE_DIR/GCF_963853765.1_gentrome.fa"
@@ -46,19 +46,26 @@ if [[ ! -s "$SALMON_INDEX/versionInfo.json" ]]; then
 fi
 
 missing_fastqc=()
-for fastq_path in "$FASTQ_DIR"/*.fastq.gz; do
-  fastq_name=$(basename "$fastq_path" .fastq.gz)
-  if [[ ! -s "$QC_DIR/${fastq_name}_fastqc.zip" ]]; then
-    missing_fastqc+=("$fastq_path")
-  fi
-done
+while IFS=, read -r sample fastq_1 fastq_2 strandedness; do
+  for fastq_path in "$fastq_1" "$fastq_2"; do
+    if [[ ! -s "$fastq_path" ]]; then
+      echo "missing FASTQ: $fastq_path" >&2
+      exit 1
+    fi
+    fastq_name=$(basename "$fastq_path" .fastq.gz)
+    if [[ ! -s "$QC_DIR/${fastq_name}_fastqc.zip" ]]; then
+      missing_fastqc+=("$fastq_path")
+    fi
+  done
+done < <(tail -n +2 "$SAMPLESHEET")
 if [[ ${#missing_fastqc[@]} -gt 0 ]]; then
   fastqc --threads "$THREADS" --outdir "$QC_DIR" "${missing_fastqc[@]}"
 fi
 
 tail -n +2 "$SAMPLESHEET" | while IFS=, read -r sample fastq_1 fastq_2 strandedness; do
   sample_quant="$QUANT_DIR/$sample"
-  if [[ -s "$sample_quant/quant.sf" ]]; then
+  if [[ -s "$sample_quant/quant.sf" && -s "$sample_quant/aux_info/meta_info.json" ]] &&
+    python -c 'import json,sys; m=json.load(open(sys.argv[1])); sys.exit(0 if m.get("end_time") and not m.get("quant_errors") and m.get("num_processed",0)>0 else 1)' "$sample_quant/aux_info/meta_info.json"; then
     echo "verified existing Salmon result: $sample"
     continue
   fi

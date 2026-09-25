@@ -1,0 +1,5 @@
+sample	condition	replicate	run_accession	salmon_version	library_type	processed_fragments	mapped_fragments	mapping_rate_percent	decoy_fragments	decoy_rate_percent	fragment_length_mean	fragment_length_sd	sequence_bias_corrected	gc_bias_corrected
+selected_A	selected	A	SRR13576947	1.10.3	IU	23941716	14931569	62.366327	854880	3.570671	275.99375488117727	74.74944113341101	True	True
+selected_B	selected	B	SRR13576945	1.10.3	IU	20502956	9457069	46.125393	545547	2.660821	265.95480098100677	67.44044263038263	True	True
+selected_C	selected	C	SRR13576944	1.10.3	IU	22183461	9344793	42.125045	614815	2.771502	267.0087228912074	71.28171010355119	True	True
+control_C	control	C	SRR13576946	1.10.3	IU	22367076	14301849	63.941523	585261	2.616618	288.2056141971929	74.4321409192233	True	True
