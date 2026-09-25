@@ -1,5 +1,6 @@
 import pandas as pd
 
+from aree.io import read_tsv
 from aree.paths import root_path
 
 
@@ -15,7 +16,7 @@ CONFIDENCE_ORDER = {
 
 def load_mapping(path=None):
     path = path or root_path("data", "mappings", "demo_identifier_map.tsv")
-    return pd.read_csv(path, sep="\t")
+    return read_tsv(path)
 
 
 def map_identifier(original_id, mapping=None):

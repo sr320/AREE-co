@@ -1,13 +1,15 @@
 import hashlib
+import io
 from datetime import date
 from pathlib import Path
 
 import pandas as pd
 
 from aree import __version__
+from aree.io import read_tsv
 from aree.harmonize.identifiers import load_mapping, map_identifier
 from aree.intake.registry import load_study
-from aree.paths import root_path
+from aree.paths import REPO_ROOT, root_path
 from aree.validation.schemas import validate_evidence_records
 
 
@@ -33,9 +35,47 @@ def checksum(path):
     return digest.hexdigest()
 
 
+def _portable_path(path):
+    # Record repo files relative to the repo root so outputs do not depend on the checkout location.
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def is_simulated(study):
+    return str(study["data_availability"]["status"]).startswith("simulated")
+
+
+def _as_written(table):
+    # Compare tables as the text written to disk, so dtype differences cannot mask identical content.
+    buffer = io.StringIO()
+    table.to_csv(buffer, sep="\t", index=False)
+    buffer.seek(0)
+    return pd.read_csv(buffer, sep="\t", dtype=str, keep_default_na=False)
+
+
+def _preserve_generation_date(new_table, previous):
+    """Keep the previous date_generated when a rerun reproduces identical records."""
+    if previous.empty or list(previous.columns) != list(new_table.columns):
+        return new_table
+    content = [column for column in new_table.columns if column != "date_generated"]
+    fresh = _as_written(new_table)[content]
+    if fresh.equals(_as_written(previous)[content]):
+        new_table = new_table.copy()
+        new_table["date_generated"] = previous["date_generated"].to_numpy()
+    return new_table
+
+
 def harmonize_processed(study_id, input_path, output_path=None, mapping_path=None):
     study = load_study(study_id)
-    table = pd.read_csv(input_path, sep="\t")
+    if output_path is None and not is_simulated(study):
+        raise ValueError(
+            "{} is not a simulated demo study; pass an explicit output path "
+            "(e.g. data/harmonized/evidence.tsv) so real evidence stays out of the demo table".format(study_id)
+        )
+    table = read_tsv(input_path)
     missing = [column for column in REQUIRED_PROCESSED_COLUMNS if column not in table.columns]
     if missing:
         raise ValueError("Processed result table is missing columns: {}".format(", ".join(missing)))
@@ -75,7 +115,7 @@ def harmonize_processed(study_id, input_path, output_path=None, mapping_path=Non
             "phenotype_direction": study["phenotype_direction"],
             "analysis_method": row["analysis_method"],
             "quality_flags": row.get("quality_flags", "none"),
-            "source_file": str(input_path),
+            "source_file": _portable_path(input_path),
             "input_checksum": input_checksum,
             "workflow_version": __version__,
             "date_generated": date.today().isoformat(),
@@ -90,16 +130,18 @@ def harmonize_processed(study_id, input_path, output_path=None, mapping_path=Non
     output_path.parent.mkdir(parents=True, exist_ok=True)
     new_table = pd.DataFrame(records)
     if output_path.exists() and output_path.stat().st_size > 0:
-        existing = pd.read_csv(output_path, sep="\t")
+        existing = read_tsv(output_path)
+        new_table = _preserve_generation_date(new_table, existing[existing["study_id"] == study_id])
         existing = existing[existing["study_id"] != study_id]
         new_table = pd.concat([existing, new_table], ignore_index=True)
     new_table.to_csv(output_path, sep="\t", index=False)
     return output_path
 
 
-def harmonize_demo():
+def harmonize_demo(output_path=None):
+    output_path = Path(output_path) if output_path else root_path("data", "demo", "harmonized_evidence.tsv")
     processed_dir = root_path("data", "demo", "processed")
     for path in sorted(processed_dir.glob("*_*.tsv")):
         study_id = path.name.rsplit("_", 1)[0]
-        harmonize_processed(study_id, path)
-    return root_path("data", "demo", "harmonized_evidence.tsv")
+        harmonize_processed(study_id, path, output_path=output_path)
+    return output_path

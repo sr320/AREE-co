@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 
+import pandas as pd
 import pytest
 import yaml
 
@@ -234,7 +235,7 @@ def test_effect_size_meta_analysis_calculates_pooled_effect():
 
 
 def test_demo_meta_analysis_and_scoring(tmp_path):
-    evidence = harmonize_demo()
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
     meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
     scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores.tsv")
     assert meta.exists()
@@ -243,7 +244,7 @@ def test_demo_meta_analysis_and_scoring(tmp_path):
 
 
 def test_candidate_score_reproducibility(tmp_path):
-    evidence = harmonize_demo()
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
     meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
     one = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores1.tsv").read_text()
     two = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores2.tsv").read_text()
@@ -251,7 +252,7 @@ def test_candidate_score_reproducibility(tmp_path):
 
 
 def test_evidence_card_generation(tmp_path):
-    evidence = harmonize_demo()
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
     meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
     scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores.tsv")
     cards = build_evidence_cards(evidence_path=evidence, scores_path=scores, output_dir=tmp_path / "cards")
@@ -260,9 +261,66 @@ def test_evidence_card_generation(tmp_path):
 
 
 def test_demo_report_build(tmp_path):
-    evidence = harmonize_demo()
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
     meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "meta.tsv")
-    score_candidates(evidence_path=evidence, meta_path=meta, output_path=ROOT / "data/demo/candidate_scores.tsv")
-    report = build_demo_report(output_path=tmp_path / "report.md")
+    scores = score_candidates(evidence_path=evidence, meta_path=meta, output_path=tmp_path / "scores.tsv")
+    report = build_demo_report(output_path=tmp_path / "report.md", evidence_path=evidence, scores_path=scores)
     assert report.exists()
     assert "AREE Demo Report" in report.read_text()
+
+
+def test_harmonize_rerun_is_byte_identical_and_portable(tmp_path):
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
+    table = pd.read_csv(evidence, sep="\t")
+    evidence.write_text(evidence.read_text().replace(table["date_generated"].iloc[0], "2000-01-01"))
+    before = evidence.read_text()
+    harmonize_demo(evidence)
+    assert evidence.read_text() == before
+    assert all(not str(path).startswith("/") for path in table["source_file"])
+
+
+def test_changed_input_refreshes_generation_date(tmp_path):
+    source = ROOT / "data/demo/processed/CGIG_HEAT_RNASEQ_001_rnaseq.tsv"
+    evidence = harmonize_processed("CGIG_HEAT_RNASEQ_001", source, tmp_path / "evidence.tsv")
+    table = pd.read_csv(evidence, sep="\t")
+    evidence.write_text(evidence.read_text().replace(table["date_generated"].iloc[0], "2000-01-01"))
+    changed = tmp_path / "changed.tsv"
+    processed = pd.read_csv(source, sep="\t")
+    processed.loc[0, "effect_size"] += 1.0
+    processed.to_csv(changed, sep="\t", index=False)
+    harmonize_processed("CGIG_HEAT_RNASEQ_001", changed, evidence)
+    assert "2000-01-01" not in set(pd.read_csv(evidence, sep="\t")["date_generated"])
+
+
+def test_real_study_requires_explicit_output():
+    with pytest.raises(ValueError, match="explicit output path"):
+        harmonize_processed(
+            "CGIG_HEAT_RNASEQ_PRJNA516762", ROOT / "data/processed/CGIG_HEAT_RNASEQ_PRJNA516762_rnaseq.tsv"
+        )
+
+
+def test_cli_downstream_commands_accept_real_evidence_paths(tmp_path):
+    from typer.testing import CliRunner
+
+    from aree.cli import app
+
+    evidence = tmp_path / "evidence.tsv"
+    source = ROOT / "data/processed/CGIG_HEAT_RNASEQ_PRJNA516762_rnaseq.tsv"
+    runner = CliRunner()
+    missing_output = runner.invoke(app, ["harmonize", "--study", "CGIG_HEAT_RNASEQ_PRJNA516762", "--input", str(source)])
+    assert missing_output.exit_code != 0
+    commands = [
+        ["harmonize", "--study", "CGIG_HEAT_RNASEQ_PRJNA516762", "--input", str(source),
+         "--mapping", str(ROOT / "data/mappings/cgigas_cgi_to_ncbi_gene_rs2024_06_v1.tsv"), "--output", str(evidence)],
+        ["meta-analyze", "--evidence", str(evidence), "--output", str(tmp_path / "meta.tsv")],
+        ["build-evidence-cards", "--evidence", str(evidence), "--meta", str(tmp_path / "meta.tsv"),
+         "--scores", str(tmp_path / "scores.tsv"), "--output-dir", str(tmp_path / "cards")],
+        ["build-demo-report", "--evidence", str(evidence), "--scores", str(tmp_path / "scores.tsv"),
+         "--output", str(tmp_path / "report.md")],
+    ]
+    for command in commands:
+        result = runner.invoke(app, command)
+        assert result.exit_code == 0, result.output
+    scores = pd.read_csv(tmp_path / "scores.tsv", sep="\t")
+    assert len(scores) == pd.read_csv(evidence, sep="\t")["feature_id_standardized"].nunique()
+    assert list((tmp_path / "cards").glob("*.md"))

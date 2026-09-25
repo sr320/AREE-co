@@ -1,8 +1,24 @@
 import math
+from pathlib import Path
 
 import pandas as pd
 
+from aree.io import read_tsv
 from aree.paths import root_path
+
+
+RESULT_COLUMNS = [
+    "n_effects",
+    "n_studies",
+    "pooled_effect",
+    "pooled_standard_error",
+    "p_value",
+    "q",
+    "i2_percent",
+    "tau2",
+    "direction_consistency",
+    "study_ids",
+]
 
 
 def _normal_cdf(x):
@@ -44,7 +60,7 @@ def random_effects(group):
 
 def run_meta_analysis(phenotype=None, feature_type=None, evidence_path=None, output_path=None):
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
-    evidence = pd.read_csv(evidence_path, sep="\t")
+    evidence = read_tsv(evidence_path)
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
     if feature_type:
@@ -57,8 +73,9 @@ def run_meta_analysis(phenotype=None, feature_type=None, evidence_path=None, out
             row = dict(zip(group_cols, keys))
             row.update(result)
             rows.append(row)
-    out = pd.DataFrame(rows)
-    output_path = output_path or root_path("data", "demo", "meta_analysis.tsv")
+    # Keep headers even when nothing is poolable (e.g. no standard errors) so downstream reads succeed.
+    out = pd.DataFrame(rows, columns=group_cols + RESULT_COLUMNS)
+    output_path = Path(output_path) if output_path else root_path("data", "demo", "meta_analysis.tsv")
     out.to_csv(output_path, sep="\t", index=False)
     return output_path
 

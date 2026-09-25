@@ -50,6 +50,16 @@ For real studies, keep evidence separate from the synthetic demo table:
 aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --mapping data/mappings/MAPPING_RELEASE.tsv --output data/harmonized/evidence.tsv
 ```
 
+`--output` is required for any study whose `data_availability.status` is not `simulated_*`, so real evidence cannot land in the demo table by accident. Point the downstream commands at the same table; without `--evidence` they read the demo data:
+
+```bash
+aree meta-analyze --evidence data/harmonized/evidence.tsv --output results/meta_analysis.tsv
+aree score-candidates --evidence data/harmonized/evidence.tsv --meta results/meta_analysis.tsv --output results/candidate_scores.tsv
+aree build-evidence-cards --evidence data/harmonized/evidence.tsv --meta results/meta_analysis.tsv --scores results/candidate_scores.tsv --output-dir results/evidence_cards
+```
+
+Rerunning `aree harmonize` on unchanged inputs leaves the evidence table byte-identical (`date_generated` is kept); it only changes when the records do.
+
 Optional interfaces:
 
 ```bash

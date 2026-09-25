@@ -1,14 +1,17 @@
+from pathlib import Path
+
 import pandas as pd
 
+from aree.io import read_tsv
 from aree.paths import root_path
 from aree.reporting.tables import dataframe_to_markdown
 
 
-def build_demo_report(output_path=None):
-    output_path = output_path or root_path("reports", "demo_report.md")
-    registry = pd.read_csv(root_path("registry", "study_registry.csv"))
-    evidence = pd.read_csv(root_path("data", "demo", "harmonized_evidence.tsv"), sep="\t")
-    scores = pd.read_csv(root_path("data", "demo", "candidate_scores.tsv"), sep="\t")
+def build_demo_report(output_path=None, registry_path=None, evidence_path=None, scores_path=None):
+    output_path = Path(output_path) if output_path else root_path("reports", "demo_report.md")
+    registry = pd.read_csv(registry_path or root_path("registry", "study_registry.csv"))
+    evidence = read_tsv(evidence_path or root_path("data", "demo", "harmonized_evidence.tsv"))
+    scores = read_tsv(scores_path or root_path("data", "demo", "candidate_scores.tsv"))
     body = [
         "# AREE Demo Report",
         "",

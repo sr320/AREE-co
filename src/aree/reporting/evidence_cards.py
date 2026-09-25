@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from aree.io import read_tsv
 from aree.paths import root_path
 from aree.reporting.tables import dataframe_to_markdown
 
@@ -11,8 +12,8 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
     scores_path = scores_path or root_path("data", "demo", "candidate_scores.tsv")
     output_dir = Path(output_dir) if output_dir else root_path("reports", "evidence_cards")
     output_dir.mkdir(parents=True, exist_ok=True)
-    evidence = pd.read_csv(evidence_path, sep="\t")
-    scores = pd.read_csv(scores_path, sep="\t")
+    evidence = read_tsv(evidence_path)
+    scores = read_tsv(scores_path)
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
     written = []
