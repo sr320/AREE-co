@@ -52,4 +52,5 @@ done
 
 python "$SCRIPT_DIR/summarize_salmon_qc.py" --quant-dir "$QUANT_DIR" \
   --design-sheet "$DESIGN_SHEET" --output "$QUANT_DIR/salmon_qc_summary.tsv"
-Rscript "$SCRIPT_DIR/run_deseq2_heat_vs_control.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$RESULTS_DIR"
+Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$RESULTS_DIR" \
+  --test=heat "--ma-title=Heat shock versus control"

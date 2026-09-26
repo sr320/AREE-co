@@ -41,3 +41,7 @@ line-length = 120
 [tool.ruff.lint]
 # Explicit bug-focused rules, so newer ruff releases do not silently widen the check to style rules.
 select = ["E4", "E7", "E9", "F", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Typer declares CLI options through default arguments; these calls build parameter specs, not shared state.
+extend-immutable-calls = ["typer.Option", "typer.Argument"]

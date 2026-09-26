@@ -72,9 +72,8 @@ with tabs[3]:
         [
             {"layer": "Study registry", "status": "complete and runnable"},
             {"layer": "Processed harmonization", "status": "complete and runnable for MVP schema"},
-            {"layer": "Raw RNA-seq Nextflow", "status": "scaffolded"},
-            {"layer": "Raw methylation Nextflow", "status": "scaffolded"},
-            {"layer": "Proteomics/metabolomics workflows", "status": "scaffolded"},
+            {"layer": "Raw RNA-seq Nextflow pipeline", "status": "complete and runnable"},
+            {"layer": "Raw methylation/proteomics/metabolomics pipelines", "status": "planned; processed results only"},
             {"layer": "Meta-analysis and scoring", "status": "complete and runnable"},
             {"layer": "Evidence cards", "status": "complete and runnable"},
         ]

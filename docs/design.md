@@ -13,7 +13,7 @@
 AREE has five connected layers:
 
 1. Study registry and dataset intake.
-2. Standardized reanalysis workflow scaffolds.
+2. Standardized raw-data reanalysis (Nextflow RNA-seq pipeline).
 3. Cross-study evidence harmonization.
 4. Meta-analysis and candidate prioritization.
 5. User-facing reports and interface.

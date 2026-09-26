@@ -59,3 +59,30 @@ jobs:
           cp data/demo/harmonized_evidence.tsv /tmp/evidence.tsv
           /tmp/wheel-env/bin/aree harmonize-demo --output /tmp/evidence.tsv
           cmp /tmp/evidence.tsv data/demo/harmonized_evidence.tsv
+
+  pipeline:
+    # Full workflows/rnaseq run on synthetic reads with the pinned toolchain from environment.yml.
+    name: nextflow rnaseq (synthetic data)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: workflows/rnaseq/environment.yml
+          environment-name: aree-rnaseq
+          # Flexible priority: under strict priority conda-forge's R packages block bioconda's R 4.3 DESeq2.
+          create-args: >-
+            --channel-priority flexible
+            python=3.12
+            pip
+            nextflow
+            openjdk=17
+          cache-environment: true
+      - run: python -m pip install -e ".[dev]"
+      - run: pytest -v tests/test_nextflow_rnaseq.py
+        env:
+          AREE_REQUIRE_PIPELINE: "1"
+
