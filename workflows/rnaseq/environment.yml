@@ -1,0 +1,10 @@
+name: aree-rnaseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - salmon=1.10.3
+  - fastqc=0.12.1
+  - r-base=4.3
+  - bioconductor-deseq2=1.42.0
+  - bioconductor-tximport=1.30.0

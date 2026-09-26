@@ -2,7 +2,7 @@
 
 AREE is an open, reproducible evidence-generation system for aquaculture resilience biomarker discovery. The MVP focuses on Pacific oyster (*Crassostrea gigas*) and is structured so additional shellfish species and aquaculture organisms can be added without changing the core model.
 
-AREE is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw workflow scaffolds, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
+AREE is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw RNA-seq reanalysis, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
 
 **Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, `data/demo/` tables, and `reports/`. To preview locally:
 
@@ -20,7 +20,7 @@ python scripts/build_site.py && quarto render _site_src
 - Markdown evidence-card generation.
 - Demo report generation.
 - A Streamlit browser for studies, evidence, and candidate cards.
-- Nextflow workflow scaffolds for raw-data reanalysis.
+- A Nextflow RNA-seq reanalysis pipeline (`workflows/rnaseq`): FastQC, Salmon, tximport/DESeq2, and export to harmonizable evidence. Methylation, proteomics and metabolomics studies currently enter as processed results.
 
 Synthetic demo data are clearly labeled as simulated and are intended to exercise the full system shape before raw public datasets are curated.
 
@@ -99,10 +99,7 @@ AREE/
 │   ├── controlled_vocabularies/
 │   └── study_registry.csv
 ├── workflows/
-│   ├── rnaseq/
-│   ├── methylation/
-│   ├── proteomics/
-│   └── metabolomics/
+│   └── rnaseq/        # Nextflow RNA-seq reanalysis pipeline
 ├── modules/
 ├── containers/
 ├── config/
@@ -128,7 +125,7 @@ AREE/
 | Study registry | Standardizes public dataset intake and study characterization. |
 | Controlled vocabularies | Normalizes phenotype, stressor, assay, tissue, and quality labels. |
 | JSON schemas (`src/aree/schemas/`) | Makes dataset metadata and evidence tables machine-validatable. |
-| Nextflow scaffolds | Defines reproducible raw-data reanalysis entry points. |
+| Nextflow RNA-seq pipeline | Reproducible raw-read reanalysis into harmonizable evidence. |
 | Processed-result harmonizers | Allows studies without raw data to contribute transparent evidence. |
 | Identifier mapping | Preserves original IDs while assigning comparable reference identifiers and mapping confidence. |
 | Evidence schema | Converts assay-specific outputs into shared biomarker evidence. |
@@ -148,7 +145,7 @@ AREE/
 | Candidate scoring | Complete transparent MVP; weights should be reviewed by domain experts. |
 | Evidence cards | Complete Markdown output; plots are textual summaries in MVP. |
 | Streamlit app | Complete lightweight browser; production search and visualizations remain future work. |
-| Raw-data Nextflow workflows | Scaffolded, not production-ready. |
+| Raw RNA-seq Nextflow pipeline | Runnable; tested end to end on synthetic reads in CI. Other assays enter as processed results. |
 | Containers | Scaffolded. |
 | CI | Included; depends on runner availability for optional Quarto/Streamlit dependencies. |
 

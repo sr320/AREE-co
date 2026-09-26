@@ -14,7 +14,8 @@
 ## Production Next Steps
 
 - Curate verified public accessions.
-- Harden Nextflow workflows with real reference downloads.
+- Add raw-data Nextflow pipelines for methylation, proteomics and metabolomics, following `workflows/rnaseq`.
+- Fetch versioned references inside the RNA-seq pipeline instead of passing prepared files.
 - Add R `metafor` cross-checks.
 - Add richer forest plots.
 - Add species-specific mapping releases.

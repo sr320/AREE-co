@@ -1,3 +1,6 @@
+from pathlib import Path
+from typing import List
+
 import typer
 
 from aree.harmonize.processed import harmonize_demo as harmonize_demo_data
@@ -6,6 +9,8 @@ from aree.io import read_tsv
 from aree.intake.registry import register_study as register_study_file
 from aree.meta_analysis.random_effects import run_meta_analysis
 from aree.prioritize.scoring import score_candidates
+from aree.raw.deseq2_evidence import ANALYSIS_METHOD, REFSEQ_RELEASE
+from aree.raw.deseq2_evidence import export_deseq2_evidence as export_evidence
 from aree.reporting.demo_report import build_demo_report as build_report
 from aree.reporting.evidence_cards import build_evidence_cards as build_cards
 from aree.validation.schemas import validate_study_file
@@ -49,6 +54,26 @@ def harmonize(
     except ValueError as exc:
         raise typer.BadParameter(str(exc), param_hint="--output") from exc
     typer.echo("harmonized evidence written to {}".format(output))
+
+
+@app.command("export-deseq2-evidence")
+def export_deseq2_evidence(
+    results: Path = typer.Option(..., help="DESeq2 all-genes TSV (feature_id_standardized, log2FoldChange, lfcSE, ...)."),
+    gff: Path = typer.Option(..., help="Gzipped RefSeq GFF of the reference the reads were quantified against."),
+    processed: Path = typer.Option(..., help="Processed evidence TSV to write (input to `aree harmonize`)."),
+    mapping: Path = typer.Option(..., help="Exact identifier mapping TSV to write."),
+    annotations: Path = typer.Option(..., help="RefSeq gene annotation TSV to write."),
+    sample_comparison: str = typer.Option(..., help="Contrast label, e.g. heat_vs_control."),
+    quality_flag: List[str] = typer.Option(["raw_reanalysis"], help="Study-level quality flag; repeat for several."),
+    reference_release: str = typer.Option(REFSEQ_RELEASE, help="Reference assembly and annotation release."),
+    analysis_method: str = typer.Option(ANALYSIS_METHOD, help="Tool chain recorded on every evidence row."),
+):
+    """Turn one DESeq2 contrast on a RefSeq reference into AREE processed evidence and mappings."""
+    export_evidence(
+        results, gff, processed, mapping, annotations,
+        sample_comparison=sample_comparison, quality_flags=quality_flag,
+        reference_release=reference_release, analysis_method=analysis_method,
+    )
 
 
 @app.command("harmonize-demo")
