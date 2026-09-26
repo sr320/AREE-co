@@ -6,13 +6,25 @@ on:
 
 jobs:
   python:
+    name: python ${{ matrix.python }} (${{ matrix.resolution }} deps)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Oldest supported Python with the lowest dependency versions pyproject.toml allows,
+          # and the newest Python with the newest dependencies.
+          - python: "3.8"
+            resolution: lowest-direct
+          - python: "3.13"
+            resolution: highest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-      - run: python -m pip install -e ".[dev]"
+      - uses: astral-sh/setup-uv@v6
+      - run: uv venv --python ${{ matrix.python }} && echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+      - run: uv pip install --resolution ${{ matrix.resolution }} -e ".[dev]"
+      - run: ruff check .
+        if: matrix.resolution == 'highest'
       - run: pytest
       - run: aree validate-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
       - run: aree harmonize-demo
@@ -26,3 +38,19 @@ jobs:
           git status --porcelain -- data/demo reports
           git diff -- data/demo reports
           test -z "$(git status --porcelain -- data/demo reports)"
+
+  wheel:
+    # A regular (non-editable) install must work: schemas ship in the package and the project
+    # directory is found from the working directory, not from the package location.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv build --wheel --out-dir dist
+      - run: uv venv --python 3.13 /tmp/wheel-env && VIRTUAL_ENV=/tmp/wheel-env uv pip install dist/*.whl
+      - name: Installed package runs against the checkout
+        run: |
+          /tmp/wheel-env/bin/python -c "import aree, sys; assert '/tmp/wheel-env/' in aree.__file__, aree.__file__"
+          /tmp/wheel-env/bin/aree validate-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
+          /tmp/wheel-env/bin/aree harmonize-demo --output /tmp/evidence.tsv
+          cmp /tmp/evidence.tsv data/demo/harmonized_evidence.tsv

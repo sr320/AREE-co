@@ -4,11 +4,11 @@ from pathlib import Path
 import jsonschema
 import yaml
 
-from aree.paths import root_path
+from aree.paths import package_path
 
 
 def load_schema(name):
-    with root_path("schemas", name).open() as handle:
+    with package_path("schemas", name).open() as handle:
         return json.load(handle)
 
 

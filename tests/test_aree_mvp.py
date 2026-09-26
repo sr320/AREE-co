@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 
+import jsonschema
 import pandas as pd
 import pytest
 import yaml
@@ -29,7 +30,7 @@ def test_schema_validation_rejects_malformed_metadata(tmp_path):
     bad = {"study_id": "bad id"}
     path = tmp_path / "bad.yaml"
     path.write_text(yaml.safe_dump(bad))
-    with pytest.raises(Exception):
+    with pytest.raises(jsonschema.ValidationError):
         validate_study_file(path)
 
 
@@ -519,3 +520,36 @@ def test_column_groups_matches_groupby_order_and_skips_missing_keys():
     groups = [(key, list(columns["value"])) for key, columns in column_groups(frame, "key", ["value"])]
     expected = [(key, list(group["value"])) for key, group in frame.groupby("key")]
     assert groups == expected == [("a", [2, 5]), ("b", [1, 4])]
+
+
+def test_project_root_resolution(tmp_path, monkeypatch):
+    import aree.paths as paths
+
+    project = tmp_path / "project"
+    (project / "registry" / "studies").mkdir(parents=True)
+    nested = project / "data" / "processed"
+    nested.mkdir(parents=True)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+
+    # A source checkout (editable install) wins when AREE_ROOT is unset.
+    monkeypatch.delenv("AREE_ROOT", raising=False)
+    assert paths.project_root() == ROOT.resolve()
+
+    # A regular install has no project around the package: use the nearest project above cwd.
+    monkeypatch.setattr(paths, "_SOURCE_CHECKOUT", tmp_path / "site-packages")
+    monkeypatch.chdir(nested)
+    assert paths.project_root() == project.resolve()
+    monkeypatch.chdir(elsewhere)
+    assert paths.project_root() == elsewhere.resolve()
+
+    # AREE_ROOT overrides everything.
+    monkeypatch.setenv("AREE_ROOT", str(project))
+    assert paths.root_path("registry") == project.resolve() / "registry"
+
+
+def test_schemas_ship_inside_the_package():
+    from aree.paths import package_path
+
+    assert package_path("schemas", "study.schema.json").is_file()
+    assert package_path("schemas", "evidence.schema.json").is_file()
