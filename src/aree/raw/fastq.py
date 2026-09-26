@@ -174,19 +174,21 @@ def write_nfcore_samplesheet(rows, output_dir, path):
     print("wrote nf-core sample sheet {}".format(path))
 
 
-def write_design_samplesheet(rows, path):
+def write_design_samplesheet(rows, path, extra_columns=()):
+    """Write the DESeq2 design sheet, optionally carrying manifest columns for blocking factors."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = ["sample", "condition", "replicate", "run_accession", *extra_columns]
     with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["sample", "condition", "replicate", "run_accession"])
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
-            writer.writerow(
-                {
-                    "sample": sample_name(row),
-                    "condition": row["condition"],
-                    "replicate": row["replicate"],
-                    "run_accession": row["run_accession"],
-                }
-            )
+            record = {
+                "sample": sample_name(row),
+                "condition": row["condition"],
+                "replicate": row["replicate"],
+                "run_accession": row["run_accession"],
+            }
+            record.update({column: row[column] for column in extra_columns})
+            writer.writerow(record)
     print("wrote DESeq2 design sheet {}".format(path))
