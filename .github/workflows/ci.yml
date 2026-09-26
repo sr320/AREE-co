@@ -16,13 +16,15 @@ jobs:
           # and the newest Python with the newest dependencies.
           - python: "3.8"
             resolution: lowest-direct
+            extras: dev
           - python: "3.13"
             resolution: highest
+            extras: dev,app  # app smoke tests need streamlit >= 1.28; they skip without it
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv venv --python ${{ matrix.python }} && echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
-      - run: uv pip install --resolution ${{ matrix.resolution }} -e ".[dev]"
+      - run: uv pip install --resolution ${{ matrix.resolution }} -e ".[${{ matrix.extras }}]"
       - run: ruff check .
         if: matrix.resolution == 'highest'
       - run: pytest

@@ -5,7 +5,10 @@ import csv
 import os
 from pathlib import Path
 
-from prepare_prjna694496_fastqs import DEFAULT_MANIFEST, md5sum
+from aree.raw.fastq import md5sum
+
+
+DEFAULT_MANIFEST = Path("data/manifests/CGIG_THERMOTOL_RNASEQ_PRJNA694496_runs.tsv")
 
 
 def main():
