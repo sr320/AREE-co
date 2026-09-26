@@ -54,6 +54,9 @@ jobs:
         run: |
           /tmp/wheel-env/bin/python -c "import aree, sys; assert '/tmp/wheel-env/' in aree.__file__, aree.__file__"
           /tmp/wheel-env/bin/aree validate-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
+          # Start from the committed table: an unchanged rerun must reproduce it byte for byte
+          # (a fresh file would carry today's date_generated and differ on any other day).
+          cp data/demo/harmonized_evidence.tsv /tmp/evidence.tsv
           /tmp/wheel-env/bin/aree harmonize-demo --output /tmp/evidence.tsv
           cmp /tmp/evidence.tsv data/demo/harmonized_evidence.tsv
 
