@@ -2,6 +2,17 @@
 
 AREE welcomes code, documentation, workflow modules, and curated public-study metadata.
 
+## Checks
+
+Run these before opening a pull request; CI runs the same checks.
+
+```bash
+ruff check .
+pytest
+```
+
+CI also reruns the demo pipeline and fails if any committed file under `data/demo/` or `reports/` changes, so commit regenerated outputs together with the code that changes them.
+
 ## Add a Study
 
 1. Copy `registry/studies/CGIG_HEAT_RNASEQ_001.yaml`.

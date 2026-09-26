@@ -37,7 +37,10 @@ def prepare(results_path: Path, annotations_path: Path, output_dir: Path) -> Non
             raise ValueError(f"Missing RefSeq gene symbol for {row['feature_id_standardized']}")
     if len(set(annotations.values())) != len(annotations):
         raise ValueError("RefSeq gene symbols must be unique for enrichment")
-    symbol = lambda row: annotations[row["feature_id_standardized"]]
+
+    def symbol(row):
+        return annotations[row["feature_id_standardized"]]
+
     background = sorted({symbol(r) for r in rows if r["pvalue"]})
     significant = [r for r in rows if r["padj"] and float(r["padj"]) < 0.05]
     queries = {

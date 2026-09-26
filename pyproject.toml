@@ -1,5 +1,6 @@
 [build-system]
-requires = ["setuptools>=50"]
+# 61 is the first setuptools that reads the [project] table below.
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -12,13 +13,13 @@ dependencies = [
   "pandas>=1.1",
   "PyYAML>=5.3",
   "jsonschema>=3.2",
-  "typer>=0.4",
+  "typer>=0.4.1",  # 0.4.0 breaks with click >= 8.1
 ]
 authors = [{name = "AREE contributors"}]
 license = {file = "LICENSE"}
 
 [project.optional-dependencies]
-dev = ["pytest>=6"]
+dev = ["pytest>=6", "ruff>=0.5"]
 app = ["streamlit>=1.0"]
 
 [project.scripts]
@@ -27,5 +28,16 @@ aree = "aree.cli:app"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+aree = ["schemas/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+
+[tool.ruff.lint]
+# Explicit bug-focused rules, so newer ruff releases do not silently widen the check to style rules.
+select = ["E4", "E7", "E9", "F", "B"]

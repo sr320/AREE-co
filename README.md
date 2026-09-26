@@ -38,6 +38,10 @@ If you prefer to use an existing Python environment:
 python3 -m pip install -e ".[dev,app]"
 ```
 
+AREE supports Python 3.8 and newer; CI tests Python 3.8 with the lowest dependency versions `pyproject.toml` allows and Python 3.13 with the newest.
+
+Commands read and write project files (`registry/`, `data/`, `reports/`). With an editable install from this checkout they use the checkout. With a regular install (`pip install .`), run `aree` from inside the project directory (any subdirectory works) or set `AREE_ROOT=/path/to/project`.
+
 ## Demo Commands
 
 ```bash
@@ -90,7 +94,6 @@ AREE/
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── docs/
-├── schemas/
 ├── registry/
 │   ├── studies/
 │   ├── controlled_vocabularies/
@@ -109,6 +112,7 @@ AREE/
 │   └── mappings/
 ├── src/
 │   └── aree/
+│       └── schemas/   # study and evidence JSON schemas, shipped with the package
 ├── app/
 ├── reports/
 ├── tests/
@@ -123,7 +127,7 @@ AREE/
 |---|---|
 | Study registry | Standardizes public dataset intake and study characterization. |
 | Controlled vocabularies | Normalizes phenotype, stressor, assay, tissue, and quality labels. |
-| JSON schemas | Makes dataset metadata and evidence tables machine-validatable. |
+| JSON schemas (`src/aree/schemas/`) | Makes dataset metadata and evidence tables machine-validatable. |
 | Nextflow scaffolds | Defines reproducible raw-data reanalysis entry points. |
 | Processed-result harmonizers | Allows studies without raw data to contribute transparent evidence. |
 | Identifier mapping | Preserves original IDs while assigning comparable reference identifiers and mapping confidence. |

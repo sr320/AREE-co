@@ -9,7 +9,7 @@ from aree import __version__
 from aree.io import read_tsv
 from aree.harmonize.identifiers import load_mapping, map_identifiers
 from aree.intake.registry import load_study
-from aree.paths import REPO_ROOT, root_path
+from aree.paths import project_root, root_path
 from aree.validation.schemas import validate_evidence_records
 
 
@@ -36,10 +36,10 @@ def checksum(path):
 
 
 def _portable_path(path):
-    # Record repo files relative to the repo root so outputs do not depend on the checkout location.
+    # Record project files relative to the project root so outputs do not depend on the checkout location.
     resolved = Path(path).resolve()
     try:
-        return resolved.relative_to(REPO_ROOT).as_posix()
+        return resolved.relative_to(project_root()).as_posix()
     except ValueError:
         return str(path)
 

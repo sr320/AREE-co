@@ -20,7 +20,6 @@ def summarize(root, output, publication_evidence):
     qc = pd.read_csv(root / "salmon/salmon_qc_summary.tsv", sep="\t")
     pca = pd.read_csv(de_dir / "sample_pca.csv")
     pca_variance = pd.read_csv(de_dir / "sample_pca_variance.csv")
-    correlations = pd.read_csv(de_dir / "sample_vst_correlations.csv", index_col=0)
     sample_qc = pd.read_csv(de_dir / "sample_deseq2_qc.tsv", sep="\t")
     if len(qc) != 6 or qc["sample"].nunique() != 6:
         raise ValueError("Six unique quantified libraries are required")
