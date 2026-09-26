@@ -6,9 +6,16 @@ __pycache__/
 .DS_Store
 results/
 data/raw/
-data/reference/
+# Downloaded genomes and annotations; notes about them stay tracked.
+data/reference/*
+!data/reference/*.md
 
 .Rproj.user
+.Rhistory
+.RData
+# Local `quarto render docs/` output; the published site is built by the Pages workflow.
+docs/*.html
+docs/*_files/
 _site/
 _site_src/
 build/
