@@ -16,13 +16,15 @@ jobs:
           # and the newest Python with the newest dependencies.
           - python: "3.8"
             resolution: lowest-direct
+            extras: dev
           - python: "3.13"
             resolution: highest
+            extras: dev,app  # app smoke tests need streamlit >= 1.28; they skip without it
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv venv --python ${{ matrix.python }} && echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
-      - run: uv pip install --resolution ${{ matrix.resolution }} -e ".[dev]"
+      - run: uv pip install --resolution ${{ matrix.resolution }} -e ".[${{ matrix.extras }}]"
       - run: ruff check .
         if: matrix.resolution == 'highest'
       - run: pytest
@@ -52,5 +54,8 @@ jobs:
         run: |
           /tmp/wheel-env/bin/python -c "import aree, sys; assert '/tmp/wheel-env/' in aree.__file__, aree.__file__"
           /tmp/wheel-env/bin/aree validate-study registry/studies/CGIG_HEAT_RNASEQ_001.yaml
+          # Start from the committed table: an unchanged rerun must reproduce it byte for byte
+          # (a fresh file would carry today's date_generated and differ on any other day).
+          cp data/demo/harmonized_evidence.tsv /tmp/evidence.tsv
           /tmp/wheel-env/bin/aree harmonize-demo --output /tmp/evidence.tsv
           cmp /tmp/evidence.tsv data/demo/harmonized_evidence.tsv

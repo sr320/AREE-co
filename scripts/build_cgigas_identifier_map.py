@@ -6,7 +6,8 @@ import gzip
 import json
 from collections import defaultdict
 from pathlib import Path
-from urllib.parse import unquote
+
+from aree.raw.gff import parse_attributes
 
 
 def open_text(path):
@@ -14,16 +15,6 @@ def open_text(path):
     if path.suffix == ".gz":
         return gzip.open(path, "rt", encoding="utf-8")
     return path.open("r", encoding="utf-8")
-
-
-def parse_attributes(text):
-    attributes = {}
-    for item in text.rstrip().split(";"):
-        if not item:
-            continue
-        key, _, value = item.partition("=")
-        attributes[key] = unquote(value)
-    return attributes
 
 
 def load_feature_ids(path):

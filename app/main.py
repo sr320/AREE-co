@@ -7,6 +7,10 @@ from aree.reporting.evidence_cards import card_filename
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# Streamlit 1.49 replaced use_container_width (since deprecated) with width="stretch"; Python 3.8
+# tops out at older Streamlit releases, so pick whichever keyword the installed version supports.
+_STREAMLIT_VERSION = tuple(int(part) for part in st.__version__.split(".")[:2])
+FULL_WIDTH = {"width": "stretch"} if _STREAMLIT_VERSION >= (1, 49) else {"use_container_width": True}
 
 
 st.set_page_config(page_title="AREE", layout="wide")
@@ -22,7 +26,7 @@ with tabs[0]:
     st.subheader("Registered Studies")
     if registry_path.exists():
         registry = pd.read_csv(registry_path)
-        st.dataframe(registry, use_container_width=True)
+        st.dataframe(registry, **FULL_WIDTH)
         st.download_button("Download registry CSV", registry.to_csv(index=False), "study_registry.csv")
     else:
         st.info("No registry CSV found.")
@@ -45,7 +49,7 @@ with tabs[1]:
         if query:
             mask = filtered.astype(str).apply(lambda col: col.str.contains(query, case=False, na=False)).any(axis=1)
             filtered = filtered[mask]
-        st.dataframe(filtered, use_container_width=True)
+        st.dataframe(filtered, **FULL_WIDTH)
         st.download_button("Download filtered evidence TSV", filtered.to_csv(sep="\t", index=False), "aree_filtered_evidence.tsv")
     else:
         st.info("Run `aree harmonize-demo` to generate evidence.")
@@ -54,7 +58,7 @@ with tabs[2]:
     st.subheader("Candidate Biomarker Evidence")
     if scores_path.exists():
         scores = pd.read_csv(scores_path, sep="\t")
-        st.dataframe(scores, use_container_width=True)
+        st.dataframe(scores, **FULL_WIDTH)
         selected = st.selectbox("Evidence card", sorted(scores["candidate_id"].astype(str)))
         card = ROOT / "reports" / "evidence_cards" / card_filename(selected)
         if card.exists():
@@ -75,5 +79,5 @@ with tabs[3]:
             {"layer": "Evidence cards", "status": "complete and runnable"},
         ]
     )
-    st.dataframe(status, use_container_width=True)
+    st.dataframe(status, **FULL_WIDTH)
 

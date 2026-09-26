@@ -6,12 +6,9 @@ import gzip
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from urllib.parse import unquote
 
-try:
-    from scripts.prepare_prjna694496_fastqs import download, nearest_existing_ancestor
-except ModuleNotFoundError:  # Direct execution places scripts/ on sys.path.
-    from prepare_prjna694496_fastqs import download, nearest_existing_ancestor
+from aree.raw.fastq import download, nearest_existing_ancestor
+from aree.raw.gff import parse_attributes
 
 
 ACCESSION = "GCF_963853765.1"
@@ -23,15 +20,6 @@ ARTIFACTS = {
     "{}_genomic.gff.gz".format(ASSEMBLY): (15657002, "f358436291fd77299046268947f8d6bb"),
     "{}_rna.fna.gz".format(ASSEMBLY): (36305575, "0321e363d5f15f9ac7d13e69ff20963a"),
 }
-
-
-def parse_attributes(text):
-    attributes = {}
-    for item in text.rstrip().split(";"):
-        if "=" in item:
-            key, value = item.split("=", 1)
-            attributes[key] = unquote(value)
-    return attributes
 
 
 def build_tx2gene(gff_path, output_path):
