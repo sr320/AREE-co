@@ -35,8 +35,13 @@ while IFS=, read -r sample fastq_1 fastq_2 strandedness; do
     [[ -s "$QC_DIR/${fastq_name}_fastqc.zip" ]] || missing_fastqc+=("$fastq_path")
   done
 done < <(tail -n +2 "$SAMPLESHEET")
-if [[ ${#missing_fastqc[@]} -gt 0 ]]; then
+# Nothing downstream reads the FastQC archives -- the recorded quality_control_status is
+# built from Salmon mapping rates and the DESeq2 summary -- so on a study large enough for
+# FastQC to take hours, SKIP_FASTQC=1 defers it and lets the quantification run first.
+if [[ ${#missing_fastqc[@]} -gt 0 && "${SKIP_FASTQC:-0}" != "1" ]]; then
   fastqc --threads "$THREADS" --outdir "$QC_DIR" "${missing_fastqc[@]}"
+elif [[ ${#missing_fastqc[@]} -gt 0 ]]; then
+  echo "SKIP_FASTQC=1: deferring FastQC for ${#missing_fastqc[@]} files"
 fi
 
 tail -n +2 "$SAMPLESHEET" | while IFS=, read -r sample fastq_1 fastq_2 strandedness; do
