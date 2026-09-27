@@ -19,6 +19,8 @@ all of its filtering disabled, at close to the speed of the extraction itself.
 
 import argparse
 import csv
+import json
+import shutil
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -72,6 +74,63 @@ def verify_sra(rows, locations, sra_dir, workers):
     return failures
 
 
+# Gzipped FASTQ bytes per spot, measured over both mates at fastp's compression level 4.
+BYTES_PER_SPOT = 175
+
+
+def check_free_space(rows, sra_dir, output_dir, keep_sra):
+    """Return a complaint if the runs still to convert will not fit, else None."""
+    pending = [
+        row for row in rows
+        if not all(fastq_path(output_dir, row["run_accession"], mate).exists() for mate in ("1", "2"))
+    ]
+    needed = sum(int(row["read_count"]) for row in pending) * BYTES_PER_SPOT
+    if not keep_sra:
+        # Each archive is removed once its FASTQ pair lands, so that space comes back.
+        needed -= sum(
+            path.stat().st_size
+            for path in (sra_path(sra_dir, row["run_accession"]) for row in pending)
+            if path.exists()
+        )
+    free = shutil.disk_usage(output_dir).free
+    gb = lambda value: value / 1e9
+    print("{} runs to convert, needing ~{:.0f} GB net; {:.0f} GB free".format(
+        len(pending), gb(needed), gb(free)))
+    if needed > free * 0.9:
+        return "not enough room: need ~{:.0f} GB, have {:.0f} GB free on {}".format(
+            gb(needed), gb(free), output_dir)
+    return None
+
+
+def discard(paths):
+    for path in paths:
+        path.unlink(missing_ok=True)
+
+
+def check_output(run, row, staged, report):
+    """Reject output that exited cleanly but does not hold the run's full read complement.
+
+    A full disk makes fastp lose writes without reporting failure, which leaves a file that
+    still ends on the run's last spot and so survives any end-of-file check. Comparing the
+    counts fastp itself reports against the manifest is what actually catches that.
+    """
+    for path in staged:
+        if not path.exists():
+            raise RuntimeError("conversion did not produce {}".format(path))
+        with path.open("rb") as handle:
+            if handle.read(2) != b"\x1f\x8b":
+                raise RuntimeError("{} is not gzip; fastp wrote plain text".format(path))
+    summary = json.loads(report.read_text())["summary"]["before_filtering"]
+    expected = int(row["read_count"])
+    # fastp counts both mates; the manifest counts spots.
+    if summary["total_reads"] != expected * 2:
+        raise RuntimeError(
+            "{}: wrote {} reads, manifest expects {} ({} spots x 2)".format(
+                run, summary["total_reads"], expected * 2, expected
+            )
+        )
+
+
 def convert_run(row, sra_dir, output_dir, threads, fastq_dump, fastp, keep_sra):
     """Convert one ``.sra`` archive to a gzipped FASTQ pair, skipping work already done."""
     run = row["run_accession"]
@@ -83,8 +142,13 @@ def convert_run(row, sra_dir, output_dir, threads, fastq_dump, fastp, keep_sra):
     if not archive.exists():
         raise FileNotFoundError("Missing SRA archive for {}: {}".format(run, archive))
 
-    # Written under temporary names so an interrupted run is not mistaken for a finished one.
-    staged = [path.with_suffix(path.suffix + ".partial") for path in mates]
+    # Staged in a subdirectory so an interrupted run is not mistaken for a finished one.
+    # The file names must be preserved: fastp chooses gzip output from the ``.gz`` suffix,
+    # so renaming the staged copies to e.g. ``.fastq.gz.partial`` silently writes plain text.
+    staging = Path(output_dir) / ".staging"
+    staging.mkdir(exist_ok=True)
+    staged = [staging / path.name for path in mates]
+    report = staging / "{}.fastp.json".format(run)
     dump = subprocess.Popen(
         [fastq_dump, "--split-spot", "--skip-technical", "--stdout", str(archive)],
         stdout=subprocess.PIPE,
@@ -102,7 +166,7 @@ def convert_run(row, sra_dir, output_dir, threads, fastq_dump, fastp, keep_sra):
             "--disable_trim_poly_g",
             "--compression", "4",
             "--thread", str(threads),
-            "--json", "/dev/null",
+            "--json", str(report),
             "--html", "/dev/null",
         ],
         stdin=dump.stdout,
@@ -111,14 +175,17 @@ def convert_run(row, sra_dir, output_dir, threads, fastq_dump, fastp, keep_sra):
     split_code = split.wait()
     dump_code = dump.wait()
     if dump_code != 0 or split_code != 0:
-        for path in staged:
-            path.unlink(missing_ok=True)
+        discard(staged + [report])
         raise RuntimeError(
             "{}: fastq-dump exited {}, fastp exited {}".format(run, dump_code, split_code)
         )
+    try:
+        check_output(run, row, staged, report)
+    except Exception:
+        discard(staged + [report])
+        raise
+    report.unlink(missing_ok=True)
     for source, target in zip(staged, mates):
-        if not source.exists():
-            raise RuntimeError("conversion did not produce {}".format(target))
         source.rename(target)
     if not keep_sra:
         archive.unlink()
@@ -161,6 +228,10 @@ def main():
         print("all 42 SRA archives match the NCBI size and MD5")
 
     if args.convert:
+        shortfall = check_free_space(rows, sra_dir, output_dir, args.keep_sra)
+        if shortfall:
+            print(shortfall, file=sys.stderr)
+            return 2
         # Conversion is disk-bound; running it serially keeps the external volume sequential.
         for row in sorted(rows, key=lambda item: item["run_accession"]):
             convert_run(
