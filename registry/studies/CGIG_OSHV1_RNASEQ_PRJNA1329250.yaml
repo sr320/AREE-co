@@ -28,9 +28,9 @@ platform: "Illumina, 151 bp paired-end"
 data_availability:
   raw: true
   processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 1,564,162,034 read pairs quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06; mapping rates 44.24-61.66% (median 55.93%), well below the 73.9-76.0% of PRJNA516762 but uniform across arms (control 57.0% versus challenged 55.4%, Welch p = 0.30) and across both lineages, so it reflects library preparation rather than viral reads displacing host reads; 5,446 of 25,734 tested genes reach FDR < 0.05 (3,237 challenge-higher, 2,209 challenge-lower); PC1 explains 59.1% of variance and orders challenged above control though six control libraries fall inside the challenged range, and PC2 (16.6%) tracks the Midori/Miyagi split that ~ population + condition blocks on"
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1016/j.fsi.2026.111154"

@@ -1,0 +1,14 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	3755	0.13450585664648781	27917
+tested	misc_RNA	294	0.010531217537701042	27917
+tested	protein_coding	23848	0.854246516459505	27917
+tested	rRNA	10	0.00035820467815309665	27917
+tested	snRNA	2	7.164093563061934e-05	27917
+tested	snoRNA	4	0.00014328187126123868	27917
+tested	transcribed_pseudogene	4	0.00014328187126123868	27917
+oshv1_uvar_higher_fdr_lt_0.05	lncRNA	255	0.07877664504170528	3237
+oshv1_uvar_higher_fdr_lt_0.05	misc_RNA	20	0.006178560395427865	3237
+oshv1_uvar_higher_fdr_lt_0.05	protein_coding	2962	0.9150447945628668	3237
+oshv1_uvar_lower_fdr_lt_0.05	lncRNA	75	0.033952014486192846	2209
+oshv1_uvar_lower_fdr_lt_0.05	misc_RNA	10	0.004526935264825713	2209
+oshv1_uvar_lower_fdr_lt_0.05	protein_coding	2124	0.9615210502489815	2209
