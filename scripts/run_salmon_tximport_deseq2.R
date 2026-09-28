@@ -1,12 +1,14 @@
 usage <- paste(
   "usage: Rscript run_salmon_tximport_deseq2.R QUANT_DIR DESIGN.csv TX2GENE.tsv OUTPUT_DIR",
-  "[--reference=control] [--test=selected] [--replicates=3] [--min-samples=3] [--ma-title=TITLE]"
+  "[--reference=control] [--test=selected] [--replicates=3] [--min-samples=3] [--ma-title=TITLE]",
+  "[--covariate=COLUMN]"
 )
 args <- commandArgs(trailingOnly = TRUE)
 is_option <- grepl("^--", args)
 positional <- args[!is_option]
 # Defaults reproduce the original PRJNA694496 selected-versus-control analysis.
-options <- list(reference = "control", test = "selected", replicates = "3", min_samples = "3", ma_title = NA)
+options <- list(reference = "control", test = "selected", replicates = "3", min_samples = "3", ma_title = NA,
+                covariate = NA)
 for (arg in args[is_option]) {
   parts <- regmatches(arg, regexec("^--([a-z-]+)=(.*)$", arg))[[1]]
   key <- if (length(parts) == 3) gsub("-", "_", parts[[2]]) else ""
@@ -23,6 +25,8 @@ test <- options$test
 # Exact per-condition replicate count to require; 0 accepts any count of at least two.
 replicates <- as.integer(options$replicates)
 min_samples <- as.integer(options$min_samples)
+# Optional blocking factor (e.g. oyster lineage) added to the model as ~ covariate + condition.
+covariate <- if (is.na(options$covariate) || !nzchar(options$covariate)) NA_character_ else options$covariate
 contrast <- paste0(test, "_vs_", reference)
 ma_title <- if (is.na(options$ma_title)) paste(tools::toTitleCase(test), "versus", reference) else options$ma_title
 
@@ -78,7 +82,22 @@ txi <- tximport(
 
 samples$condition <- factor(samples$condition, levels = c(reference, test))
 rownames(samples) <- samples$sample
-dds <- DESeqDataSetFromTximport(txi, colData = samples, design = ~ condition)
+model <- ~ condition
+if (!is.na(covariate)) {
+  if (!covariate %in% colnames(samples)) {
+    stop(sprintf("design sheet has no column '%s'", covariate))
+  }
+  samples[[covariate]] <- factor(samples[[covariate]])
+  if (nlevels(samples[[covariate]]) < 2) {
+    stop(sprintf("covariate '%s' needs at least two levels", covariate))
+  }
+  # A covariate that never varies within a condition is aliased with it and cannot be fit.
+  if (any(rowSums(table(samples[[covariate]], samples$condition) > 0) < 2)) {
+    stop(sprintf("covariate '%s' is confounded with condition", covariate))
+  }
+  model <- as.formula(paste("~", covariate, "+ condition"))
+}
+dds <- DESeqDataSetFromTximport(txi, colData = samples, design = model)
 genes_imported <- nrow(dds)
 keep <- rowSums(counts(dds) >= 10) >= min_samples
 dds <- dds[keep, ]
@@ -144,6 +163,8 @@ summary_table <- data.frame(
             sum(result$padj < 0.05, na.rm = TRUE),
             sum(result$padj < 0.05 & result$log2FoldChange > 0, na.rm = TRUE),
             sum(result$padj < 0.05 & result$log2FoldChange < 0, na.rm = TRUE), cooks_cutoff))
+# Kept out of the numeric summary table so its value column stays numeric.
+writeLines(paste(deparse(model), collapse = ""), file.path(output_dir, "design_formula.txt"))
 write.table(summary_table, file.path(output_dir, "analysis_summary.tsv"),
             sep = "\t", quote = FALSE, row.names = FALSE)
 

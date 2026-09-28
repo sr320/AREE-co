@@ -1,4 +1,8 @@
-"""Summarize versioned RefSeq annotations for the PRJNA694496 DESeq2 result."""
+"""Summarize versioned RefSeq annotations for a DESeq2 result.
+
+The gene-set names carry the test arm of the contrast, so ``--test-label`` names it. It
+defaults to the ``selected`` of PRJNA694496, the study this was first written for.
+"""
 
 import argparse
 import csv
@@ -39,7 +43,9 @@ def benjamini_hochberg(p_values):
     return adjusted
 
 
-def summarize(results_path, annotations_path, output_dir):
+def summarize(results_path, annotations_path, output_dir, study_label, test_label):
+    higher = "{}_higher_fdr_lt_0.05".format(test_label)
+    lower = "{}_lower_fdr_lt_0.05".format(test_label)
     results = list(csv.DictReader(results_path.open(newline=""), delimiter="\t"))
     annotations = {
         row["feature_id_standardized"]: row
@@ -47,14 +53,14 @@ def summarize(results_path, annotations_path, output_dir):
     }
     if len(annotations) != len(results):
         raise ValueError("Annotation table must have exactly one row per tested gene")
-    groups = {"tested": [], "selected_higher_fdr_lt_0.05": [], "selected_lower_fdr_lt_0.05": []}
+    groups = {"tested": [], higher: [], lower: []}
     for result in results:
         annotation = annotations[result["feature_id_standardized"]]
         merged = dict(result)
         merged.update(annotation)
         groups["tested"].append(merged)
         if result["padj"] and float(result["padj"]) < 0.05:
-            group = "selected_higher_fdr_lt_0.05" if float(result["log2FoldChange"]) > 0 else "selected_lower_fdr_lt_0.05"
+            group = higher if float(result["log2FoldChange"]) > 0 else lower
             groups[group].append(merged)
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -74,7 +80,7 @@ def summarize(results_path, annotations_path, output_dir):
     population = len(groups["tested"])
     background_counts = Counter(row["gene_biotype"] or "missing" for row in groups["tested"])
     enrichment_rows = []
-    for group in ("selected_higher_fdr_lt_0.05", "selected_lower_fdr_lt_0.05"):
+    for group in (higher, lower):
         group_counts = Counter(row["gene_biotype"] or "missing" for row in groups[group])
         draws = len(groups[group])
         for biotype, background_count in sorted(background_counts.items()):
@@ -98,10 +104,10 @@ def summarize(results_path, annotations_path, output_dir):
         writer.writerows(enrichment_rows)
 
     lines = [
-        "# PRJNA694496 RefSeq functional annotations", "",
+        "# {} RefSeq functional annotations".format(study_label), "",
         "Descriptions and gene biotypes come directly from GCF_963853765.1 / RS_2024_06. This is annotation and ranking, not ontology or pathway enrichment.", "",
     ]
-    for group in ("selected_higher_fdr_lt_0.05", "selected_lower_fdr_lt_0.05"):
+    for group in (higher, lower):
         rows = groups[group]
         characterized = [r for r in rows if r["description"] and not r["description"].lower().startswith("uncharacterized")]
         lines.extend([
@@ -137,5 +143,7 @@ if __name__ == "__main__":
     parser.add_argument("--results", type=Path, required=True)
     parser.add_argument("--annotations", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--study-label", default="PRJNA694496", help="heading for the report")
+    parser.add_argument("--test-label", default="selected", help="test arm of the contrast, used to name the gene sets")
     args = parser.parse_args()
-    summarize(args.results, args.annotations, args.output_dir)
+    summarize(args.results, args.annotations, args.output_dir, args.study_label, args.test_label)

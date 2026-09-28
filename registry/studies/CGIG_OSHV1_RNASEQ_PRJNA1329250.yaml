@@ -1,0 +1,48 @@
+study_id: CGIG_OSHV1_RNASEQ_PRJNA1329250
+doi: "10.1016/j.fsi.2026.111154"
+accessions:
+  bioproject: "PRJNA1329250"
+  pmid: "41581675"
+citation: "Calla B, Thompson NF, Burge CA. Population-specific transcriptomics of Pacific oyster after exposure to a highly pathogenic, globally distributed virus. Fish Shellfish Immunol. 2026;171:111154."
+species: "Crassostrea gigas"
+strain_population_family: "Two hatchery-propagated Pacific oyster lineages evaluated by the USDA-ARS Pacific Shellfish Research Unit: a Midori-derived population and a Miyagi-derived population"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_soft_tissue"
+life_stage: "spat"
+experimental_treatment: "Experimental challenge with OsHV-1 microvariant (USA, Australia, or France strain)"
+control_condition: "Unchallenged control spat from the same two lineages"
+stressor_class: "pathogen_challenge"
+exposure:
+  intensity: "OsHV-1 microvariant challenge; inoculum dose not recorded in the public SRA metadata"
+  duration: "not recorded in the public SRA metadata"
+  timing: "acute experimental challenge"
+phenotype: "immune_responsiveness"
+phenotype_direction: "Infection up-regulated antiviral defense transcripts, including RIG-I-like receptors and the interferon-like pathway, similarly in both lineages; AREE records molecular antiviral responsiveness, not an organism-level survival difference"
+phenotype_units: null
+resilience_classification: "disease_associated"
+sample_size: 42
+biological_replication: "42 RNA-seq libraries: 12 controls (6 Midori, 6 Miyagi) and 30 OsHV-1 microvariant-challenged (15 Midori, 15 Miyagi, split across USA, Australia, and France viral strains at 5 libraries per lineage-strain cell)"
+platform: "Illumina, 151 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 1,564,162,034 read pairs quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06; mapping rates 44.24-61.66% (median 55.93%), well below the 73.9-76.0% of PRJNA516762 but uniform across arms (control 57.0% versus challenged 55.4%, Welch p = 0.30) and across both lineages, so it reflects library preparation rather than viral reads displacing host reads; 5,446 of 25,734 tested genes reach FDR < 0.05 (3,237 challenge-higher, 2,209 challenge-lower); PC1 explains 59.1% of variance and orders challenged above control though six control libraries fall inside the challenged range, and PC2 (16.6%) tracks the Midori/Miyagi split that ~ population + condition blocks on"
+analysis_status: "raw_reanalysis_harmonized"
+provenance:
+  source_links:
+    - "https://doi.org/10.1016/j.fsi.2026.111154"
+    - "https://pubmed.ncbi.nlm.nih.gov/41581675/"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1329250"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA1329250"
+  curator: "AREE contributors"
+  curation_date: "2026-09-26"
+limitations:
+  - "This intake represents the molecular antiviral response to experimental OsHV-1 microvariant challenge, not a measured survival or organism-level disease-resistance difference between the two lineages."
+  - "Challenge dose, exposure duration, and time of sampling after inoculation are not recorded in the public SRA metadata, so exposure intensity and duration are unresolved."
+  - "The challenged and control arms are unequal in size (30 versus 12 libraries), but lineage is balanced within each arm and within every viral strain: 6 Midori and 6 Miyagi controls, and 5 of each lineage for each of the Australia, France, and USA strains. The lineage effect is therefore not confounded with infection status, and AREE blocks on lineage as ~ population + condition."
+  - "The publication contrasts the USA and Australia microvariant strains and reports no marked difference between them; the France-strain libraries are present in the BioProject and are pooled into the challenged arm of the AREE contrast rather than analyzed as a separate strain effect."
+  - "The BioProject carries no author-deposited processed expression matrix, so AREE has no published feature-level effect table to reconcile against."
+  - "Condition, lineage, and viral-strain assignments were reconstructed from NCBI BioSample attribute tags rather than from a supplementary sample table; the source metadata spells the Miyagi lineage 'Myagi', which AREE normalized."
