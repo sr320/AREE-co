@@ -1,0 +1,45 @@
+study_id: CGIG_OA_RNASEQ_PRJNA826964
+doi: null
+accessions:
+  bioproject: "PRJNA826964"
+  sra: "SRP370394"
+citation: "Institute of Oceanology, Chinese Academy of Sciences. The compromised energy management of Pacific oysters (Crassostrea gigas) under ocean acidification conditions. NCBI BioProject PRJNA826964; public 2022. No linked publication identified."
+species: "Crassostrea gigas"
+strain_population_family: "not collected in the public BioSample metadata"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "hepatopancreas"
+life_stage: "not_recorded"
+experimental_treatment: "Laboratory ocean acidification exposure sampled after 7, 28 and 56 days"
+control_condition: "Ambient-seawater controls sampled at the same three time points"
+stressor_class: "ocean_acidification_pH"
+exposure:
+  intensity: "acidified seawater; target pH or pCO2 not recorded in the public SRA or BioSample metadata"
+  duration: "7, 28 and 56 days"
+  timing: "chronic exposure, time-course sampling"
+phenotype: "metabolic_resilience"
+phenotype_direction: "The BioProject title frames acidification as compromising energy management; AREE records the hepatopancreas transcriptional response to acidification, not a measured organism-level energetic or survival phenotype"
+phenotype_units: null
+resilience_classification: "stress_response"
+sample_size: 18
+biological_replication: "18 RNA-seq libraries: 9 ambient controls and 9 acidified, three biological replicates per arm at each of 7, 28 and 56 days"
+platform: "Illumina HiSeq 2500, 150 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA826964"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA826964"
+  curator: "AREE contributors"
+  curation_date: "2026-09-28"
+limitations:
+  - "No publication is linked to the BioProject, and searches of PubMed, Europe PMC full text and Crossref on 2026-09-28 found none, so there are no published methods, results or effect tables to reconcile the reanalysis against."
+  - "The acidification intensity (target pH or pCO2), seawater carbonate chemistry, temperature and oyster size or age are not recorded in the public metadata, so exposure intensity and life stage are unresolved."
+  - "The primary AREE contrast pools all acidified libraries against all controls and blocks on sampling day (~ timepoint + condition); it estimates an acidification effect averaged over 7, 28 and 56 days rather than time-specific or acclimation effects, and each day-by-condition cell has only three libraries."
+  - "Condition, sampling day and replicate were taken from NCBI BioSample treatment and replicate attributes and agree with the library names (C/O = control/acidified, followed by day and replicate)."
+  - "The BioProject carries no author-deposited processed expression matrix."
