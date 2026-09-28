@@ -42,7 +42,7 @@ provenance:
 limitations:
   - "This intake represents the molecular antiviral response to experimental OsHV-1 microvariant challenge, not a measured survival or organism-level disease-resistance difference between the two lineages."
   - "Challenge dose, exposure duration, and time of sampling after inoculation are not recorded in the public SRA metadata, so exposure intensity and duration are unresolved."
-  - "The two lineages are unequally represented across the design only in the viral-strain dimension; the primary AREE contrast pools all challenged libraries against all controls and is balanced across Midori and Miyagi, so the lineage effect is not confounded with infection status."
+  - "The challenged and control arms are unequal in size (30 versus 12 libraries), but lineage is balanced within each arm and within every viral strain: 6 Midori and 6 Miyagi controls, and 5 of each lineage for each of the Australia, France, and USA strains. The lineage effect is therefore not confounded with infection status, and AREE blocks on lineage as ~ population + condition."
   - "The publication contrasts the USA and Australia microvariant strains and reports no marked difference between them; the France-strain libraries are present in the BioProject and are pooled into the challenged arm of the AREE contrast rather than analyzed as a separate strain effect."
   - "The BioProject carries no author-deposited processed expression matrix, so AREE has no published feature-level effect table to reconcile against."
   - "Condition, lineage, and viral-strain assignments were reconstructed from NCBI BioSample attribute tags rather than from a supplementary sample table; the source metadata spells the Miyagi lineage 'Myagi', which AREE normalized."
