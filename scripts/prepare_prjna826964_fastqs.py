@@ -7,6 +7,9 @@ verified against the size and MD5 NCBI publishes (``*_sra_locations.tsv``), and 
 to gzipped FASTQ pairs with ``fastq-dump --stdout | fastp``. The verification and
 conversion steps are shared with ``prepare_prjna1329250_fastqs``; the run manifest keeps
 the ENA URLs and checksums for reference only.
+
+Because it imports those shared steps from ``scripts``, run it from the repository root
+as ``python -m scripts.prepare_prjna826964_fastqs``.
 """
 
 import argparse
