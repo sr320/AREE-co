@@ -3,10 +3,19 @@ import gzip
 
 from aree.raw.fastq import write_design_samplesheet
 from scripts.prepare_prjna826964_evidence import prepare
-from scripts.prepare_prjna826964_fastqs import load_manifest
+from scripts.prepare_prjna826964_fastqs import load_locations, load_manifest
 
 
 MANIFEST = "data/manifests/CGIG_OA_RNASEQ_PRJNA826964_runs.tsv"
+LOCATIONS = "data/manifests/CGIG_OA_RNASEQ_PRJNA826964_sra_locations.tsv"
+
+
+def test_every_run_has_an_sra_location_for_checksum_verification():
+    locations = load_locations(LOCATIONS)
+    assert {row["run_accession"] for row in load_manifest(MANIFEST)} == set(locations)
+    for record in locations.values():
+        assert len(record["sra_md5"]) == 32
+        assert int(record["sra_size"]) > 0
 
 
 def test_run_manifest_is_timepoint_balanced_across_both_arms():
