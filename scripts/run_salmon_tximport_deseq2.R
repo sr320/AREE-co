@@ -1,14 +1,14 @@
 usage <- paste(
   "usage: Rscript run_salmon_tximport_deseq2.R QUANT_DIR DESIGN.csv TX2GENE.tsv OUTPUT_DIR",
   "[--reference=control] [--test=selected] [--replicates=3] [--min-samples=3] [--ma-title=TITLE]",
-  "[--covariate=COLUMN]"
+  "[--covariate=COLUMN] [--collapse-by=COLUMN[+COLUMN...]]"
 )
 args <- commandArgs(trailingOnly = TRUE)
 is_option <- grepl("^--", args)
 positional <- args[!is_option]
 # Defaults reproduce the original PRJNA694496 selected-versus-control analysis.
 options <- list(reference = "control", test = "selected", replicates = "3", min_samples = "3", ma_title = NA,
-                covariate = NA)
+                covariate = NA, collapse_by = NA)
 for (arg in args[is_option]) {
   parts <- regmatches(arg, regexec("^--([a-z-]+)=(.*)$", arg))[[1]]
   key <- if (length(parts) == 3) gsub("-", "_", parts[[2]]) else ""
@@ -27,6 +27,10 @@ replicates <- as.integer(options$replicates)
 min_samples <- as.integer(options$min_samples)
 # Optional blocking factor (e.g. oyster lineage) added to the model as ~ covariate + condition.
 covariate <- if (is.na(options$covariate) || !nzchar(options$covariate)) NA_character_ else options$covariate
+# Libraries that share these design columns are technical replicates of one RNA sample; their
+# counts are summed so that each pool, not each library, is the unit of replication.
+collapse_by <- if (is.na(options$collapse_by) || !nzchar(options$collapse_by)) character() else
+  strsplit(options$collapse_by, "+", fixed = TRUE)[[1]]
 contrast <- paste0(test, "_vs_", reference)
 ma_title <- if (is.na(options$ma_title)) paste(tools::toTitleCase(test), "versus", reference) else options$ma_title
 
@@ -49,7 +53,20 @@ if (!all(required_sample_columns %in% colnames(samples))) {
 if (anyDuplicated(samples$sample)) {
   stop("sample names must be unique")
 }
-condition_counts <- table(samples$condition)
+if (length(collapse_by) > 0) {
+  if (!all(collapse_by %in% colnames(samples))) {
+    stop(sprintf("design sheet has no column(s) %s", paste(setdiff(collapse_by, colnames(samples)), collapse = ", ")))
+  }
+  pool <- do.call(paste, c(unname(as.list(samples[collapse_by])), sep = "_"))
+  model_columns <- intersect(c("condition", options$covariate), colnames(samples))
+  if (any(sapply(model_columns, function(column) any(tapply(samples[[column]], pool, function(x) length(unique(x))) > 1)))) {
+    stop("a collapsed pool spans more than one condition or covariate level")
+  }
+  libraries <- samples
+  libraries$pool <- pool
+}
+pool_samples <- if (length(collapse_by) > 0) libraries[!duplicated(libraries$pool), ] else samples
+condition_counts <- table(pool_samples$condition)
 levels_present <- all(c(reference, test) %in% names(condition_counts))
 group_sizes <- if (levels_present) as.integer(condition_counts[c(reference, test)]) else integer()
 if (!levels_present ||
@@ -80,6 +97,21 @@ txi <- tximport(
   dropInfReps = TRUE
 )
 
+if (length(collapse_by) > 0) {
+  pools <- unique(libraries$pool)
+  members <- lapply(pools, function(p) libraries$sample[libraries$pool == p])
+  txi$counts <- sapply(members, function(m) rowSums(txi$counts[, m, drop = FALSE]))
+  txi$abundance <- sapply(members, function(m) rowMeans(txi$abundance[, m, drop = FALSE]))
+  txi$length <- sapply(members, function(m) rowMeans(txi$length[, m, drop = FALSE]))
+  colnames(txi$counts) <- colnames(txi$abundance) <- colnames(txi$length) <- pools
+  samples <- libraries[!duplicated(libraries$pool), ]
+  samples$run_accession <- sapply(members, function(m) paste(libraries$run_accession[match(m, libraries$sample)], collapse = ";"))
+  samples$sample <- samples$pool
+  samples$replicate <- samples$pool
+  samples$pool <- NULL
+  write.csv(data.frame(pool = libraries$pool, library = libraries$sample, run_accession = libraries$run_accession),
+            file.path(output_dir, "collapsed_pools.csv"), row.names = FALSE)
+}
 samples$condition <- factor(samples$condition, levels = c(reference, test))
 rownames(samples) <- samples$sample
 model <- ~ condition

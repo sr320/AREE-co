@@ -57,8 +57,10 @@ done
 
 python "$SCRIPT_DIR/summarize_salmon_qc.py" --quant-dir "$QUANT_DIR" \
   --design-sheet "$DESIGN_SHEET" --output "$QUANT_DIR/salmon_qc_summary.tsv"
-# Nine libraries per arm, three at each of 7, 28 and 56 days. Exposure duration is balanced
-# across arms, so timepoint is blocked out as ~ timepoint + condition.
+# Nine libraries per arm, three at each of 7, 28 and 56 days, but the three libraries in each
+# day-by-condition cell share one pooled RNA sample: their allele frequencies agree to within
+# sequencing noise while every cell differs from every other. Each cell is therefore collapsed
+# to one pool, leaving three pools per arm, and timepoint is blocked out as ~ timepoint + condition.
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$RESULTS_DIR" \
-  --test=acidified --replicates=9 --covariate=timepoint \
+  --test=acidified --replicates=3 --covariate=timepoint --collapse-by=condition+timepoint \
   "--ma-title=Ocean acidification versus ambient control"
