@@ -37,7 +37,7 @@ def register_study(path: str):
             raise
 
 
-EVIDENCE_HELP = "Harmonized evidence TSV (default: synthetic demo table)."
+EVIDENCE_HELP = "Harmonized evidence TSV, or a directory of per-study TSVs (default: synthetic demo table)."
 
 
 @app.command("harmonize")
@@ -45,7 +45,9 @@ def harmonize(
     study: str = typer.Option(...),
     input: str = typer.Option(...),
     output: str = typer.Option(
-        None, "--output", help="Evidence TSV to update. Required for studies that are not simulated demos."
+        None, "--output",
+        help="Evidence TSV to update, or a directory that gets one STUDY_ID.tsv per study. "
+        "Required for studies that are not simulated demos.",
     ),
     mapping: str = typer.Option(None, "--mapping"),
 ):

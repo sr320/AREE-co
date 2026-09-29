@@ -110,6 +110,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--analysis-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--prior-evidence", type=Path, default=Path("data/harmonized/evidence.tsv"))
+    parser.add_argument("--prior-evidence", type=Path, default=Path("data/harmonized/CGIG_HEAT_RNASEQ_PRJNA516762.tsv"))
     args = parser.parse_args()
     summarize(args.analysis_root, args.output, args.prior_evidence)

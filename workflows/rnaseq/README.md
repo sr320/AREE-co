@@ -49,7 +49,7 @@ nextflow run workflows/rnaseq -profile micromamba \
 aree harmonize --study CGIG_HEAT_RNASEQ_PRJNA516762 \
   --input results/rnaseq/CGIG_HEAT_RNASEQ_PRJNA516762/evidence/CGIG_HEAT_RNASEQ_PRJNA516762_rnaseq.tsv \
   --mapping results/rnaseq/CGIG_HEAT_RNASEQ_PRJNA516762/evidence/CGIG_HEAT_RNASEQ_PRJNA516762_mapping.tsv \
-  --output data/harmonized/evidence.tsv
+  --output data/harmonized
 ```
 
 The per-study shell wrappers in `scripts/run_prjna*_salmon.sh` record how the committed reanalyses were run;

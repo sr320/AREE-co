@@ -2,7 +2,7 @@ from collections import Counter
 from pathlib import Path
 
 from aree.groups import column_groups, is_missing, present
-from aree.io import read_tsv
+from aree.io import read_evidence, read_tsv
 from aree.meta_analysis.random_effects import poolable
 from aree.paths import root_path
 from aree.prioritize.scoring import score_table
@@ -72,7 +72,7 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
     output_dir = Path(output_dir) if output_dir else root_path("reports", "evidence_cards")
     output_dir.mkdir(parents=True, exist_ok=True)
-    evidence = read_tsv(evidence_path)
+    evidence = read_evidence(evidence_path)
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
     scores = read_tsv(scores_path) if scores_path else score_table(evidence)

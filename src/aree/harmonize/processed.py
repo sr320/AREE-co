@@ -68,12 +68,26 @@ def _preserve_generation_date(new_table, previous):
     return new_table
 
 
+def _study_output_path(output_path, study_id):
+    """Resolve --output: a directory (existing, or a path without a suffix) gets one ``<study_id>.tsv`` per study.
+
+    Real evidence is kept one file per study so no single file outgrows GitHub's size limits;
+    readers concatenate the directory (see ``aree.io.read_evidence``).
+    """
+    if output_path is None:
+        return root_path("data", "demo", "harmonized_evidence.tsv")
+    output_path = Path(output_path)
+    if output_path.is_dir() or not output_path.suffix:
+        return output_path / "{}.tsv".format(study_id)
+    return output_path
+
+
 def harmonize_processed(study_id, input_path, output_path=None, mapping_path=None):
     study = load_study(study_id)
     if output_path is None and not is_simulated(study):
         raise ValueError(
             "{} is not a simulated demo study; pass an explicit output path "
-            "(e.g. data/harmonized/evidence.tsv) so real evidence stays out of the demo table".format(study_id)
+            "(e.g. data/harmonized) so real evidence stays out of the demo table".format(study_id)
         )
     table = read_tsv(input_path)
     missing = [column for column in REQUIRED_PROCESSED_COLUMNS if column not in table.columns]
@@ -126,11 +140,13 @@ def harmonize_processed(study_id, input_path, output_path=None, mapping_path=Non
         }
         records.append(record)
     validate_evidence_records(records)
-    output_path = Path(output_path) if output_path else root_path("data", "demo", "harmonized_evidence.tsv")
+    output_path = _study_output_path(output_path, study_id)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     new_table = pd.DataFrame(records)
     if output_path.exists() and output_path.stat().st_size > 0:
         existing = read_tsv(output_path)
+        if set(existing.columns) == set(new_table.columns):
+            new_table = new_table[list(existing.columns)]
         new_table = _preserve_generation_date(new_table, existing[existing["study_id"] == study_id])
         existing = existing[existing["study_id"] != study_id]
         new_table = pd.concat([existing, new_table], ignore_index=True)

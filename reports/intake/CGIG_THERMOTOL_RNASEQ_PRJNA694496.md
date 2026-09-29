@@ -139,7 +139,7 @@ The complete analysis report, QC tables, figures, annotated gene results, and
 sensitivity comparison are under `reports/analysis/PRJNA694496/`.
 
 All 19,816 tested effects and standard errors are now present in
-`data/harmonized/evidence.tsv`, with exact GeneID mappings to
+`data/harmonized/CGIG_THERMOTOL_RNASEQ_PRJNA694496.tsv`, with exact GeneID mappings to
 `GCF_963853765.1-RS_2024_06`. Local RefSeq annotation and gene-biotype
 over-representation results accompany the analysis report. Version-matched
 g:Profiler analysis mapped every direction-specific RefSeq symbol and found 35

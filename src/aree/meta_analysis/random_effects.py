@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from aree.groups import column_groups, is_missing
-from aree.io import read_tsv
+from aree.io import read_evidence
 from aree.paths import root_path
 
 
@@ -112,7 +112,7 @@ def meta_analysis_table(evidence):
 
 def run_meta_analysis(phenotype=None, feature_type=None, evidence_path=None, output_path=None):
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
-    evidence = read_tsv(evidence_path)
+    evidence = read_evidence(evidence_path)
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
     if feature_type:
