@@ -1,0 +1,51 @@
+study_id: CGIG_HAB_RNASEQ_PRJEB18614
+doi: "10.1038/s41598-017-03797-4"
+accessions:
+  bioproject: "PRJEB18614"
+  arrayexpress: "E-MTAB-5345"
+  pmcid: "PMC5471176"
+  pmid: "28615697"
+citation: "Payton L, Perrigault M, Hoede C, Massabuau JC, Sow M, Huvet A, Boullot F, Fabioux C, Hegaret H, Tran D. Remodeling of the cycling transcriptome of the oyster Crassostrea gigas by the harmful algae Alexandrium minutum. Sci Rep. 2017;7:3480."
+species: "Crassostrea gigas"
+strain_population_family: "Diploid oysters from the Bay of Arcachon, France (72.8 mm shell length, 38.5 g total fresh weight); genetic background not reported"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "adult"
+experimental_treatment: "Continuous feeding on the paralytic shellfish toxin-producing dinoflagellate Alexandrium minutum (strain AM89BM) at about 400 cells/mL, mimicking a bloom"
+control_condition: "Continuous feeding on the non-toxic dinoflagellate Heterocapsa triquetra, sampled at the same times"
+stressor_class: "harmful_algal_bloom_exposure"
+exposure:
+  intensity: "about 400 A. minutum cells/mL; gills accumulated 95.8 +/- 13.5 ng/g STX-equivalent paralytic shellfish toxins, and control gills none (ELISA)"
+  duration: "sampled every 4 h over 52 h of exposure, after 6 days of pre-exposure to H. triquetra"
+  timing: "acute, time-course sampling across three light:dark cycles (L:D 9:15, 15 C)"
+phenotype: "metabolic_resilience"
+phenotype_direction: "A. minutum exposure is unfavorable. The publication reports remodelling of the gill cycling transcriptome (loss of oscillations, de novo oscillating transcripts, shortened periods) and toxin accumulation, not survival. AREE records the time-averaged gill transcriptional response to the toxic diet."
+phenotype_units: null
+resilience_classification: "stress_response"
+sample_size: 26
+biological_replication: "26 RNA-seq libraries: one pool of gill RNA from 6 oysters for each of 13 sampling times in each diet. Both diets were sampled at the same 13 times, giving 13 time-matched pairs. There is no replication within a diet-by-time cell. Each diet used three tanks."
+platform: "Illumina HiSeq 2500, 100 bp paired-end, stranded TruSeq mRNA"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://doi.org/10.1038/s41598-017-03797-4"
+    - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5471176/"
+    - "https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-5345"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJEB18614"
+  curator: "AREE contributors"
+  curation_date: "2026-09-29"
+limitations:
+  - "Each library was sequenced on two lanes; the lanes are technical duplicates of one library, not replicates. Only the lower-numbered lane of each pair is used (26 of the 52 deposited runs, 136.8 GB instead of about 274 GB). The unused run is named in each manifest row."
+  - "The primary contrast, ~ timepoint + condition, blocks on sampling time and treats the 13 time-matched pools per diet as replicates, as the publication did. The publication's central finding is that A. minutum remodels the daily cycling of gill transcripts, so a diet effect averaged over time will miss, or dilute, effects confined to part of the cycle."
+  - "Diet is partly confounded with sequencing pool. The libraries were multiplexed into four pools, each on its own lane pair of one flowcell. Pool L003-L004 holds 6 A. minutum libraries and no controls, and pool L005-L006 holds 6 controls and 1 A. minutum library; pools L001-L002 and L007-L008 carry both diets. A sensitivity model with sequencing_pool as a covariate should accompany the primary result."
+  - "Each diet used three tanks, but the publication does not say how the 6 oysters in each pool were drawn from them, so tank effects cannot be modelled."
+  - "Timepoint labels are Day and Zeitgeber time rounded down: d1_zt04 is Day 1 ZT 4.5 and d3_zt04 is Day 3 ZT 4.5, where ZT 0 is lights on. The methods list the same 13 times as the ArrayExpress SDRF."
+  - "Condition, time and lane come from the ArrayExpress E-MTAB-5345 SDRF (feeding condition, time and assay name), and every ENA sample alias matches its SDRF source name."
+  - "The publication aligned reads with STAR to the Ensembl Metazoa C. gigas genome and mitochondrial genome and tested diet with edgeR across the 13 times, reporting 740 differentially expressed transcripts at FDR < 0.01 (89.5% higher under A. minutum). The transcript list is not in the supplement, whose only table lists the 30 most significant cycling transcripts per class, so only the count and direction balance can be compared."
