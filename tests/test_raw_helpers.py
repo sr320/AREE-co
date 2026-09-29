@@ -1,3 +1,4 @@
+import csv
 import gzip
 import hashlib
 import threading
@@ -6,7 +7,10 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from aree.raw.fastq import download, download_once, load_run_manifest
+from aree.raw.fastq import (
+    download, download_once, download_runs, load_run_manifest, run_mates, total_fastq_bytes,
+    write_nfcore_samplesheet,
+)
 from aree.raw.gff import gene_annotations, parse_attributes
 
 
@@ -111,3 +115,29 @@ def test_gff_attributes_and_gene_annotations(tmp_path):
     assert sorted(annotations) == ["NCBI:GeneID:11", "NCBI:GeneID:12"]
     assert annotations["NCBI:GeneID:11"]["gene_symbol"] == "hsp70"
     assert annotations["NCBI:GeneID:12"]["gene_symbol"] == "LOC12"
+
+
+def test_single_end_runs_download_one_file_and_leave_fastq_2_empty(server, tmp_path):
+    url, payload, digest = server
+    row = {
+        "run_accession": "run", "condition": "control", "replicate": "1", "layout": "single",
+        "fastq_1": url, "fastq_1_bytes": str(len(payload)), "fastq_1_md5": digest,
+        "fastq_2": "", "fastq_2_bytes": "", "fastq_2_md5": "",
+    }
+    assert run_mates(row) == ("1",)
+    assert total_fastq_bytes([row]) == len(payload)
+    download_runs([row], tmp_path / "fastq")
+    assert sorted(path.name for path in (tmp_path / "fastq").iterdir()) == ["run_1.fastq.gz"]
+    sheet = tmp_path / "samplesheet.csv"
+    write_nfcore_samplesheet([row], tmp_path / "fastq", sheet)
+    with sheet.open(newline="") as handle:
+        written = next(csv.DictReader(handle))
+    assert written["fastq_1"].endswith("run_1.fastq.gz")
+    assert written["fastq_2"] == ""
+
+
+def test_paired_end_is_the_default_and_unknown_layouts_are_rejected():
+    assert run_mates({"run_accession": "run"}) == ("1", "2")
+    assert run_mates({"run_accession": "run", "layout": "paired"}) == ("1", "2")
+    with pytest.raises(ValueError, match="Unknown library layout"):
+        run_mates({"run_accession": "run", "layout": "SINGLE"})
