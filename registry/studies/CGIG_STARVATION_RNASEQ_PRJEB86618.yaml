@@ -31,9 +31,9 @@ platform: "Illumina NextSeq 550, 75 bp single-end (76 bp as deposited)"
 data_availability:
   raw: true
   processed: true
-  status: "public_raw_and_processed"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 318,481,607 single-end reads quantified with Salmon 2.3.4 (sequence-bias correction; GC-bias correction is not fitted for single-end reads) against GCF_963853765.1/RS_2024_06; mapping rates 65.35-69.05% (median 67.26%), below the publication's 82.3% STAR genome alignment as expected for transcriptome-only quantification, and about two points lower in starved than fed pools (66.2% versus 68.2%, Welch p = 0.0003, with decoy-genome rates 9.8% versus 8.0%); 11,930 of 25,253 tested genes reach FDR < 0.05 (5,941 starved-higher, 5,989 starved-lower); PC1 (49.1%) and PC2 (39.8%) separate the four diet-by-family cells; within-cell BCV is 9.8%, below the 17-38% of the other AREE oyster studies, which fits pools of 10 full sibs. The pools are independent: expressed-SNP allele frequencies at 477 sites differ within cells by 0.098 against 0.042 simulated for one RNA resequenced, and no library shows single-animal genotype peaks"
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1016/j.isci.2025.114333"
@@ -53,3 +53,6 @@ limitations:
   - "Condition, family, time and replicate come from the ENA sample aliases and titles (sam_P_<family>_<3 fed | 5 starved>_<hours>_<replicate>), and the two sources agree for every library."
   - "The publication aligned reads with STAR to the Penaloza et al. 2021 assembly and analysed the 0 h diet contrast with WGCNA, treating the families as replicates, not with a per-gene differential expression test. Supplementary Table S5 lists the 13,238 genes in the three diet-associated modules (6,307 in the fed-associated turquoise module; 3,603 blue and 3,328 brown starved-associated), with module membership scores and, for 9,540 of them, an NCBI GeneID. It supports a direction-level comparison but gives no effect sizes or per-gene significance."
   - "The DECICOMP 30 C fed arm (PRJEB86646) shares the same families, design and fed controls, but the publication does not use it and it is outside this record."
+  - "Against publication Supplementary Table S5, 8,609 genes of the diet-associated WGCNA modules have a GeneID tested here. 98.3% of fed-module genes are lower and 97.5% of starved-module genes are higher in starved pools (99.0% among genes with |module membership| > 0.8), and only 37 are significant in the opposite direction."
+  - "Nearly half the tested genes are significant because the design has low within-cell variance (pools of 10 full sibs, BCV 9.8%) and 16 days of starvation is a large perturbation. The replicate genotype check rules out resequenced RNA. Pooling still removes individual variation, so the error model describes pool-to-pool variation, not animal-to-animal variation."
+  - "Starved pools map about two points less to the transcriptome and more to the genome decoy than fed pools. The shift is small beside the expression effects but systematic, and it may reflect more unspliced or intronic RNA under starvation."

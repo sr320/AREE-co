@@ -30,7 +30,6 @@ from pathlib import Path
 import numpy as np
 
 
-READ_LENGTH_CIGAR = "150M"
 MAX_MISMATCHES = 3
 
 
@@ -85,7 +84,8 @@ def pileup(sam, targets_path, transcripts_path, output):
         transcript = fields[2]
         # Salmon reports every alignment as a full-length match, so indels and clipped ends only
         # show up as mismatches; reads with more than a few are dropped rather than trusted.
-        if transcript not in counts or fields[5] != READ_LENGTH_CIGAR or int(fields[1]) & 0x904:
+        # Only full-length matches ("<read length>M") are kept, whatever the read length.
+        if transcript not in counts or fields[5] != "{}M".format(len(fields[9])) or int(fields[1]) & 0x904:
             continue
         if "NH:i:1\t" not in fields[11]:
             continue
