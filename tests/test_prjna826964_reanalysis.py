@@ -64,3 +64,4 @@ def test_oa_reanalysis_exports_acidification_evidence(tmp_path):
     assert processed_rows[0]["sample_comparison"] == "ocean_acidification_vs_ambient_control"
     assert processed_rows[0]["molecular_direction"] == "down"
     assert "ocean_acidification_response" in processed_rows[0]["quality_flags"]
+    assert "possible_genetic_background_confound" in processed_rows[0]["quality_flags"]
