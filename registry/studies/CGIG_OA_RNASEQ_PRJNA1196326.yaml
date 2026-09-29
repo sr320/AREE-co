@@ -1,0 +1,46 @@
+study_id: CGIG_OA_RNASEQ_PRJNA1196326
+doi: null
+accessions:
+  bioproject: "PRJNA1196326"
+  sra: "SRP550480"
+citation: "Institute of Oceanology, Chinese Academy of Sciences. Transcriptional acclimation following transgenerational exposure of oysters to ocean acidification. NCBI BioProject PRJNA1196326; public 2024. No linked publication identified."
+species: "Crassostrea gigas"
+strain_population_family: "Oysters from Penglai, Yantai, Shandong, China; broodstock origin, family structure and whether both parental groups came from one stock are not recorded"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_larva"
+life_stage: "eyed_larva"
+experimental_treatment: "Eyed larvae whose parents were held under elevated pCO2 (acidified, pH 7.4); BioSample isolate \"acidification group\", sample names S74_1-3"
+control_condition: "Eyed larvae whose parents were held at ambient pH 8.1; BioSample isolate \"wild type group\", sample names S81_1-3"
+stressor_class: "ocean_acidification_pH"
+exposure:
+  intensity: "parental exposure to elevated pCO2 at pH 7.4 against ambient pH 8.1 (BioProject description); pCO2, carbonate chemistry and temperature are not recorded"
+  duration: "parental exposure duration not recorded; larvae collected 2024-09-24"
+  timing: "parental (transgenerational) exposure; whether the larvae themselves were reared at ambient or acidified pH is not recorded"
+phenotype: "acidification_tolerance"
+phenotype_direction: "The BioProject frames the study as transcriptional acclimation of offspring after parental acidification exposure; no larval performance or survival phenotype is deposited, so AREE records the larval transcriptional response to parental acidification, not a measured tolerance phenotype"
+phenotype_units: null
+resilience_classification: "environmental_exposure"
+sample_size: 6
+biological_replication: "6 RNA-seq libraries of eyed larvae, 3 from the acidified-parent group and 3 from the ambient-parent group. Each library is presumably a pool of many larvae; the public metadata do not say whether the three replicates are separate culture tanks, separate crosses or subsamples of one culture."
+platform: "Illumina NovaSeq 6000, 150 bp paired-end, stranded (dUTP) oligo-dT libraries"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1196326"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA1196326"
+  curator: "AREE contributors"
+  curation_date: "2026-09-29"
+limitations:
+  - "No publication is linked to the BioProject, and searches of PubMed, Europe PMC (including the accession) and Crossref on 2026-09-29 found none, so there are no published methods, results or effect tables to reconcile a reanalysis against. The BioProject title matches Goncalves et al. 2016 (Mol Ecol, doi:10.1111/mec.13808) except for the word \"Rapid\", but that paper studied Saccostrea glomerata and is not this dataset."
+  - "The contrast compares offspring of two parental groups, so parental treatment is confounded with parentage: the acidified and ambient larvae necessarily have different parents. Unless both parental groups were drawn at random from one broodstock, genetic background can differ between arms, as it did in the sister IOCAS study PRJNA826964. The reanalysis should run the expressed-SNP check (scripts/check_replicate_genotypes.py) to measure between-arm genetic distance and to test whether the three replicates per arm are independent."
+  - "Whether the larvae were reared at ambient pH or at their parents' pH is not recorded, so the contrast cannot be separated into transgenerational and within-generation effects. It is recorded as the effect of parental acidification exposure on eyed-larval gene expression."
+  - "Parental exposure duration, pCO2, carbonate chemistry, temperature, larval age in days and rearing density are not in the public metadata."
+  - "Condition and replicate come from the NCBI BioSample isolate attributes (\"acidification group 1-3\" for S74, \"wild type group 1-3\" for S81). They agree with the pH in the sample-name prefixes (S74 = pH 7.4, S81 = pH 8.1), and every library is paired-end with ENA FASTQ MD5s recorded in the manifest."
+  - "With three libraries per arm, the contrast has four residual degrees of freedom, fewer if the replicates share a culture."

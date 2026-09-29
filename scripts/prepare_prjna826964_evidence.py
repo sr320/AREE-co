@@ -7,7 +7,12 @@ from aree.raw.deseq2_evidence import export_deseq2_evidence
 
 
 SAMPLE_COMPARISON = "ocean_acidification_vs_ambient_control"
-QUALITY_FLAGS = ["raw_reanalysis", "ocean_acidification_response", "timepoint_blocked_contrast"]
+# Each day-by-condition cell is one pooled RNA sample, and the acidified pools are genetically
+# distinct from the controls, so part of the contrast may be genetic background (see the registry).
+QUALITY_FLAGS = [
+    "raw_reanalysis", "ocean_acidification_response", "timepoint_blocked_contrast",
+    "pooled_rna_samples", "possible_genetic_background_confound",
+]
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"
 
 
