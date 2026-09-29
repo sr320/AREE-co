@@ -1,6 +1,6 @@
 args <- commandArgs(trailingOnly = TRUE)
-if (length(args) != 4) {
-  stop("usage: Rscript run_deseq2_leave_one_out.R DDS.rds EXCLUDED_SAMPLE FULL_RESULTS.tsv OUTPUT_DIR")
+if (!(length(args) %in% c(4, 5))) {
+  stop("usage: Rscript run_deseq2_leave_one_out.R DDS.rds EXCLUDED_SAMPLE FULL_RESULTS.tsv OUTPUT_DIR [TEST_LEVEL]")
 }
 
 suppressPackageStartupMessages(library(DESeq2))
@@ -9,6 +9,8 @@ dds_path <- args[[1]]
 excluded_sample <- args[[2]]
 full_results_path <- args[[3]]
 output_dir <- args[[4]]
+# The treated condition level; the default reproduces the PRJNA694496 selected-versus-control run.
+test_level <- if (length(args) == 5) args[[5]] else "selected"
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
 dds <- readRDS(dds_path)
@@ -26,7 +28,7 @@ if (length(condition_counts) != 2 || any(condition_counts < 2)) {
 dds_sensitivity <- DESeq(dds_sensitivity)
 result <- results(
   dds_sensitivity,
-  contrast = c("condition", "selected", "control"),
+  contrast = c("condition", test_level, "control"),
   alpha = 0.05
 )
 result_table <- data.frame(
@@ -74,7 +76,7 @@ summary_table <- data.frame(
     "full_significant_same_direction", "full_significant_retained_at_fdr_0.05"
   ),
   value = c(
-    excluded_sample, condition_counts[["control"]], condition_counts[["selected"]],
+    excluded_sample, condition_counts[["control"]], condition_counts[[test_level]],
     nrow(comparison),
     cor(comparison$log2FoldChange_full[finite_effects],
         comparison$log2FoldChange_leave_one_out[finite_effects]),

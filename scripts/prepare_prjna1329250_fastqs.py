@@ -93,15 +93,11 @@ def check_free_space(rows, sra_dir, output_dir, keep_sra):
             if path.exists()
         )
     free = shutil.disk_usage(output_dir).free
-
-    def gb(value):
-        return value / 1e9
-
     print("{} runs to convert, needing ~{:.0f} GB net; {:.0f} GB free".format(
-        len(pending), gb(needed), gb(free)))
+        len(pending), needed / 1e9, free / 1e9))
     if needed > free * 0.9:
         return "not enough room: need ~{:.0f} GB, have {:.0f} GB free on {}".format(
-            gb(needed), gb(free), output_dir)
+            needed / 1e9, free / 1e9, output_dir)
     return None
 
 
