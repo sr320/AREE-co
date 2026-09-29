@@ -350,11 +350,11 @@ def test_harmonize_to_directory_writes_one_file_per_study(tmp_path):
 
     combined = read_evidence(evidence_dir)
     single = pd.read_csv(harmonize_demo(tmp_path / "evidence.tsv"), sep="\t", float_precision="round_trip")
-    key = ["evidence_id"]
-    pd.testing.assert_frame_equal(
-        combined.sort_values(key).reset_index(drop=True),
-        single[list(combined.columns)].sort_values(key).reset_index(drop=True),
-    )
+    # Compare as written text: an all-empty column's dtype depends on which files were concatenated.
+    def as_text(table):
+        return table.sort_values("evidence_id").to_csv(sep="\t", index=False)
+
+    assert as_text(combined) == as_text(single[list(combined.columns)])
     meta = run_meta_analysis(evidence_path=evidence_dir, output_path=tmp_path / "meta_dir.tsv")
     reference = run_meta_analysis(evidence_path=tmp_path / "evidence.tsv", output_path=tmp_path / "meta_file.tsv")
     assert meta.read_text() == reference.read_text()
