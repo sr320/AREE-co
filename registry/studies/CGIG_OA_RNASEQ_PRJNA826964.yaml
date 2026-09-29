@@ -1,0 +1,48 @@
+study_id: CGIG_OA_RNASEQ_PRJNA826964
+doi: null
+accessions:
+  bioproject: "PRJNA826964"
+  sra: "SRP370394"
+citation: "Institute of Oceanology, Chinese Academy of Sciences. The compromised energy management of Pacific oysters (Crassostrea gigas) under ocean acidification conditions. NCBI BioProject PRJNA826964; public 2022. No linked publication identified."
+species: "Crassostrea gigas"
+strain_population_family: "not collected in the public BioSample metadata"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "hepatopancreas"
+life_stage: "not_recorded"
+experimental_treatment: "Laboratory ocean acidification exposure sampled after 7, 28 and 56 days"
+control_condition: "Ambient-seawater controls sampled at the same three time points"
+stressor_class: "ocean_acidification_pH"
+exposure:
+  intensity: "acidified seawater, probably CO2-driven pH 7.50 (inferred from sister IOCAS studies, unconfirmed); target pH or pCO2 not recorded in the public SRA or BioSample metadata"
+  duration: "7, 28 and 56 days"
+  timing: "chronic exposure, time-course sampling"
+phenotype: "metabolic_resilience"
+phenotype_direction: "The BioProject title frames acidification as compromising energy management; AREE records the hepatopancreas transcriptional response to acidification, not a measured organism-level energetic or survival phenotype"
+phenotype_units: null
+resilience_classification: "stress_response"
+sample_size: 6
+biological_replication: "6 pooled RNA samples, one per arm at each of 7, 28 and 56 days, each sequenced as three libraries (18 libraries); the BioSample records call the libraries biological replicates, but their genotypes show each set of three is one pool of several oysters"
+platform: "Illumina HiSeq 2500, 150 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 435,657,730 read pairs quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06; mapping rates 78.62-81.26% (median 79.79%), equal across arms (control 79.9% versus acidified 79.9%); expressed-SNP allele frequencies at 2,837 sites show the three libraries in each day-by-condition cell are one pooled RNA sample (within-cell mean difference 0.040-0.057 against 0.039 expected from resequencing the same RNA, r = 0.95; between cells 0.078-0.317), so the 18 libraries were collapsed to 6 pools and tested as ~ timepoint + condition; 890 of 24,681 tested genes reach FDR < 0.05 (301 acidified-higher, 589 acidified-lower) against 10,797 when the libraries were treated as replicates; PC1 (35.9%) separates acidified_d56 from the other five pools and PC2 (29.7%) separates the arms"
+analysis_status: "raw_reanalysis_complete_not_harmonized"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA826964"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA826964"
+  curator: "AREE contributors"
+  curation_date: "2026-09-28"
+limitations:
+  - "No publication is linked to the BioProject, and searches of PubMed, Europe PMC full text and Crossref on 2026-09-28 found none, so there are no published methods, results or effect tables to reconcile the reanalysis against."
+  - "The acidification intensity (target pH or pCO2), seawater carbonate chemistry, temperature and oyster size or age are not recorded in the public metadata, so exposure intensity and life stage are unresolved."
+  - "The treatment was probably CO2-driven acidification to pH 7.50. This is inferred, not documented: the same IOCAS group (L. Qiu and colleagues) ran C. gigas CO2 exposures at pH 7.50 sampled from 7 to 56 days (Wang et al. 2021, Ecotoxicol Environ Saf, doi:10.1016/j.ecoenv.2021.112235) and at pH 7.50 for 7 and 60 days (Wang et al. 2020, Sci Total Environ, doi:10.1016/j.scitotenv.2020.140177), and reported hepatopancreas responses to acidification over about two months (Zhang et al. 2021, J Oceanol Limnol, doi:10.1007/s00343-021-0462-x). None of these papers is linked to PRJNA826964, and the closed-access hepatopancreas paper, the most likely companion, has not been checked against it."
+  - "The primary AREE contrast compares the three acidified pools with the three control pools and blocks on sampling day (~ timepoint + condition); it estimates an acidification effect averaged over 7, 28 and 56 days rather than time-specific or acclimation effects, and it has only two residual degrees of freedom."
+  - "The three libraries per day-by-condition cell are technical replicates of one pooled RNA sample, not the independent biological replicates the BioSample attributes state. Expressed-SNP allele frequencies (scripts/check_replicate_genotypes.py, 4M read pairs per library) agree within a cell to within resequencing noise and show no single-animal genotype peaks, and within-cell expression dispersion is 2.7% BCV against 10.8-22.4% in the other AREE oyster studies. Treating the 18 libraries as replicates inflates significance roughly twelvefold, so the libraries are summed into 6 pools (--collapse-by=condition+timepoint)."
+  - "Each pool is a different set of animals, and the acidified pools are genetically further from the controls (mean allele-frequency difference 0.24-0.31) than the control pools are from one another (0.085-0.19), so acidified and control oysters may come from different stocks or families. Several of the strongest effects are 4-6 log2 changes in transposon-derived genes (tigger, HARBI1), the pattern expected from presence-absence variation between genetic backgrounds, so part of the contrast may be genetic rather than an acidification response. For this reason the result is recorded but not harmonized into the evidence base."
+  - "Condition, sampling day and replicate were taken from NCBI BioSample treatment and replicate attributes and agree with the library names (C/O = control/acidified, followed by day and replicate)."
+  - "The BioProject carries no author-deposited processed expression matrix."
