@@ -1,0 +1,58 @@
+study_id: CGIG_STARVATION_RNASEQ_PRJEB86618
+doi: "10.1016/j.isci.2025.114333"
+accessions:
+  bioproject: "PRJEB86618"
+  control_bioproject: "PRJEB86525"
+  umbrella_bioproject: "PRJEB86647"
+  pmcid: "PMC12803857"
+  pmid: "41541659"
+citation: "Duperret L, Valdivieso A, Petton B, Morga B, Faury N, de Lorgeril J, Corporeau C, Degremont L, Allienne JF, Henry S, Turtoi A, Pouzadoux J, Romatif O, Courtay G, Monaco CJ, Toulza E, Lagorce A, Pernet F, Vidal-Dupiol J, Mitta G. Food deprivation enhances disease resistance: Underlying mechanisms in oysters confronted with pacific oyster mortality syndrome. iScience. 2026;29(1):114333."
+species: "Crassostrea gigas"
+strain_population_family: "Two POMS-susceptible full-sib G1 families (F11N, F14R) bred at the Ifremer Bouin hatchery from G0 families whose parents were wild oysters from Dellec, Rade de Brest"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_soft_tissue"
+life_stage: "spat"
+experimental_treatment: "Starved for 16 days at 23 C (DECICOMP nutritional-stress arm, PRJEB86618)"
+control_condition: "Fed phytoplankton ad libitum for 16 days at 23 C (DECICOMP control arm, PRJEB86525)"
+stressor_class: "nutritional_limitation"
+exposure:
+  intensity: "complete food deprivation versus ad libitum phytoplankton; weight gain over 16 days was 15.3% (F14R) and 19.3% (F11N) starved versus 95.7% and 90.2% fed, with lower triacylglycerol reserves"
+  duration: "16 days"
+  timing: "chronic; the AREE contrast uses the 0 h sample taken at the end of acclimation, when OsHV-1 mu-Var donor oysters were added"
+phenotype: "disease_resistance"
+phenotype_direction: "Lower mortality after OsHV-1 mu-Var cohabitation is favorable. Starved spat had lower final mortality than fed spat (F14R 34.8% versus 75.5%; F11N 93.3% versus 100%; log-rank p < 0.05 in both families), and deaths began later (120 h versus 72-96 h post-cohabitation). AREE records the whole-spat transcriptional state produced by starvation before infection, not survival per library."
+phenotype_units: "percent final mortality after OsHV-1 mu-Var cohabitation"
+resilience_classification: "resilience_associated"
+sample_size: 12
+biological_replication: "12 RNA-seq libraries used for the contrast, all sampled at 0 h post-cohabitation: 6 fed and 6 starved, three per diet in each of the two families. Each library pools the soft tissue of 10 live spat taken from one tank. The experiment used three tanks per diet, and each tank held both families."
+platform: "Illumina NextSeq 550, 75 bp single-end (76 bp as deposited)"
+data_availability:
+  raw: true
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 318,481,607 single-end reads quantified with Salmon 2.3.4 (sequence-bias correction; GC-bias correction is not fitted for single-end reads) against GCF_963853765.1/RS_2024_06; mapping rates 65.35-69.05% (median 67.26%), below the publication's 82.3% STAR genome alignment as expected for transcriptome-only quantification, and about two points lower in starved than fed pools (66.2% versus 68.2%, Welch p = 0.0003, with decoy-genome rates 9.8% versus 8.0%); 11,930 of 25,253 tested genes reach FDR < 0.05 (5,941 starved-higher, 5,989 starved-lower); PC1 (49.1%) and PC2 (39.8%) separate the four diet-by-family cells; within-cell BCV is 9.8%, below the 17-38% of the other AREE oyster studies, which fits pools of 10 full sibs. The pools are independent: expressed-SNP allele frequencies at 477 sites differ within cells by 0.098 against 0.042 simulated for one RNA resequenced, and no library shows single-animal genotype peaks"
+analysis_status: "raw_reanalysis_harmonized"
+provenance:
+  source_links:
+    - "https://doi.org/10.1016/j.isci.2025.114333"
+    - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12803857/"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJEB86618"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJEB86525"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJEB86647"
+  curator: "AREE contributors"
+  curation_date: "2026-09-29"
+limitations:
+  - "The contrast uses only the 0 h libraries. They were sampled when the OsHV-1 mu-Var donor oysters were added, so they capture starvation without infection. The other 71 deposited libraries (3-72 h) follow each diet through infection, when the fed spat carry far more virus. A diet effect pooled across that time course would mix starvation with differential infection progression, so they are not used here."
+  - "Each tank held both families, so the F11N and F14R libraries with the same replicate number probably share a tank. The public metadata do not state that replicate numbers correspond to tanks. The model ~ family + condition treats the six libraries per diet as independent, although only three tanks per diet are independent units, so the error model may be somewhat optimistic."
+  - "The two families differ strongly in POMS susceptibility and in how much starvation protected them, so a single diet effect averaged over both may hide family-specific responses."
+  - "The ENA sample titles call every time point 'hours post-infection', including 0 h. The publication shows the 0 h pools were sampled at the start of cohabitation, before viral DNA load rose."
+  - "The publication reports 84 sequenced libraries and 83 are deposited; the starved F14R 6 h replicate 3 is absent. It also excluded one F11N 48 h replicate 2 library with 21% mapping without naming its diet, and both such libraries are deposited. Neither affects the 0 h contrast."
+  - "The STAR Methods key-resources table swaps the two RNA-seq accessions (PRJEB86618 'for the Fed condition'). The data statement, the ENA study titles and every ENA sample title agree that PRJEB86618 is the starved arm and PRJEB86525 the fed arm, and the manifest follows them."
+  - "Condition, family, time and replicate come from the ENA sample aliases and titles (sam_P_<family>_<3 fed | 5 starved>_<hours>_<replicate>), and the two sources agree for every library."
+  - "The publication aligned reads with STAR to the Penaloza et al. 2021 assembly and analysed the 0 h diet contrast with WGCNA, treating the families as replicates, not with a per-gene differential expression test. Supplementary Table S5 lists the 13,238 genes in the three diet-associated modules (6,307 in the fed-associated turquoise module; 3,603 blue and 3,328 brown starved-associated), with module membership scores and, for 9,540 of them, an NCBI GeneID. It supports a direction-level comparison but gives no effect sizes or per-gene significance."
+  - "The DECICOMP 30 C fed arm (PRJEB86646) shares the same families, design and fed controls, but the publication does not use it and it is outside this record."
+  - "Against publication Supplementary Table S5, 8,609 genes of the diet-associated WGCNA modules have a GeneID tested here. 98.3% of fed-module genes are lower and 97.5% of starved-module genes are higher in starved pools (99.0% among genes with |module membership| > 0.8), and only 37 are significant in the opposite direction."
+  - "Nearly half the tested genes are significant because the design has low within-cell variance (pools of 10 full sibs, BCV 9.8%) and 16 days of starvation is a large perturbation. The replicate genotype check rules out resequenced RNA. Pooling still removes individual variation, so the error model describes pool-to-pool variation, not animal-to-animal variation."
+  - "Starved pools map about two points less to the transcriptome and more to the genome decoy than fed pools. The shift is small beside the expression effects but systematic, and it may reflect more unspliced or intronic RNA under starvation."

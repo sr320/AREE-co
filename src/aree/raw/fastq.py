@@ -41,8 +41,18 @@ def load_run_manifest(path, expected_conditions):
     return rows
 
 
+def run_mates(row):
+    """Mate numbers a manifest run carries: ("1",) for single-end, ("1", "2") for paired-end."""
+    layout = row.get("layout", "paired")
+    if layout == "single":
+        return ("1",)
+    if layout == "paired":
+        return ("1", "2")
+    raise ValueError("Unknown library layout {!r} for {}".format(layout, row.get("run_accession")))
+
+
 def total_fastq_bytes(rows):
-    return sum(int(row[field]) for row in rows for field in ("fastq_1_bytes", "fastq_2_bytes"))
+    return sum(int(row["fastq_{}_bytes".format(mate)]) for row in rows for mate in run_mates(row))
 
 
 def nearest_existing_ancestor(path):
@@ -134,7 +144,7 @@ def fastq_path(output_dir, run_accession, mate):
 
 
 def download_runs(rows, output_dir, workers=1, retries=12, timeout=60):
-    """Download both mates of every manifest run into output_dir, verifying each file."""
+    """Download every mate of every manifest run into output_dir, verifying each file."""
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     jobs = [
         (
@@ -144,7 +154,7 @@ def download_runs(rows, output_dir, workers=1, retries=12, timeout=60):
             row["fastq_{}_md5".format(mate)],
         )
         for row in rows
-        for mate in ("1", "2")
+        for mate in run_mates(row)
     ]
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = [executor.submit(download, *job, retries=retries, timeout=timeout) for job in jobs]
@@ -167,7 +177,11 @@ def write_nfcore_samplesheet(rows, output_dir, path):
                 {
                     "sample": sample_name(row),
                     "fastq_1": str(fastq_path(output_dir, row["run_accession"], "1").resolve()),
-                    "fastq_2": str(fastq_path(output_dir, row["run_accession"], "2").resolve()),
+                    # nf-core marks a single-end sample by leaving fastq_2 empty.
+                    "fastq_2": (
+                        str(fastq_path(output_dir, row["run_accession"], "2").resolve())
+                        if "2" in run_mates(row) else ""
+                    ),
                     "strandedness": "auto",
                 }
             )
