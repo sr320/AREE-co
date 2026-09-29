@@ -1,7 +1,7 @@
 usage <- paste(
   "usage: Rscript run_salmon_tximport_deseq2.R QUANT_DIR DESIGN.csv TX2GENE.tsv OUTPUT_DIR",
   "[--reference=control] [--test=selected] [--replicates=3] [--min-samples=3] [--ma-title=TITLE]",
-  "[--covariate=COLUMN] [--collapse-by=COLUMN[+COLUMN...]]"
+  "[--covariate=COLUMN[+COLUMN...]] [--collapse-by=COLUMN[+COLUMN...]]"
 )
 args <- commandArgs(trailingOnly = TRUE)
 is_option <- grepl("^--", args)
@@ -25,8 +25,10 @@ test <- options$test
 # Exact per-condition replicate count to require; 0 accepts any count of at least two.
 replicates <- as.integer(options$replicates)
 min_samples <- as.integer(options$min_samples)
-# Optional blocking factor (e.g. oyster lineage) added to the model as ~ covariate + condition.
-covariate <- if (is.na(options$covariate) || !nzchar(options$covariate)) NA_character_ else options$covariate
+# Optional blocking factors (e.g. oyster lineage) added to the model as ~ covariate + condition;
+# several are joined with "+" and enter the model in the order given.
+covariates <- if (is.na(options$covariate) || !nzchar(options$covariate)) character() else
+  strsplit(options$covariate, "+", fixed = TRUE)[[1]]
 # Libraries that share these design columns are technical replicates of one RNA sample; their
 # counts are summed so that each pool, not each library, is the unit of replication.
 collapse_by <- if (is.na(options$collapse_by) || !nzchar(options$collapse_by)) character() else
@@ -58,7 +60,7 @@ if (length(collapse_by) > 0) {
     stop(sprintf("design sheet has no column(s) %s", paste(setdiff(collapse_by, colnames(samples)), collapse = ", ")))
   }
   pool <- do.call(paste, c(unname(as.list(samples[collapse_by])), sep = "_"))
-  model_columns <- intersect(c("condition", options$covariate), colnames(samples))
+  model_columns <- intersect(c("condition", covariates), colnames(samples))
   if (any(sapply(model_columns, function(column) any(tapply(samples[[column]], pool, function(x) length(unique(x))) > 1)))) {
     stop("a collapsed pool spans more than one condition or covariate level")
   }
@@ -115,7 +117,7 @@ if (length(collapse_by) > 0) {
 samples$condition <- factor(samples$condition, levels = c(reference, test))
 rownames(samples) <- samples$sample
 model <- ~ condition
-if (!is.na(covariate)) {
+for (covariate in covariates) {
   if (!covariate %in% colnames(samples)) {
     stop(sprintf("design sheet has no column '%s'", covariate))
   }
@@ -123,11 +125,22 @@ if (!is.na(covariate)) {
   if (nlevels(samples[[covariate]]) < 2) {
     stop(sprintf("covariate '%s' needs at least two levels", covariate))
   }
-  # A covariate that never varies within a condition is aliased with it and cannot be fit.
-  if (any(rowSums(table(samples[[covariate]], samples$condition) > 0) < 2)) {
+  # A covariate whose every level sits within one condition is aliased with it and cannot be fit.
+  # Some single-condition levels are allowed (e.g. a sequencing pool holding one arm only): the
+  # condition effect is then estimated from the levels that carry both, and the rank check
+  # below still refuses any combination that leaves it unidentifiable.
+  if (all(rowSums(table(samples[[covariate]], samples$condition) > 0) < 2)) {
     stop(sprintf("covariate '%s' is confounded with condition", covariate))
   }
-  model <- as.formula(paste("~", covariate, "+ condition"))
+}
+if (length(covariates) > 0) {
+  model <- as.formula(paste("~", paste(c(covariates, "condition"), collapse = " + ")))
+  # Covariates that pass the check above one at a time can still be aliased with each other
+  # or, together, with condition; either leaves the model without a unique fit.
+  design_matrix <- model.matrix(model, samples)
+  if (qr(design_matrix)$rank < ncol(design_matrix)) {
+    stop(sprintf("model %s is not full rank", paste(deparse(model), collapse = "")))
+  }
 }
 dds <- DESeqDataSetFromTximport(txi, colData = samples, design = model)
 genes_imported <- nrow(dds)

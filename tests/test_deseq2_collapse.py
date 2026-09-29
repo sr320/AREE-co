@@ -96,3 +96,54 @@ def test_collapse_refuses_a_pool_that_spans_covariate_levels(tmp_path):
                   "--replicates=1", "--covariate=timepoint", "--collapse-by=condition")
     assert result.returncode != 0
     assert "spans more than one condition or covariate level" in result.stderr
+
+
+def _add_design_column(design, name, values):
+    with design.open(newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    for row in rows:
+        row[name] = values(row)
+    with design.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def test_several_covariates_enter_the_model_in_order(tmp_path):
+    quant_dir, design, tx2gene = _write_study(tmp_path)
+    # A batch that crosses both conditions and all days, like a sequencing lane.
+    _add_design_column(design, "batch", lambda row: "lane" + row["replicate"][-1])
+    output_dir = tmp_path / "deseq2"
+    result = _run(quant_dir, design, tx2gene, output_dir, "--replicates=9", "--covariate=timepoint+batch")
+    assert result.returncode == 0, result.stderr
+    assert (output_dir / "design_formula.txt").read_text().strip() == "~timepoint + batch + condition"
+
+
+def test_aliased_covariates_are_refused(tmp_path):
+    quant_dir, design, tx2gene = _write_study(tmp_path)
+    # A renamed copy of timepoint passes the per-covariate check but duplicates it in the model.
+    _add_design_column(design, "day", lambda row: row["timepoint"].upper())
+    result = _run(quant_dir, design, tx2gene, tmp_path / "deseq2", "--replicates=9", "--covariate=timepoint+day")
+    assert result.returncode != 0
+    assert "is not full rank" in result.stderr
+
+
+def test_covariate_with_some_single_condition_levels_is_fitted(tmp_path):
+    quant_dir, design, tx2gene = _write_study(tmp_path)
+    # Like an unbalanced multiplex pool: "a" holds control d7 only, "b" acidified d7 only, and "c"
+    # carries both arms, so the acidification effect is still estimable within "c".
+    def pool(row):
+        if row["timepoint"] == "d7":
+            return "a" if row["condition"] == "control" else "b"
+        return "c"
+    _add_design_column(design, "pool", pool)
+    result = _run(quant_dir, design, tx2gene, tmp_path / "deseq2", "--replicates=9", "--covariate=pool")
+    assert result.returncode == 0, result.stderr
+
+
+def test_covariate_nested_entirely_within_condition_is_refused(tmp_path):
+    quant_dir, design, tx2gene = _write_study(tmp_path)
+    _add_design_column(design, "tank", lambda row: row["condition"] + "_tank")
+    result = _run(quant_dir, design, tx2gene, tmp_path / "deseq2", "--replicates=9", "--covariate=tank")
+    assert result.returncode != 0
+    assert "is confounded with condition" in result.stderr
