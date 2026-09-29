@@ -58,15 +58,15 @@ aree build-demo-report
 For real studies, keep evidence separate from the synthetic demo table:
 
 ```bash
-aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --mapping data/mappings/MAPPING_RELEASE.tsv --output data/harmonized/evidence.tsv
+aree harmonize --study STUDY_ID --input data/processed/STUDY_ID_rnaseq.tsv --mapping data/mappings/MAPPING_RELEASE.tsv --output data/harmonized
 ```
 
-`--output` is required for any study whose `data_availability.status` is not `simulated_*`, so real evidence cannot land in the demo table by accident. Point the downstream commands at the same table; without `--evidence` they read the demo data:
+`--output` is required for any study whose `data_availability.status` is not `simulated_*`, so real evidence cannot land in the demo table by accident. Given a directory, `harmonize` writes one `STUDY_ID.tsv` per study (rerunning a study replaces only its own file), which keeps every committed file well under GitHub's 50 MB warning and 100 MB limit. Point the downstream commands at the same directory; they concatenate every `*.tsv` in it (a single TSV also works). Without `--evidence` they read the demo data:
 
 ```bash
-aree meta-analyze --evidence data/harmonized/evidence.tsv --output results/meta_analysis.tsv
-aree score-candidates --evidence data/harmonized/evidence.tsv --output results/candidate_scores.tsv
-aree build-evidence-cards --evidence data/harmonized/evidence.tsv --scores results/candidate_scores.tsv --output-dir results/evidence_cards
+aree meta-analyze --evidence data/harmonized --output results/meta_analysis.tsv
+aree score-candidates --evidence data/harmonized --output results/candidate_scores.tsv
+aree build-evidence-cards --evidence data/harmonized --scores results/candidate_scores.tsv --output-dir results/evidence_cards
 ```
 
 Scoring recomputes heterogeneity from the evidence it scores, so `meta_analysis.tsv` is for inspection only and a filtered or stale copy cannot change the ranking. Effects are pooled and summarized only within one `effect_size_type`; candidates remain one row per feature so cross-context and multi-omics convergence still count. Use `--phenotype`/`--stressor` on `score-candidates` for a context-specific ranking.

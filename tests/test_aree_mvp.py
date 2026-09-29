@@ -332,6 +332,51 @@ def test_cli_downstream_commands_accept_real_evidence_paths(tmp_path):
     assert list((tmp_path / "cards").glob("*.md"))
 
 
+def test_harmonize_to_directory_writes_one_file_per_study(tmp_path):
+    from aree.io import read_evidence
+
+    evidence_dir = tmp_path / "harmonized"
+    for path in sorted((ROOT / "data/demo/processed").glob("*_*.tsv")):
+        study_id = path.name.rsplit("_", 1)[0]
+        written = harmonize_processed(study_id, path, output_path=evidence_dir)
+        assert written == evidence_dir / "{}.tsv".format(study_id)
+    files = sorted(evidence_dir.glob("*.tsv"))
+    for file in files:
+        assert set(pd.read_csv(file, sep="\t")["study_id"]) == {file.stem}
+    before = [file.read_bytes() for file in files]
+    first = files[0]
+    harmonize_processed(first.stem, ROOT / "data/demo/processed/{}_rnaseq.tsv".format(first.stem), evidence_dir)
+    assert [file.read_bytes() for file in files] == before
+
+    combined = read_evidence(evidence_dir)
+    single = pd.read_csv(harmonize_demo(tmp_path / "evidence.tsv"), sep="\t", float_precision="round_trip")
+    key = ["evidence_id"]
+    pd.testing.assert_frame_equal(
+        combined.sort_values(key).reset_index(drop=True),
+        single[list(combined.columns)].sort_values(key).reset_index(drop=True),
+    )
+    meta = run_meta_analysis(evidence_path=evidence_dir, output_path=tmp_path / "meta_dir.tsv")
+    reference = run_meta_analysis(evidence_path=tmp_path / "evidence.tsv", output_path=tmp_path / "meta_file.tsv")
+    assert meta.read_text() == reference.read_text()
+
+
+def test_read_evidence_rejects_empty_directory(tmp_path):
+    from aree.io import read_evidence
+
+    with pytest.raises(ValueError, match="No evidence TSVs"):
+        read_evidence(tmp_path)
+
+
+def test_committed_harmonized_evidence_is_one_small_file_per_study():
+    # GitHub warns above 50 MB and rejects files above 100 MB, so real evidence is split by study.
+    files = sorted((ROOT / "data/harmonized").glob("*.tsv"))
+    assert files
+    for file in files:
+        assert file.stat().st_size < 50 * 1024 * 1024, file.name
+        assert set(pd.read_csv(file, sep="\t", usecols=["study_id"])["study_id"]) == {file.stem}
+        assert (ROOT / "registry/studies/{}.yaml".format(file.stem)).exists()
+
+
 def _evidence_rows(tmp_path, rows):
     base = {
         "feature_type": "gene",

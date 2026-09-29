@@ -112,6 +112,6 @@ if __name__ == "__main__":
     parser.add_argument("--analysis-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--publication-evidence", type=Path,
-                        default=Path("data/harmonized/evidence.tsv"))
+                        default=Path("data/harmonized/CGIG_HEAT_RNASEQ_PRJNA516762.tsv"))
     args = parser.parse_args()
     summarize(args.analysis_root, args.output, args.publication_evidence)
