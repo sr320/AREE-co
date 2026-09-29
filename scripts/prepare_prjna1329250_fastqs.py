@@ -93,7 +93,10 @@ def check_free_space(rows, sra_dir, output_dir, keep_sra):
             if path.exists()
         )
     free = shutil.disk_usage(output_dir).free
-    gb = lambda value: value / 1e9
+
+    def gb(value):
+        return value / 1e9
+
     print("{} runs to convert, needing ~{:.0f} GB net; {:.0f} GB free".format(
         len(pending), gb(needed), gb(free)))
     if needed > free * 0.9:

@@ -127,7 +127,10 @@ def compare(paths, min_depth=30, min_pooled_minor=0.15, seed=1):
     for name, row in zip(names, af):
         print(f"  {name:20s} {np.histogram(row, bins=10, range=(0, 1))[0]}")
     rng = np.random.default_rng(seed)
-    group = lambda name: name.rsplit("_", 1)[0]
+
+    def group(name):
+        return name.rsplit("_", 1)[0]
+
     summary = {"within": [], "between": []}
     for i, j in itertools.combinations(range(len(names)), 2):
         shared = (af[i] * dp[i] + af[j] * dp[j]) / (dp[i] + dp[j])
