@@ -24,15 +24,15 @@ phenotype: "metabolic_resilience"
 phenotype_direction: "A. minutum exposure is unfavorable. The publication reports remodelling of the gill cycling transcriptome (loss of oscillations, de novo oscillating transcripts, shortened periods) and toxin accumulation, not survival. AREE records the time-averaged gill transcriptional response to the toxic diet."
 phenotype_units: null
 resilience_classification: "stress_response"
-sample_size: 26
+sample_size: 24
 biological_replication: "26 RNA-seq libraries: one pool of gill RNA from 6 oysters for each of 13 sampling times in each diet. Both diets were sampled at the same 13 times, giving 13 time-matched pairs. There is no replication within a diet-by-time cell. Each diet used three tanks."
 platform: "Illumina HiSeq 2500, 100 bp paired-end, stranded TruSeq mRNA"
 data_availability:
   raw: true
   processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 819,493,060 read pairs from 26 one-lane libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 (12 runs from ENA FASTQs, 14 from NCBI .sra archives); mapping rates 68.33-77.33% (median 70.57%). Both day 2 ZT 8.5 pools are contaminated with adductor muscle (myosin, paramyosin, tropomyosin, titin: 23-27% of reads in the top 20 genes against about 6%) and dominated PC1 (79.7%), so the primary contrast drops that time-matched pair (12 versus 12, ~ timepoint + condition): 6,980 of 23,588 tested genes reach FDR < 0.05 (3,690 A. minutum-higher, 3,290 lower), PC1 (35.6%) separates every A. minutum pool from every control, and within-group BCV is 13.7%. With all 26 pools 6,872 genes are significant (log2FC r = 0.982). Blocking also on sequencing pool keeps 99.9% of significant genes in the same direction (log2FC r = 0.794) but only 53.8% significant (4,138 genes), because two of the four pools hold almost one diet each. Mapping is slightly higher in A. minutum pools at matched times (71.3% versus 70.2%, paired p = 0.003)"
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1038/s41598-017-03797-4"
@@ -43,9 +43,13 @@ provenance:
   curation_date: "2026-09-29"
 limitations:
   - "Each library was sequenced on two lanes; the lanes are technical duplicates of one library, not replicates. Only the lower-numbered lane of each pair is used (26 of the 52 deposited runs, 136.8 GB instead of about 274 GB). The unused run is named in each manifest row."
+  - "Reads come from two mirrors. 12 runs are the ENA FASTQs, checked against the manifest MD5s. The other 14, listed with NCBI's size and MD5 in CGIG_HAB_RNASEQ_PRJEB18614_sra_locations.tsv, were converted from full NCBI .sra archives, and their read counts were checked against the manifest. They were moved to NCBI after ENA corrupted multi-connection transfers and then refused requests. Each library comes from one mirror only."
+  - "Both day 2 ZT 8.5 gill pools (control and A. minutum) carry adductor-muscle RNA from dissection and are excluded from the primary contrast; sample_size counts the 24 remaining pools. The all-26 fit is kept as a comparison."
+  - "Salmon detected one ENA library (control d1 ZT 12.5, ERR1758944) as ISF instead of the ISR expected for stranded TruSeq, so its read files are swapped relative to the rest. Library type is inferred per sample, so quantification is unaffected."
   - "The primary contrast, ~ timepoint + condition, blocks on sampling time and treats the 13 time-matched pools per diet as replicates, as the publication did. The publication's central finding is that A. minutum remodels the daily cycling of gill transcripts, so a diet effect averaged over time will miss, or dilute, effects confined to part of the cycle."
-  - "Diet is partly confounded with sequencing pool. The libraries were multiplexed into four pools, each on its own lane pair of one flowcell. Pool L003-L004 holds 6 A. minutum libraries and no controls, and pool L005-L006 holds 6 controls and 1 A. minutum library; pools L001-L002 and L007-L008 carry both diets. A sensitivity model with sequencing_pool as a covariate should accompany the primary result."
+  - "Diet is partly confounded with sequencing pool. The libraries were multiplexed into four pools, each on its own lane pair of one flowcell. Pool L003-L004 holds 6 A. minutum libraries and no controls, and pool L005-L006 holds 6 controls and 1 A. minutum library; pools L001-L002 and L007-L008 carry both diets. The sensitivity model with sequencing_pool as a covariate keeps the direction of 99.9% of the primary significant genes, including all 30 top genes, which also stay significant. Only 53.8% of genes overall stay significant, so the gene count depends on the model, but the direction does not."
   - "Each diet used three tanks, but the publication does not say how the 6 oysters in each pool were drawn from them, so tank effects cannot be modelled."
   - "Timepoint labels are Day and Zeitgeber time rounded down: d1_zt04 is Day 1 ZT 4.5 and d3_zt04 is Day 3 ZT 4.5, where ZT 0 is lights on. The methods list the same 13 times as the ArrayExpress SDRF."
   - "Condition, time and lane come from the ArrayExpress E-MTAB-5345 SDRF (feeding condition, time and assay name), and every ENA sample alias matches its SDRF source name."
-  - "The publication aligned reads with STAR to the Ensembl Metazoa C. gigas genome and mitochondrial genome and tested diet with edgeR across the 13 times, reporting 740 differentially expressed transcripts at FDR < 0.01 (89.5% higher under A. minutum). The transcript list is not in the supplement, whose only table lists the 30 most significant cycling transcripts per class, so only the count and direction balance can be compared."
+  - "The publication aligned reads with STAR to the Ensembl Metazoa C. gigas genome and mitochondrial genome and tested diet with edgeR across the 13 times, reporting 740 differentially expressed transcripts at FDR < 0.01 (89.5% higher under A. minutum). The transcript list is not in the supplement, whose only table lists the 30 most significant cycling transcripts per class, so only the count and direction balance can be compared. AREE finds about 5,070 genes at FDR < 0.01, 59.6% higher under A. minutum. That is far more genes and a weaker up-bias than the published 740 transcripts (89.5% up), with a different aligner, count model and genome assembly."
+  - "The strongest A. minutum-higher genes form a lysosomal and endocytic programme (dipeptidyl peptidase 1, LAMP1, CD63, VPS4B, syntaxin-8) and include detoxification genes: the ABCB1 multidrug efflux pump, arylacetamide deacetylase and mitochondrial alternative oxidase."

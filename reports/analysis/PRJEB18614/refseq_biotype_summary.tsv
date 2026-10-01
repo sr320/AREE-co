@@ -1,0 +1,12 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	3294	0.13152325813535637	25045
+tested	misc_RNA	230	0.009183469754442005	25045
+tested	protein_coding	21502	0.858534637652226	25045
+tested	rRNA	15	0.0005989219405070872	25045
+tested	transcribed_pseudogene	4	0.0001597125174685566	25045
+alexandrium_higher_fdr_lt_0.05	lncRNA	75	0.02032520325203252	3690
+alexandrium_higher_fdr_lt_0.05	misc_RNA	7	0.001897018970189702	3690
+alexandrium_higher_fdr_lt_0.05	protein_coding	3608	0.9777777777777777	3690
+alexandrium_lower_fdr_lt_0.05	lncRNA	238	0.07234042553191489	3290
+alexandrium_lower_fdr_lt_0.05	misc_RNA	22	0.006686930091185411	3290
+alexandrium_lower_fdr_lt_0.05	protein_coding	3030	0.9209726443768997	3290

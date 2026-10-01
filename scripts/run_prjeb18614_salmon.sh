@@ -57,14 +57,24 @@ done
 
 python "$SCRIPT_DIR/summarize_salmon_qc.py" --quant-dir "$QUANT_DIR" \
   --design-sheet "$DESIGN_SHEET" --output "$QUANT_DIR/salmon_qc_summary.tsv"
-# One pool of six oysters per diet at each of 13 sampling times; both diets were sampled at the
-# same times, so timepoint pairs them as ~ timepoint + condition.
-Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$RESULTS_DIR" \
-  --test=alexandrium --replicates=13 --covariate=timepoint \
-  "--ma-title=Alexandrium minutum versus Heterocapsa triquetra (gills, 13 times)"
+# Both day 2 ZT 8.5 gill pools, one per diet, are contaminated with adductor muscle: myosin,
+# paramyosin, tropomyosin, titin and adductor actin take 23-27% of their reads in the top 20
+# genes, against about 6% in every other pool. The pair is dropped from the primary contrast,
+# which keeps the design paired by time (12 versus 12).
+PRIMARY_SHEET="$ANALYSIS_ROOT/deseq2_samplesheet_excl_d2zt08.csv"
+awk -F, 'NR == 1 || $5 != "d2_zt08"' "$DESIGN_SHEET" > "$PRIMARY_SHEET"
+# Both diets were sampled at the same times, so timepoint pairs them as ~ timepoint + condition.
+Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$PRIMARY_SHEET" "$TX2GENE" "$RESULTS_DIR" \
+  --test=alexandrium --replicates=12 --covariate=timepoint \
+  "--ma-title=A. minutum vs control, without the muscle-contaminated d2 ZT8.5 pair"
 # The four multiplex pools are unbalanced by diet (L003-L004 is all A. minutum), so the same
 # contrast is refitted with the pool as a second blocking factor to show what the pool explains.
-Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" \
+Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$PRIMARY_SHEET" "$TX2GENE" \
   "$ANALYSIS_ROOT/deseq2_pool_sensitivity" \
-  --test=alexandrium --replicates=13 --covariate=timepoint+sequencing_pool \
-  "--ma-title=Alexandrium minutum versus control, blocking sequencing pool"
+  --test=alexandrium --replicates=12 --covariate=timepoint+sequencing_pool \
+  "--ma-title=A. minutum vs control, without d2 ZT8.5, blocking sequencing pool"
+# All 26 pools, contaminated pair included, for comparison.
+Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" \
+  "$ANALYSIS_ROOT/deseq2_all26" \
+  --test=alexandrium --replicates=13 --covariate=timepoint \
+  "--ma-title=A. minutum vs control, all 26 pools"
