@@ -3,10 +3,11 @@ import gzip
 
 from aree.raw.fastq import run_mates, write_design_samplesheet
 from scripts.prepare_prjeb18614_evidence import prepare
-from scripts.prepare_prjeb18614_fastqs import load_manifest
+from scripts.prepare_prjeb18614_fastqs import load_locations, load_manifest, split_by_source
 
 
 MANIFEST = "data/manifests/CGIG_HAB_RNASEQ_PRJEB18614_runs.tsv"
+LOCATIONS = "data/manifests/CGIG_HAB_RNASEQ_PRJEB18614_sra_locations.tsv"
 
 
 def test_both_diets_are_sampled_once_at_the_same_thirteen_times():
@@ -66,3 +67,14 @@ def test_alexandrium_reanalysis_exports_flagged_evidence(tmp_path):
     assert processed_rows[0]["molecular_direction"] == "up"
     flags = processed_rows[0]["quality_flags"]
     assert "time_averaged_over_diurnal_cycle" in flags and "sequencing_pool_partly_confounded" in flags
+
+
+def test_every_run_has_exactly_one_source_with_a_checksum():
+    rows = load_manifest(MANIFEST)
+    locations = load_locations(LOCATIONS)
+    ena, ncbi = split_by_source(rows, locations)
+    assert len(ena) + len(ncbi) == 26 and ena and ncbi
+    for row in ncbi:
+        record = locations[row["run_accession"]]
+        assert len(record["sra_md5"]) == 32 and int(record["sra_size"]) > 0
+        assert record["sra_url"].endswith("/{0}/{0}".format(row["run_accession"]))
