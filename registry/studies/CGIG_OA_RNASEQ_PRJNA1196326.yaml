@@ -28,9 +28,9 @@ platform: "Illumina NovaSeq 6000, 150 bp paired-end, stranded (dUTP) oligo-dT li
 data_availability:
   raw: true
   processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 121,029,855 read pairs quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 (stranded ISR); mapping rates 68.92-78.45% (median 75.99%), not different between arms (control mean 73.6% versus parental_acidified 76.3%); expressed-SNP allele frequencies at 4,106 sites show the three libraries in each arm are one culture, either one RNA sample or large pools of larvae from one culture (within-arm mean difference 0.061 against 0.051 expected from resequencing the same RNA, r = 0.90), and that the two parental groups are genetically distinct (between arms 0.235 against 0.056, comparable to the 0.271 between two unrelated DECICOMP full-sib families), so parental treatment is fully confounded with parentage and there is one culture per arm; collapsing to one sample per arm leaves 1 v 1, which DESeq2 cannot test, so the 3 v 3 contrast was run for descriptive fold changes only: 10,466 of 21,179 tested genes reach a nominal FDR < 0.05 (5,005 higher, 5,461 lower in parental_acidified), inflated by pseudoreplication; PC1 (94.2%) separates the arms"
+analysis_status: "raw_reanalysis_complete_not_harmonized"
 provenance:
   source_links:
     - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1196326"
@@ -44,3 +44,4 @@ limitations:
   - "Parental exposure duration, pCO2, carbonate chemistry, temperature, larval age in days and rearing density are not in the public metadata."
   - "Condition and replicate come from the NCBI BioSample isolate attributes (\"acidification group 1-3\" for S74, \"wild type group 1-3\" for S81). They agree with the pH in the sample-name prefixes (S74 = pH 7.4, S81 = pH 8.1), and every library is paired-end with ENA FASTQ MD5s recorded in the manifest."
   - "With three libraries per arm, the contrast has four residual degrees of freedom, fewer if the replicates share a culture."
+  - "Not harmonized into the evidence base (decision 2026-10-02). The AREE expressed-SNP check (scripts/check_replicate_genotypes.py, 4M read pairs per library) found the three libraries per arm no more different than resequencing one culture, and the two arms as genetically distant as unrelated full-sib families, so there is one culture per arm, parentage and parental pH are inseparable, and no valid test of the parental-acidification effect exists. The 3 v 3 DESeq2 results are kept outside the repository as descriptive fold changes only."
