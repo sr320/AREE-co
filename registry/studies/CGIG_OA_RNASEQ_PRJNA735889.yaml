@@ -1,0 +1,46 @@
+study_id: CGIG_OA_RNASEQ_PRJNA735889
+doi: "10.1111/gcb.16101"
+accessions:
+  bioproject: "PRJNA735889"
+citation: "Lutier M, Di Poi C, Gazeau F, Appolis A, Le Luyer J, Pernet F. Revisiting tolerance to ocean acidification: Insights from a new framework combining physiological and molecular tipping points of Pacific oyster. Glob Chang Biol. 2022;28(10):3333-3348."
+species: "Crassostrea gigas"
+strain_population_family: "Standardized Ifremer juveniles (NSI), one hatchery cohort produced in August 2018 at Argenton, Brittany, France"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "juvenile"
+experimental_treatment: "Juveniles held 23 days at mean pHT 6.5-6.8 (tanks 9 and 15 at 6.5, 16 at 6.6, 7 at 6.7, 14 at 6.8), below the 7.3-6.9 tipping-point window the authors report; condition label acidified"
+control_condition: "Juveniles held 23 days at mean pHT 7.4-7.8 (tanks 13 at 7.4, 17 at 7.5, 8 at 7.6, 5 at 7.7, 3 at 7.8), above the tipping-point window; condition label control. No tank was held at ambient pH (about 8.0)."
+stressor_class: "ocean_acidification_pH"
+exposure:
+  intensity: "pHT 6.5-6.8 against pHT 7.4-7.8 (total scale, mean over exposure, BioSample growth_protocol); one tank per pH level"
+  duration: "23 days"
+  timing: "5-month-old juveniles, sampled 2019-02-19"
+phenotype: "acidification_tolerance"
+phenotype_direction: "Lutier et al. report physiological tipping points at pHT 7.3-6.9 that coincide with a major reshuffling of the transcriptome and membrane lipids; AREE records the whole-animal transcriptional response below the tipping window relative to above it, not a measured tolerance phenotype"
+phenotype_units: null
+resilience_classification: "environmental_exposure"
+sample_size: 51
+biological_replication: "51 whole-animal libraries, each one oyster: 26 control (5 per tank at pHT 7.5-7.8, 6 at 7.4 including 13Ebis) and 25 acidified (5 per tank at pHT 6.5-6.8). Each pH level is one tank, so oysters are replicates within tank and the 10 tanks are the replicates of the pH contrast."
+platform: "Illumina NovaSeq 6000, 150 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA735889"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA735889"
+    - "https://doi.org/10.1111/gcb.16101"
+  curator: "AREE contributors"
+  curation_date: "2026-10-02"
+limitations:
+  - "The study is a 15-level pH gradient (pHT 6.5-7.8, 76 libraries). AREE reduces it to a two-group contrast at the authors' tipping-point window: the five tanks inside pHT 7.3-6.9 (tanks 1, 6, 4, 11 and 10; 25 libraries) are excluded and not downloaded. Effect sizes are therefore log2 fold changes between two pH bands, not slopes per pH unit, and they mix the response across five pH levels on each side."
+  - "There is no ambient-pH tank; the reference band (pHT 7.4-7.8) is itself below present-day coastal pH, so the contrast understates the full response to acidification."
+  - "Each pH level is a single tank, so tank and pH are confounded at the level of a single pH; with five tanks per band the band contrast has tank-level replication, but DESeq2 treats the 51 oysters as independent and does not model tank. Tank effects should be checked from the PCA and per-tank residuals."
+  - "Tank 15 is labelled 'pHT 6.5 bis' in BioSample: a second tank at pHT 6.5 alongside tank 9."
+  - "Library 13Ebis (SRR14803132) has a different index from 13E (SRR14803133) and about half its reads; whether it is a separate oyster or a resequencing of 13E is to be settled by the expressed-SNP check (scripts/check_replicate_genotypes.py)."
+  - "Condition, tank and pH come from the NCBI BioSample title, treatment and growth_protocol attributes; every library is paired-end with ENA FASTQ MD5s recorded in the manifest."
