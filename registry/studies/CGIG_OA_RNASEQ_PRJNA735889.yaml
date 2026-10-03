@@ -1,0 +1,47 @@
+study_id: CGIG_OA_RNASEQ_PRJNA735889
+doi: "10.1111/gcb.16101"
+accessions:
+  bioproject: "PRJNA735889"
+citation: "Lutier M, Di Poi C, Gazeau F, Appolis A, Le Luyer J, Pernet F. Revisiting tolerance to ocean acidification: Insights from a new framework combining physiological and molecular tipping points of Pacific oyster. Glob Chang Biol. 2022;28(10):3333-3348."
+species: "Crassostrea gigas"
+strain_population_family: "Standardized Ifremer juveniles (NSI), one hatchery cohort produced in August 2018 at Argenton, Brittany, France"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "juvenile"
+experimental_treatment: "Juveniles held 23 days at mean pHT 6.5-6.8 (tanks 9 and 15 at 6.5, 16 at 6.6, 7 at 6.7, 14 at 6.8), below the 7.3-6.9 tipping-point window the authors report; condition label acidified"
+control_condition: "Juveniles held 23 days at mean pHT 7.4-7.8 (tanks 13 at 7.4, 17 at 7.5, 8 at 7.6, 5 at 7.7, 3 at 7.8), above the tipping-point window; condition label control. No tank was held at ambient pH (about 8.0)."
+stressor_class: "ocean_acidification_pH"
+exposure:
+  intensity: "pHT 6.5-6.8 against pHT 7.4-7.8 (total scale, mean over exposure, BioSample growth_protocol); one tank per pH level"
+  duration: "23 days"
+  timing: "5-month-old juveniles, sampled 2019-02-19"
+phenotype: "acidification_tolerance"
+phenotype_direction: "Lutier et al. report physiological tipping points at pHT 7.3-6.9 that coincide with a major reshuffling of the transcriptome and membrane lipids; AREE records the whole-animal transcriptional response below the tipping window relative to above it, not a measured tolerance phenotype"
+phenotype_units: null
+resilience_classification: "environmental_exposure"
+sample_size: 50
+biological_replication: "50 oysters, one whole-animal library each: 25 control and 25 acidified, 5 per tank. A 51st library, 13Ebis, is a resequencing of oyster 13E and is not analysed. Each pH level is one tank, so oysters are replicates within tank and the 10 tanks are the replicates of the pH contrast."
+platform: "Illumina NovaSeq 6000, 150 bp paired-end"
+data_availability:
+  raw: true
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 1,717,290,624 read pairs from 50 single-oyster libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 (51 runs from NCBI .sra archives; 13Ebis left out as a resequencing of oyster 13E); mapping rates 71.27-83.67% (median 78.58%), not different between bands (control 78.8% versus acidified 78.0%, Welch t = 1.29). Expressed-SNP allele frequencies at 1,073 sites show every library is one diploid animal (35-47% heterozygous sites) and that oysters differ as much within tanks as between them (0.334 versus 0.335), so tanks were stocked from one cohort and pH is not confounded with genetic background; 13E and 13Ebis differ by 0.026 against 0.032 expected for one RNA resequenced. PC1 of the unadjusted model is a male gametogenesis programme (428 genes at r < -0.9 with PC1: axonemal dyneins, calaxin, ropporin, synaptonemal-complex genes, cyclin B3) active in 11 of 25 control and 2 of 25 acidified oysters (Fisher p = 0.008), spread over all five control tanks. The primary model is ~ gametogenesis + condition (25 v 25): 4,725 of 28,811 tested genes reach FDR < 0.05 (2,735 acidified-higher, 1,990 acidified-lower). The unadjusted ~ condition model gives 6,739; 4,058 genes are significant in both and 97.2% of unadjusted significant genes keep their direction (log2FC r = 0.71). Top genes include a monocarboxylate transporter and Kunitz protease inhibitors up and the shell-matrix protein N66, parathyroid-hormone receptors and arginine kinase down."
+analysis_status: "raw_reanalysis_harmonized"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA735889"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA735889"
+    - "https://doi.org/10.1111/gcb.16101"
+  curator: "AREE contributors"
+  curation_date: "2026-10-02"
+limitations:
+  - "The study is a 15-level pH gradient (pHT 6.5-7.8, 76 libraries). AREE reduces it to a two-group contrast at the authors' tipping-point window: the five tanks inside pHT 7.3-6.9 (tanks 1, 6, 4, 11 and 10; 25 libraries) are excluded and not downloaded. Effect sizes are therefore log2 fold changes between two pH bands, not slopes per pH unit, and they mix the response across five pH levels on each side."
+  - "There is no ambient-pH tank; the reference band (pHT 7.4-7.8) is itself below present-day coastal pH, so the contrast understates the full response to acidification."
+  - "Each pH level is a single tank, so tank and pH are confounded at the level of a single pH; with five tanks per band the band contrast has tank-level replication, but DESeq2 treats the 51 oysters as independent and does not model tank. Tank effects should be checked from the PCA and per-tank residuals."
+  - "Tank 15 is labelled 'pHT 6.5 bis' in BioSample: a second tank at pHT 6.5 alongside tank 9."
+  - "Library 13Ebis (SRR14803132) has a different index from 13E (SRR14803133) and about half its reads. The expressed-SNP check shows it is the same oyster (allele-frequency difference 0.026, below the 0.032 expected for one RNA resequenced; the next closest pair differs by 0.198), so it is kept in the manifest but left out of the analysis."
+  - "Male gametogenesis is unbalanced between bands: a spermatogenesis module is active in 11 of 25 control and 2 of 25 acidified oysters (Fisher p = 0.008), spread across all five control tanks, which suggests that low pH delays or suppresses the onset of spermatogenesis in 5-month-old juveniles. The primary model blocks on this call (~ gametogenesis + condition) so the evidence records the direct transcriptional response to pH rather than the difference in how many oysters are maturing; the unadjusted model is kept as a sensitivity analysis. The call is a transcriptional proxy derived from the same data (scripts/score_prjna735889_gametogenesis.py), not a histological sex or maturation call, and with only two active acidified oysters the gametogenesis effect is estimated mostly from the control band."
+  - "Condition, tank and pH come from the NCBI BioSample title, treatment and growth_protocol attributes; every library is paired-end. ENA served the FASTQs at about 80 KB/s on 2026-10-02, so all 51 runs are taken from the NCBI Open Data mirror as .sra archives checked against the size and MD5 NCBI publishes (CGIG_OA_RNASEQ_PRJNA735889_sra_locations.tsv), and each converted FASTQ pair must match the manifest read count."
