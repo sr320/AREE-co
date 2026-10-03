@@ -29,10 +29,10 @@ biological_replication: "12 RNA-seq libraries, all sampled at 0 h post-cohabitat
 platform: "Illumina NextSeq 550, 75 bp single-end (76 bp as deposited)"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 321,328,949 single-end reads quantified with Salmon 2.3.4 (sequence-bias correction; GC-bias correction is not fitted for single-end reads) against GCF_963853765.1/RS_2024_06; mapping rates 64.29-69.05%, about three points lower at 30 C than 23 C (65.5% versus 68.2%, with no overlap between arms), a systematic shift like the two points seen under starvation; 9,024 of 25,355 tested genes reach FDR < 0.05 under ~ family + condition (4,542 higher and 4,482 lower at 30 C); PC1 (60.7%) separates every 30 C pool from every 23 C pool and PC2 (31.1%) separates the families. The pools are independent and temperature is not confounded with genotype: expressed-SNP allele frequencies differ by 0.100 between pools of one family at the same temperature, against 0.040 simulated for one RNA resequenced, and by 0.099 between pools of one family at different temperatures (0.353 between families). Small heat shock proteins are among the strongest 30 C-higher genes (all 7 significant heat shock protein genes are higher), and asparagine synthetase and glycogen-branching enzyme fall. Fold changes are uncorrelated with the starvation contrast that shares these controls (r = -0.05 over 24,836 genes)."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1016/j.scitotenv.2025.180026"
@@ -47,3 +47,5 @@ limitations:
   - "Each tank held both families, so the F11N and F14R libraries with the same replicate number probably share a tank. The model ~ family + condition treats the six libraries per temperature as independent, although only three tanks per temperature are independent units."
   - "The 30 C arm and the 23 C controls were held in separate tanks of one experiment at the Argenton station, so tank is nested in temperature."
   - "Condition, family, time and replicate come from the ENA sample aliases and titles (sam_P_<family>_<3 fed 23 C | 4 fed 30 C>_<hours>_<replicate>), and the two sources agree for every library."
+  - "The publication reports enhanced baseline antiviral immunity at 30 C. At 0 h this reanalysis finds the opposite for several classic antiviral markers: all 13 significant interferon-induced protein 44 genes, 10 of 12 significant tumor necrosis factor genes and both significant 2'-5'-oligoadenylate synthetase genes are lower at 30 C. The publication is not open access and its gene lists were not compared, so whether this reflects different gene sets, a different time point or a real disagreement is unresolved."
+  - "Pools at 30 C map about three points less to the transcriptome than pools at 23 C. The shift is systematic but small beside the expression effects."
