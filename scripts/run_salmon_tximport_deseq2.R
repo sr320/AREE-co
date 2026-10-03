@@ -1,14 +1,14 @@
 usage <- paste(
   "usage: Rscript run_salmon_tximport_deseq2.R QUANT_DIR DESIGN.csv TX2GENE.tsv OUTPUT_DIR",
   "[--reference=control] [--test=selected] [--replicates=3] [--min-samples=3] [--ma-title=TITLE]",
-  "[--covariate=COLUMN[+COLUMN...]] [--collapse-by=COLUMN[+COLUMN...]]"
+  "[--covariate=COLUMN[+COLUMN...]] [--collapse-by=COLUMN[+COLUMN...]] [--tag-seq=yes]"
 )
 args <- commandArgs(trailingOnly = TRUE)
 is_option <- grepl("^--", args)
 positional <- args[!is_option]
 # Defaults reproduce the original PRJNA694496 selected-versus-control analysis.
 options <- list(reference = "control", test = "selected", replicates = "3", min_samples = "3", ma_title = NA,
-                covariate = NA, collapse_by = NA)
+                covariate = NA, collapse_by = NA, tag_seq = "no")
 for (arg in args[is_option]) {
   parts <- regmatches(arg, regexec("^--([a-z-]+)=(.*)$", arg))[[1]]
   key <- if (length(parts) == 3) gsub("-", "_", parts[[2]]) else ""
@@ -33,6 +33,12 @@ covariates <- if (is.na(options$covariate) || !nzchar(options$covariate)) charac
 # counts are summed so that each pool, not each library, is the unit of replication.
 collapse_by <- if (is.na(options$collapse_by) || !nzchar(options$collapse_by)) character() else
   strsplit(options$collapse_by, "+", fixed = TRUE)[[1]]
+# 3' tag-seq (e.g. QuantSeq) yields one read per transcript whatever its length, so counts are
+# used without the tximport average-transcript-length offset.
+if (!options$tag_seq %in% c("yes", "no")) {
+  stop("--tag-seq must be yes or no")
+}
+tag_seq <- identical(options$tag_seq, "yes")
 contrast <- paste0(test, "_vs_", reference)
 ma_title <- if (is.na(options$ma_title)) paste(tools::toTitleCase(test), "versus", reference) else options$ma_title
 
@@ -142,7 +148,11 @@ if (length(covariates) > 0) {
     stop(sprintf("model %s is not full rank", paste(deparse(model), collapse = "")))
   }
 }
-dds <- DESeqDataSetFromTximport(txi, colData = samples, design = model)
+dds <- if (tag_seq) {
+  DESeqDataSetFromMatrix(round(txi$counts), colData = samples, design = model)
+} else {
+  DESeqDataSetFromTximport(txi, colData = samples, design = model)
+}
 genes_imported <- nrow(dds)
 keep <- rowSums(counts(dds) >= 10) >= min_samples
 dds <- dds[keep, ]
@@ -190,9 +200,12 @@ write.csv(correlations, file.path(output_dir, "sample_vst_correlations.csv"), qu
 cooks <- assays(dds)[["cooks"]]
 cooks_cutoff <- qf(0.99, 2, ncol(dds) - 2)
 sample_qc <- data.frame(sample = samples$sample, condition = samples$condition,
-                        normalization_factor_median = apply(
-                          normalizationFactors(dds), 2, median, na.rm = TRUE
-                        ),
+                        # Tag-seq runs have one size factor per library instead of per-gene factors.
+                        normalization_factor_median = if (is.null(normalizationFactors(dds))) {
+                          unname(sizeFactors(dds))
+                        } else {
+                          apply(normalizationFactors(dds), 2, median, na.rm = TRUE)
+                        },
                         genes_above_cooks_cutoff = colSums(cooks > cooks_cutoff, na.rm = TRUE))
 write.table(sample_qc, file.path(output_dir, "sample_deseq2_qc.tsv"),
             sep = "\t", quote = FALSE, row.names = FALSE)

@@ -147,3 +147,49 @@ def test_covariate_nested_entirely_within_condition_is_refused(tmp_path):
     result = _run(quant_dir, design, tx2gene, tmp_path / "deseq2", "--replicates=9", "--covariate=tank")
     assert result.returncode != 0
     assert "is confounded with condition" in result.stderr
+
+
+def test_tag_seq_drops_the_transcript_length_offset(tmp_path):
+    """With --tag-seq=yes, normalization is one size factor per sample, whatever Salmon's lengths."""
+    rng = np.random.default_rng(11)
+    genes = 200
+    quant_dir = tmp_path / "salmon"
+    tx2gene = tmp_path / "tx2gene.tsv"
+    tx2gene.write_text("transcript_id\tgene_id\n" + "".join(f"tx{g}\tgene{g}\n" for g in range(genes)))
+    rows, raw = [], {}
+    for condition in ("control", "acidified"):
+        for replicate in (1, 2, 3):
+            sample = f"{condition}_{replicate}"
+            counts = rng.poisson(rng.gamma(2.0, 100.0, genes)) + 10
+            # Effective lengths that differ by sample would enter the tximport offset.
+            lengths = rng.uniform(200, 3000, genes)
+            sample_dir = quant_dir / sample
+            sample_dir.mkdir(parents=True)
+            with (sample_dir / "quant.sf").open("w") as handle:
+                handle.write("Name\tLength\tEffectiveLength\tTPM\tNumReads\n")
+                for gene, (count, length) in enumerate(zip(counts, lengths)):
+                    handle.write(f"tx{gene}\t{length + 200:.0f}\t{length:.1f}\t{count / length:.4f}\t{count}\n")
+            raw[sample] = counts
+            rows.append({"sample": sample, "condition": condition, "replicate": str(replicate),
+                         "run_accession": f"SRR{len(rows)}"})
+    design = tmp_path / "design.csv"
+    with design.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    output_dir = tmp_path / "deseq2"
+    result = _run(quant_dir, design, tx2gene, output_dir, "--replicates=3", "--tag-seq=yes")
+    assert result.returncode == 0, result.stderr
+    with (output_dir / "acidified_vs_control_normalized_counts.tsv").open() as handle:
+        table = list(csv.reader(handle, delimiter="\t"))
+    header = table[0]
+    for column, sample in enumerate(header[1:], start=1):
+        ratios = [float(row[column]) / raw[sample][int(row[0].split("gene")[-1])] for row in table[1:]]
+        assert max(ratios) / min(ratios) == pytest.approx(1.0, abs=1e-6)
+
+
+def test_tag_seq_rejects_other_values(tmp_path):
+    quant_dir, design, tx2gene = _write_study(tmp_path)
+    result = _run(quant_dir, design, tx2gene, tmp_path / "out", "--tag-seq=maybe")
+    assert result.returncode != 0
+    assert "--tag-seq must be yes or no" in result.stderr

@@ -1,0 +1,46 @@
+study_id: CGIG_MULTISTRESS_RNASEQ_PRJNA913164
+doi: "10.1111/gcb.16880"
+accessions:
+  bioproject: "PRJNA913164"
+  pmid: "37464471"
+citation: "George MN, Cattau O, Middleton MA, Lawson D, Vadopalas B, Gavery M, Roberts SB. Triploid Pacific oysters exhibit stress response dysregulation and elevated mortality following heatwaves. Glob Chang Biol. 2023;29(24):6969-6987."
+species: "Crassostrea gigas"
+strain_population_family: "2-year-old diploid and triploid oysters from a commercial grower, collected at Quilcene, Washington, USA (47.76 N, 122.85 W)"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "adult"
+experimental_treatment: "Held in 30 C seawater, then emersed in air at 44 C for 6 h (multiple stressor, seawater heat followed by aerial heat over a tidal cycle)"
+control_condition: "Held submerged at 20 C (control)"
+stressor_class: "multi_stressor_exposure"
+exposure:
+  intensity: "30 C seawater followed by 6 h aerial emersion at 44 C, against 20 C submerged"
+  duration: "30 C exposure followed by 6 h emersion at 44 C"
+  timing: "acute; replicates conditions of the June 2021 Pacific Northwest atmospheric heatwave over a tidal cycle; ctenidium sampled 2021-07-12"
+phenotype: "thermal_tolerance"
+phenotype_direction: "Mortality after the multiple stressor was higher in triploids than diploids (36.4% versus 14.8%), with metabolic depression and reduced ctenidium Na/K-ATPase activity in triploids. AREE records the ctenidium transcriptional response averaged over ploidy, not survival per library."
+phenotype_units: "percent mortality"
+resilience_classification: "stress_response"
+sample_size: 48
+biological_replication: "48 ctenidium libraries, one oyster each: 24 controls and 24 30 C + 44 C emersion, 12 diploid and 12 triploid in each arm. The 24 control libraries are shared with CGIG_HEAT_RNASEQ_PRJNA913164 (30 C seawater only)."
+platform: "Illumina NovaSeq 6000, QuantSeq 3' mRNA-Seq (Tag-seq), 101 bp single-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://doi.org/10.1111/gcb.16880"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA913164"
+    - "https://github.com/mattgeorgephd/NOPP-gigas-ploidy-temp/tree/main/202107_EXP2/tag-seq"
+  curator: "AREE contributors"
+  curation_date: "2026-10-03"
+limitations:
+  - "The BioSamples carry no treatment or ploidy attribute. Both come from the description column of the authors' NCBI submission sheet (github.com/mattgeorgephd/NOPP-gigas-ploidy-temp, 202107_EXP2/tag-seq/NCBI/attributes.tsv), matched to BioSample by isolate name; sample-name prefixes do not map one-to-one to groups."
+  - "The study has three arms that share one control group. AREE records each stressor against the 20 C controls as its own study (CGIG_HEAT_RNASEQ_PRJNA913164 (30 C seawater only) is the other), so the two records share their reference group and their effect estimates are correlated; they must not be treated as independent in a meta-analysis."
+  - "Diploids and triploids are pooled with ploidy as a blocking factor (~ ploidy + condition), so the effect is averaged over ploidy. The publication's main finding is that triploids respond differently, especially to the multiple stressor; the ploidy-by-treatment interaction is reported in the quality-control summary, and ploidy-specific effects are not part of this record."
+  - "QuantSeq 3' tag-seq yields about one read per transcript, so Salmon was run with --noLengthCorrection and DESeq2 used the counts without the tximport length offset (--tag-seq=yes). Library sizes are small (0.9-8.3 million reads), and isoform-level information is not recoverable."
+  - "The authors excluded eight libraries as outliers in their DESeq2 analysis (D54, N56, X44, R53, M43, N54, X42, T62). AREE quantifies all 72 and applies its own QC; which libraries are excluded here, and why, is recorded in the quality-control summary."
