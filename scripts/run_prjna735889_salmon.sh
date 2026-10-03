@@ -15,6 +15,7 @@ FASTQ_DIR="$ANALYSIS_ROOT/fastq"
 QUANT_DIR="$ANALYSIS_ROOT/salmon"
 QC_DIR="$ANALYSIS_ROOT/fastqc"
 RESULTS_DIR="$ANALYSIS_ROOT/deseq2"
+UNADJUSTED_DIR="$ANALYSIS_ROOT/deseq2_unadjusted"
 DESIGN_SHEET="$ANALYSIS_ROOT/deseq2_samplesheet.csv"
 TX2GENE="$REFERENCE_DIR/GCF_963853765.1_tx2gene.tsv"
 SALMON_INDEX="$REFERENCE_DIR/salmon_index_decoy"
@@ -66,7 +67,17 @@ done
 python "$SCRIPT_DIR/summarize_salmon_qc.py" --quant-dir "$QUANT_DIR" \
   --design-sheet "$DESIGN_SHEET" --output "$QUANT_DIR/salmon_qc_summary.tsv"
 # Each library is one whole juvenile. Five tanks per pH band, one tank per pH level, so tank
-# is nested in condition and cannot be a covariate; the bands are unequal (26 v 25).
-Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$RESULTS_DIR" \
+# is nested in condition and cannot be a covariate. 13Ebis, a resequencing of oyster 13E, is
+# left out of the sample sheets, giving 25 v 25.
+#
+# PC1 of the unadjusted model is male gametogenesis, which is active in far more control
+# than acidified oysters. That run is kept as a sensitivity analysis; the primary model
+# blocks on the gametogenesis call so the evidence records the direct response to pH.
+Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$UNADJUSTED_DIR" \
   --test=acidified --replicates=0 \
-  "--ma-title=Juveniles at pHT 6.5-6.8 versus 7.4-7.8 (23 days)"
+  "--ma-title=Juveniles at pHT 6.5-6.8 versus 7.4-7.8 (23 days), unadjusted"
+python "$SCRIPT_DIR/score_prjna735889_gametogenesis.py" --unadjusted "$UNADJUSTED_DIR" \
+  --design-sheet "$DESIGN_SHEET" --output-dir "$ANALYSIS_ROOT"
+Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$ANALYSIS_ROOT/deseq2_samplesheet_gametogenesis.csv" \
+  "$TX2GENE" "$RESULTS_DIR" --test=acidified --replicates=0 --covariate=gametogenesis \
+  "--ma-title=Juveniles at pHT 6.5-6.8 versus 7.4-7.8 (23 days), blocked on gametogenesis"

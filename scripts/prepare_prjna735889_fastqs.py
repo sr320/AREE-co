@@ -22,6 +22,10 @@ from scripts.prepare_prjna1329250_fastqs import check_free_space, convert_run, l
 DEFAULT_MANIFEST = Path("data/manifests/CGIG_OA_RNASEQ_PRJNA735889_runs.tsv")
 DEFAULT_LOCATIONS = Path("data/manifests/CGIG_OA_RNASEQ_PRJNA735889_sra_locations.tsv")
 EXPECTED_CONDITIONS = {"control": 26, "acidified": 25}
+# 13Ebis is a second library from oyster 13E (expressed-SNP allele frequencies differ by 0.026,
+# below the 0.032 expected from resequencing one RNA), so it is kept in the manifest for
+# provenance but left out of the sample sheets to avoid counting one animal twice.
+EXCLUDED_RUNS = {"SRR14803132"}
 
 
 def load_manifest(path):
@@ -49,7 +53,7 @@ def main():
     output_dir = args.analysis_root / "fastq"
     output_dir.mkdir(parents=True, exist_ok=True)
     sra_dir = args.sra_dir or args.analysis_root / "sra"
-    print("runs: 51 paired-end (26 at pHT 7.4-7.8, 25 at pHT 6.5-6.8; tipping-window tanks excluded)")
+    print("runs: 51 paired-end (26 at pHT 7.4-7.8, 25 at pHT 6.5-6.8; tipping-window tanks excluded); 50 analysed")
     if args.verify:
         failures = verify_sra(rows, locations, sra_dir, args.workers)
         if failures:
@@ -63,9 +67,10 @@ def main():
             return 2
         for row in sorted(rows, key=lambda item: item["run_accession"]):
             convert_run(row, sra_dir, output_dir, args.threads, args.fastq_dump, args.fastp, args.keep_sra)
-    write_nfcore_samplesheet(rows, output_dir, args.analysis_root / "nfcore_samplesheet.csv")
+    analysed = [row for row in rows if row["run_accession"] not in EXCLUDED_RUNS]
+    write_nfcore_samplesheet(analysed, output_dir, args.analysis_root / "nfcore_samplesheet.csv")
     # tank and pH are carried for QC; tank is nested in condition, so it is not a covariate.
-    write_design_samplesheet(rows, args.analysis_root / "deseq2_samplesheet.csv", extra_columns=("tank", "ph_total"))
+    write_design_samplesheet(analysed, args.analysis_root / "deseq2_samplesheet.csv", extra_columns=("tank", "ph_total"))
     return 0
 
 
