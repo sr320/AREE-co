@@ -12,7 +12,7 @@
 - Direction of association: higher: 1
 - Identifier mapping confidence: inferred
 - Limitations: annotation_inferred
-- Effects without standard errors (not pooled in meta-analysis): none
+- Effects without usable uncertainty or with exploratory inference (not pooled in meta-analysis): none
 
 ## Effect Summary
 

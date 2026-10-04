@@ -19,6 +19,10 @@ aree register-study registry/studies/STUDY_ID.yaml
 
 ## Raw Reanalysis Versus Processed Harmonization
 
+Set `sample_size` to the count included in the final primary analysis, after sample exclusions or technical-replicate collapse. Use `biological_replication` to identify the counted unit (individual animals, pools or libraries), counts per group, exclusions, and the independent experimental units. For example, PRJEB18614 uses 24 pools after excluding two of 26 libraries; PRJNA735889 uses 50 animals after excluding the resequenced 13Ebis library. A pooled-library count is not an individual-animal or independent-tank count.
+
+After changing the primary analysis or its registry count, rerun harmonization with the matching mapping release before scoring. The committed-evidence consistency tests compare every row's count with both YAML and CSV metadata, and scoring rejects conflicting counts within a study rather than choosing one silently.
+
 Use raw-data reanalysis when public FASTQ, spectra, or feature-level raw files are available and licensing permits reuse. Use processed-results harmonization when only publication supplements or repository-derived result tables are available.
 
 Write real-study evidence outside the synthetic demo directory:

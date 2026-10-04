@@ -7,7 +7,7 @@ from aree.raw.deseq2_evidence import export_deseq2_evidence
 
 
 SAMPLE_COMPARISON = "starved_vs_fed_ad_libitum_16d_before_oshv1"
-QUALITY_FLAGS = ["raw_reanalysis", "nutritional_limitation_response", "pre_infection_baseline", "family_blocked_contrast"]
+QUALITY_FLAGS = ["raw_reanalysis", "nutritional_limitation_response", "pre_infection_baseline", "family_blocked_contrast", "dependence_group=DECICOMP_PRJEB86525_0h_controls"]
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"
 
 

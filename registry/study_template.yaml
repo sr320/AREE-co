@@ -25,8 +25,9 @@ phenotype: "thermal_tolerance"
 phenotype_direction: "higher survival under heat is favorable"
 phenotype_units: "percent survival"
 resilience_classification: "resilience_associated"
+# Count only the samples included in the final primary analysis, after exclusions/collapse.
 sample_size: 12
-biological_replication: "6 control and 6 exposed biological replicates"
+biological_replication: "Replace with the counted unit (animals, pools or libraries), group counts, exclusions, and independent experimental units (e.g. tanks)."
 platform: "Illumina"
 data_availability:
   raw: true
@@ -41,4 +42,3 @@ provenance:
   curation_date: "2026-07-06"
 limitations:
   - "Template only; not a real study."
-

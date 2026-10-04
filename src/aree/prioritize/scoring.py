@@ -7,7 +7,7 @@ import pandas as pd
 from aree.groups import column_groups, is_missing, present
 from aree.harmonize.identifiers import mapping_score
 from aree.io import read_evidence
-from aree.meta_analysis.random_effects import meta_analysis_table
+from aree.meta_analysis.random_effects import EXPLORATORY_FLAG, meta_analysis_table
 from aree.paths import root_path
 
 
@@ -33,7 +33,9 @@ SCORE_COLUMNS = [
     "score",
     "category",
     "n_studies",
+    "n_independent_studies",
     "total_biological_sample_size",
+    "sample_size_status",
     "assay_diversity",
     "direction_consistency",
     "consistency_flag",
@@ -65,7 +67,17 @@ SCORED_COLUMNS = [
     "adjusted_p_value",
     "tissue",
     "life_stage",
+    "_dependence_group",
 ]
+
+
+def dependence_group(study_id, flags):
+    """Explicit groups travel with evidence, including when scored outside this checkout."""
+    groups = {flag.split("=", 1)[1] for flag in str(flags).split(";")
+              if flag.startswith("dependence_group=")}
+    if len(groups) > 1 or "" in groups:
+        raise ValueError("Invalid dependence group for {}".format(study_id))
+    return "group:" + next(iter(groups)) if groups else "study:" + str(study_id)
 
 
 def _mean(values):
@@ -106,15 +118,17 @@ def _typed_effect_summary(group):
     return _typed_effect_summary_arrays(group["effect_size"].to_numpy(), group["effect_size_type"].to_numpy())
 
 
-def _first_per_study_total(study_ids, sample_sizes):
-    # Each study's sample size counts once (its first row), as drop_duplicates("study_id") did.
-    seen = {}
-    for study, size in zip(study_ids, sample_sizes):
-        seen.setdefault(study, size)
-    return sum(size for size in seen.values() if not is_missing(size))
-
-
 def score_table(evidence):
+    evidence = evidence.copy()
+    evidence["_dependence_group"] = [
+        dependence_group(study, flags)
+        for study, flags in zip(evidence["study_id"], evidence["quality_flags"])
+    ]
+    # A study must have one group across all its features; partial flagging is unsafe.
+    if (evidence.groupby("study_id")["_dependence_group"].nunique() > 1).any():
+        raise ValueError("Inconsistent dependence groups within a study")
+    if (evidence.groupby("study_id")["sample_size"].nunique(dropna=False) > 1).any():
+        raise ValueError("Inconsistent sample sizes within a study; regenerate evidence from the final registry")
     # Heterogeneity comes from the same evidence being scored, never from a previously written
     # (possibly filtered or stale) meta-analysis file. Groups with nothing poolable have no I2
     # and carry no heterogeneity information.
@@ -123,22 +137,38 @@ def score_table(evidence):
     rows = []
     for feature, group in column_groups(evidence, "feature_id_standardized", SCORED_COLUMNS):
         n_studies = len(set(present(group["study_id"])))
+        n_independent = len(set(group["_dependence_group"]))
         assay_diversity = len(set(present(group["feature_type"])))
-        total_n = _first_per_study_total(group["study_id"], group["sample_size"])
+        sizes = {}
+        for key, size in zip(group["_dependence_group"], group["sample_size"]):
+            if not is_missing(size):
+                sizes[key] = max(sizes.get(key, 0), size)
+        total_n = sum(sizes.values())
+        dependent = n_independent < n_studies
+        # Correlated contrasts cannot establish directional replication. Average within
+        # a dependence group and effect scale before comparing independent groups.
+        effects, types = group["effect_size"], group["effect_size_type"]
+        if dependent:
+            independent_effects = {}
+            for key, kind, effect in zip(group["_dependence_group"], types, effects):
+                independent_effects.setdefault((key, kind), []).append(effect)
+            effects = [_mean(values) for values in independent_effects.values()]
+            types = [key[1] for key in independent_effects]
         effect_magnitude, direction_consistency = _typed_effect_summary_arrays(
-            group["effect_size"], group["effect_size_type"]
+            effects, types
         )
         phenotype_relevance = _mean([value == "resilience_associated" for value in group["resilience_classification"]])
         mapping_conf = _mean([mapping_score(value) for value in group["mapping_confidence"]])
         data_quality = 1.0 - min(_mean([value != "none" for value in group["quality_flags"]]), 1.0) * 0.4
-        adjusted = present(group["adjusted_p_value"])
+        adjusted = present([q for q, flags in zip(group["adjusted_p_value"], group["quality_flags"])
+                            if EXPLORATORY_FLAG not in str(flags).split(";")])
         best_q = min(adjusted) if adjusted else float("nan")
         heterogeneity_penalty = 0.0
         if feature in max_i2:
             heterogeneity_penalty = min(max_i2[feature] / 100.0, 1.0) * 0.15
         context_breadth = len(set(present(group["tissue"]))) + len(set(present(group["life_stage"])))
         components = {
-            "n_studies": _bounded(n_studies, 4),
+            "n_studies": _bounded(n_independent, 4),
             "total_sample_size": _bounded(total_n, 100),
             "effect_magnitude": effect_magnitude,
             "significance": _significance_score(best_q),
@@ -152,7 +182,8 @@ def score_table(evidence):
         }
         weighted = sum(SCORE_WEIGHTS[key] * components[key] for key in SCORE_WEIGHTS) / _WEIGHT_TOTAL
         score = weighted - heterogeneity_penalty
-        if n_studies >= 2 and direction_consistency >= 0.67 and phenotype_relevance >= 0.5:
+        exploratory = any(EXPLORATORY_FLAG in str(flags).split(";") for flags in group["quality_flags"])
+        if n_independent >= 2 and direction_consistency >= 0.67 and phenotype_relevance >= 0.5 and not exploratory:
             category = "High-priority cross-study candidate"
         elif assay_diversity >= 2:
             category = "Multi-omics convergence candidate"
@@ -170,7 +201,9 @@ def score_table(evidence):
                 "score": round(max(score, 0.0), 4),
                 "category": category,
                 "n_studies": n_studies,
+                "n_independent_studies": n_independent,
                 "total_biological_sample_size": int(total_n),
+                "sample_size_status": "conservative lower bound; shared samples" if dependent else "reported study totals",
                 "assay_diversity": assay_diversity,
                 "direction_consistency": round(direction_consistency, 3),
                 "consistency_flag": consistency_flag,
@@ -194,4 +227,3 @@ def score_candidates(evidence_path=None, output_path=None, phenotype=None, stres
     output_path = Path(output_path) if output_path else root_path("data", "demo", "candidate_scores.tsv")
     out.to_csv(output_path, sep="\t", index=False)
     return output_path
-

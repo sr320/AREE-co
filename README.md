@@ -4,11 +4,13 @@ AREE is an open, reproducible evidence-generation system for aquaculture resilie
 
 AREE is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw RNA-seq reanalysis, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
 
-**Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, `data/demo/` tables, and `reports/`. To preview locally:
+**Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, real `data/harmonized/` evidence, versioned annotations in `reports/`, and a separate synthetic demo. To preview locally:
 
 ```bash
 python scripts/build_site.py && quarto render _site_src
 ```
+
+The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
 
 ## What Is Runnable Now
 
@@ -70,6 +72,8 @@ aree build-evidence-cards --evidence data/harmonized --scores results/candidate_
 ```
 
 Scoring recomputes heterogeneity from the evidence it scores, so `meta_analysis.tsv` is for inspection only and a filtered or stale copy cannot change the ranking. Effects are pooled and summarized only within one `effect_size_type`; candidates remain one row per feature so cross-context and multi-omics convergence still count. Use `--phenotype`/`--stressor` on `score-candidates` for a context-specific ranking.
+
+Studies sharing controls must carry the same `dependence_group=GROUP_ID` quality flag on every evidence row. `n_studies` preserves the registered-study count; `n_independent_studies` counts these groups once for scoring and high-priority classification. Shared groups use a conservative sample-count lower bound rather than summed totals, labeled by `sample_size_status`. The DECICOMP temperature and starvation contrasts already carry their shared-control group.
 
 `aree build-evidence-cards --phenotype PHENOTYPE` builds cards for one phenotype only. Card filenames are made safe for every OS (e.g. `NCBI:LOC105317001` → `NCBI_LOC105317001.md`), and each build removes previously generated cards that are no longer in scope, so the directory always matches its evidence.
 
