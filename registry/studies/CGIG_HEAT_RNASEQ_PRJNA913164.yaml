@@ -1,0 +1,47 @@
+study_id: CGIG_HEAT_RNASEQ_PRJNA913164
+doi: "10.1111/gcb.16880"
+accessions:
+  bioproject: "PRJNA913164"
+  pmid: "37464471"
+citation: "George MN, Cattau O, Middleton MA, Lawson D, Vadopalas B, Gavery M, Roberts SB. Triploid Pacific oysters exhibit stress response dysregulation and elevated mortality following heatwaves. Glob Chang Biol. 2023;29(24):6969-6987."
+species: "Crassostrea gigas"
+strain_population_family: "2-year-old diploid and triploid oysters from a commercial grower, collected at Quilcene, Washington, USA (47.76 N, 122.85 W)"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "adult"
+experimental_treatment: "Held submerged in 30 C seawater (single stressor, marine heatwave seawater temperature)"
+control_condition: "Held submerged at 20 C (control)"
+stressor_class: "temperature"
+exposure:
+  intensity: "30 C seawater against 20 C"
+  duration: "acute heatwave exposure; see publication for duration and ramp"
+  timing: "acute; replicates conditions of the June 2021 Pacific Northwest atmospheric heatwave over a tidal cycle; ctenidium sampled 2021-07-12"
+phenotype: "thermal_tolerance"
+phenotype_direction: "Mortality was elevated in the stress treatments relative to the control. AREE records the ctenidium transcriptional response to elevated seawater temperature, not survival per library."
+phenotype_units: "percent mortality"
+resilience_classification: "stress_response"
+sample_size: 44
+biological_replication: "44 ctenidium libraries analysed, one oyster each (23 controls and 21 treated after QC exclusions), from 48 sequenced: 24 controls and 24 30 C, 12 diploid and 12 triploid in each arm. The 24 control libraries are shared with CGIG_MULTISTRESS_RNASEQ_PRJNA913164 (30 C followed by 44 C emersion)."
+platform: "Illumina NovaSeq 6000, QuantSeq 3' mRNA-Seq (Tag-seq), 101 bp single-end"
+data_availability:
+  raw: true
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "Salmon 2.3.4 (--noLengthCorrection, sequence-bias correction) against GCF_963853765.1/RS_2024_06 on all 72 QuantSeq libraries; mapping rates are low for 3' tag-seq against the annotated transcriptome (18.7-46.4%, median 34.3%, among the 63 analysed libraries) but similar across arms (control 31.7%, 30 C 33.5%). Nine libraries were left out because their median VST correlation with the other libraries fell below the median minus three robust SDs (0.834): N56, X44, X42, T62, R53, N54 and M43, which the authors also excluded, and R62 and N57; the authors' eighth exclusion, D54, passes and is kept. Tested as ~ ploidy + condition on counts without the tximport length offset (23 control v 21 30 C): 4,394 of 18,085 tested genes reach FDR < 0.05 (2,216 higher, 2,178 lower); PC1 11.7%, PC2 8.3%. A ploidy-by-treatment likelihood-ratio test finds 10 genes with FDR < 0.05; within-ploidy Wald tests give 2,892 diploid and 2,249 triploid significant genes, with log2 fold changes correlated 0.35 across all tested genes. Of the publication's diploid and triploid 30 C gene lists, 90.1% and 97.0% of genes tested here change in the same direction (98.5% and 99.4% among genes also significant here). The response: ER chaperones and splicing factors rise (78 kDa glucose-regulated protein, calreticulin, protein disulfide-isomerase A6, SR splicing factors; 13 of 19 significant heat shock protein genes higher) while high-mobility-group proteins and nucleolin fall."
+analysis_status: "raw_reanalysis_harmonized"
+provenance:
+  source_links:
+    - "https://doi.org/10.1111/gcb.16880"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA913164"
+    - "https://github.com/mattgeorgephd/NOPP-gigas-ploidy-temp/tree/main/202107_EXP2/tag-seq"
+  curator: "AREE contributors"
+  curation_date: "2026-10-03"
+limitations:
+  - "The BioSamples carry no treatment or ploidy attribute. Both come from the description column of the authors' NCBI submission sheet (github.com/mattgeorgephd/NOPP-gigas-ploidy-temp, 202107_EXP2/tag-seq/NCBI/attributes.tsv), matched to BioSample by isolate name; sample-name prefixes do not map one-to-one to groups."
+  - "The study has three arms that share one control group. AREE records each stressor against the 20 C controls as its own study (CGIG_MULTISTRESS_RNASEQ_PRJNA913164 (30 C followed by 44 C emersion) is the other), so the two records share their reference group and their effect estimates are correlated; they must not be treated as independent in a meta-analysis."
+  - "Diploids and triploids are pooled with ploidy as a blocking factor (~ ploidy + condition), so the effect is averaged over ploidy. The publication's main finding is that triploids respond differently, especially to the multiple stressor; the ploidy-by-treatment interaction is reported in the quality-control summary, and ploidy-specific effects are not part of this record."
+  - "QuantSeq 3' tag-seq yields about one read per transcript, so Salmon was run with --noLengthCorrection and DESeq2 used the counts without the tximport length offset (--tag-seq=yes). Library sizes are small (0.9-8.3 million reads), and isoform-level information is not recoverable."
+  - "The authors excluded eight libraries as outliers (D54, N56, X44, R53, M43, N54, X42, T62). AREE quantified all 72 and applied its own rule (median VST correlation below the median minus three robust SDs): seven of the authors' eight fail it, D54 passes and is kept, and R62 and N57 also fail and are left out. The exclusions live in scripts/prepare_prjna913164_fastqs.py and remove one or two libraries from some ploidy-by-treatment cells."
+  - "The expressed-SNP replicate check (scripts/check_replicate_genotypes.py) could not be run: 3' tags cover too little of the target transcripts (about 2,000 usable reads per library, even after poly-A and adapter trimming) to call allele frequencies. Each library is a single adult oyster according to the publication, so no pooling or resequencing is expected, but this was not verified genetically."
