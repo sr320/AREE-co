@@ -4,13 +4,13 @@ AREE is an open, reproducible evidence-generation system for aquaculture resilie
 
 AREE is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw RNA-seq reanalysis, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
 
-**Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, `data/demo/` tables, and `reports/`. To preview locally:
+**Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, real `data/harmonized/` evidence, versioned annotations in `reports/`, and a separate synthetic demo. To preview locally:
 
 ```bash
 python scripts/build_site.py && quarto render _site_src
 ```
 
-The site separates real-study progress and real harmonized record counts from explicitly labeled simulated demo rankings, meta-analysis and cards. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
+The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
 
 ## What Is Runnable Now
 
