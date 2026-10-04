@@ -32,12 +32,24 @@ def _two_sided_p(z):
     return float("{:.12g}".format(math.erfc(abs(z) / math.sqrt(2.0))))
 
 
+EXPLORATORY_FLAG = "exploratory_tank_clustering_unmodeled"
+
+
+def inference_eligible(evidence):
+    if "quality_flags" not in evidence:
+        return pd.Series(True, index=evidence.index)
+    return ~evidence["quality_flags"].fillna("").str.split(";").map(
+        lambda flags: EXPLORATORY_FLAG in flags
+    ).astype(bool)
+
+
 def poolable(evidence):
-    """Mask of effects usable for inverse-variance pooling (effect size and a positive standard error)."""
-    return evidence["effect_size"].notna() & evidence["standard_error"].notna() & (evidence["standard_error"] > 0)
+    """Effects with usable uncertainty and eligible study-level inference."""
+    return (evidence["effect_size"].notna() & evidence["standard_error"].notna()
+            & (evidence["standard_error"] > 0) & inference_eligible(evidence))
 
 
-def _pool(effects, standard_errors, study_ids):
+def _pool(effects, standard_errors, study_ids, eligible=None):
     """DerSimonian-Laird pooling of one group's arrays, reporting effects that could not be pooled.
 
     Sums are plain sequential sums, which are deterministic on every platform.
@@ -46,6 +58,8 @@ def _pool(effects, standard_errors, study_ids):
         not is_missing(effect) and not is_missing(se) and se > 0
         for effect, se in zip(effects, standard_errors)
     ]
+    if eligible is not None:
+        usable = [ok and bool(allowed) for ok, allowed in zip(usable, eligible)]
     excluded = sorted({study for study, ok in zip(study_ids, usable) if not ok})
     exclusion = {
         "n_effects_excluded": usable.count(False),
@@ -59,7 +73,8 @@ def _pool(effects, standard_errors, study_ids):
     if k == 0:
         # Keep the group visible: silently dropping it hides studies that lack standard errors.
         result = {column: float("nan") for column in RESULT_COLUMNS}
-        result.update(n_effects=0, n_studies=0, study_ids="", pooling_status="no_standard_errors", **exclusion)
+        status = "no_inference_eligible_effects" if eligible is not None and not all(eligible) else "no_standard_errors"
+        result.update(n_effects=0, n_studies=0, study_ids="", pooling_status=status, **exclusion)
         return result
     wi = [1.0 / v for v in vi]
     sum_w = sum(wi)
@@ -92,7 +107,8 @@ def _pool(effects, standard_errors, study_ids):
 def random_effects(group):
     """DerSimonian-Laird pooling of one group, reporting any effects that could not be pooled."""
     return _pool(
-        group["effect_size"].to_numpy(), group["standard_error"].to_numpy(), group["study_id"].to_numpy()
+        group["effect_size"].to_numpy(), group["standard_error"].to_numpy(), group["study_id"].to_numpy(),
+        inference_eligible(group).to_numpy(),
     )
 
 
@@ -102,10 +118,11 @@ GROUP_COLUMNS = ["feature_id_standardized", "feature_type", "effect_size_type", 
 def meta_analysis_table(evidence):
     """Pool effects per feature and context; only effects on the same scale (effect_size_type) are pooled."""
     rows = []
-    groups = column_groups(evidence, GROUP_COLUMNS, ["effect_size", "standard_error", "study_id"])
+    evidence = evidence.assign(_inference_eligible=inference_eligible(evidence))
+    groups = column_groups(evidence, GROUP_COLUMNS, ["effect_size", "standard_error", "study_id", "_inference_eligible"])
     for keys, columns in groups:
         row = dict(zip(GROUP_COLUMNS, keys))
-        row.update(_pool(columns["effect_size"], columns["standard_error"], columns["study_id"]))
+        row.update(_pool(columns["effect_size"], columns["standard_error"], columns["study_id"], columns["_inference_eligible"]))
         rows.append(row)
     return pd.DataFrame(rows, columns=GROUP_COLUMNS + RESULT_COLUMNS)
 

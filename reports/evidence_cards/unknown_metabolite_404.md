@@ -12,7 +12,7 @@
 - Direction of association: lower: 1
 - Identifier mapping confidence: unresolved
 - Limitations: unresolved_metabolite
-- Effects without standard errors (not pooled in meta-analysis): none
+- Effects without usable uncertainty or with exploratory inference (not pooled in meta-analysis): none
 
 ## Effect Summary
 

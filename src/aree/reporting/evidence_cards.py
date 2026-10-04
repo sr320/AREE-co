@@ -120,7 +120,7 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
             "- Direction of association: {}".format(directions),
             "- Identifier mapping confidence: {}".format(_joined(group["mapping_confidence"])),
             "- Limitations: {}".format("; ".join(sorted({str(value) for value in group["quality_flags"]}))),
-            "- Effects without standard errors (not pooled in meta-analysis): {}".format(
+            "- Effects without usable uncertainty or with exploratory inference (not pooled in meta-analysis): {}".format(
                 ", ".join(not_pooled) or "none"
             ),
             "",

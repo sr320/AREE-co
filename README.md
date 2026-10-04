@@ -10,6 +10,8 @@ AREE is not a static list of papers. It provides a versioned path from public st
 python scripts/build_site.py && quarto render _site_src
 ```
 
+The site separates real-study progress and real harmonized record counts from explicitly labeled simulated demo rankings, meta-analysis and cards. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
+
 ## What Is Runnable Now
 
 - Study registration validation against JSON Schema.
@@ -70,6 +72,8 @@ aree build-evidence-cards --evidence data/harmonized --scores results/candidate_
 ```
 
 Scoring recomputes heterogeneity from the evidence it scores, so `meta_analysis.tsv` is for inspection only and a filtered or stale copy cannot change the ranking. Effects are pooled and summarized only within one `effect_size_type`; candidates remain one row per feature so cross-context and multi-omics convergence still count. Use `--phenotype`/`--stressor` on `score-candidates` for a context-specific ranking.
+
+Studies sharing controls must carry the same `dependence_group=GROUP_ID` quality flag on every evidence row. `n_studies` preserves the registered-study count; `n_independent_studies` counts these groups once for scoring and high-priority classification. Shared groups use a conservative sample-count lower bound rather than summed totals, labeled by `sample_size_status`. The DECICOMP temperature and starvation contrasts already carry their shared-control group.
 
 `aree build-evidence-cards --phenotype PHENOTYPE` builds cards for one phenotype only. Card filenames are made safe for every OS (e.g. `NCBI:LOC105317001` → `NCBI_LOC105317001.md`), and each build removes previously generated cards that are no longer in scope, so the directory always matches its evidence.
 

@@ -130,7 +130,7 @@ def quarto_config(analyses, cards):
                     {"text": "Progress", "href": "index.qmd"},
                     {"text": "Studies", "href": "studies.qmd"},
                     {
-                        "text": "Results",
+                        "text": "Simulated demo results",
                         "menu": [
                             {"text": "Candidate scores", "href": "candidates.qmd"},
                             {"text": "Meta-analysis", "href": "meta-analysis.qmd"},
@@ -138,7 +138,7 @@ def quarto_config(analyses, cards):
                         ],
                     },
                     {"text": "Reanalyses", "menu": [{"text": "All reanalyses", "href": "analyses.qmd"}] + analysis_menu},
-                    {"text": "Evidence cards ({})".format(len(cards)), "href": "evidence_cards/index.qmd"},
+                    {"text": "Demo evidence cards ({})".format(len(cards)), "href": "evidence_cards/index.qmd"},
                     {
                         "text": "Docs",
                         "menu": [{"text": title, "href": "docs/" + name} for name, title in DOC_PAGES],
@@ -152,7 +152,7 @@ def quarto_config(analyses, cards):
     return yaml.safe_dump(config, sort_keys=False)
 
 
-def progress_page(registry, extra, analyses, cards, scores, evidence):
+def progress_page(registry, extra, analyses, cards, scores, evidence, real_evidence_count=0):
     real = registry[~registry["data_status"].map(is_simulated)]
     reanalyzed = registry[registry["data_status"].str.contains("reanalysis_complete", na=False)]
     sha = git("rev-parse", "--short", "HEAD")
@@ -163,9 +163,10 @@ def progress_page(registry, extra, analyses, cards, scores, evidence):
         ("Registered studies", len(registry)),
         ("Real public studies", len(real)),
         ("Raw-data reanalyses complete", len(reanalyzed)),
-        ("Harmonized evidence records", len(evidence)),
-        ("Scored candidates", len(scores)),
-        ("Evidence cards", len(cards)),
+        ("Real harmonized evidence records", real_evidence_count),
+        ("Simulated demo evidence records", len(evidence)),
+        ("Simulated demo candidates", len(scores)),
+        ("Simulated demo evidence cards", len(cards)),
     ]
     tile_md = "\n".join(
         '<div class="stat"><div class="stat-value">{:,}</div><div class="stat-label">{}</div></div>'.format(value, label)
@@ -184,6 +185,7 @@ def progress_page(registry, extra, analyses, cards, scores, evidence):
             links.append("[intake](intake/{}.md)".format(rec.study_id))
         if bp and analysis.exists():
             links.append("[reanalysis](analysis/{}/analysis_report.md)".format(bp))
+        links.insert(0, "[design and limitations](studies/{}.qmd)".format(rec.study_id))
         rows.append([rec.study_id, bp, "{} / {}".format(rec.stressor_class, rec.phenotype), str(rec.analysis_status).replace("_", " "), " · ".join(links)])
     real_table = md_table(pd.DataFrame(rows, columns=[
         "Study", "BioProject", "Stressor / phenotype", "Analysis status", "Links"
@@ -229,7 +231,9 @@ Last updated from commit [`{sha}`]({repo}/commit/{sha}) ({commit_date}); site bu
 
 Simulated demo studies ({n_sim}) are listed on the [Studies](studies.qmd) page.
 
-## Top candidates
+## Simulated demo candidates
+
+These rankings use synthetic observations to demonstrate the workflow. They are not findings from the real public studies above. Real-study candidate rankings have not been published on this site.
 
 {top}
 
@@ -257,7 +261,7 @@ def studies_page(registry):
         "phenotype", "resilience_classification", "sample_size", "data_status", "analysis_status",
     ]].copy()
     table["study_id"] = [
-        "[{0}](intake/{0}.md)".format(s) if (ROOT / "reports" / "intake" / "{}.md".format(s)).exists() else s
+        "[{0}](studies/{0}.qmd)".format(s)
         for s in table["study_id"]
     ]
     return '---\ntitle: "Registered studies"\n---\n\nFrom `registry/study_registry.csv`. Studies whose data status begins with `simulated` are MVP demo data.\n\n' + md_table(table) + "\n"
@@ -270,7 +274,8 @@ def candidates_page(scores, cards):
         for c in table["candidate_id"]
     ]
     return (
-        '---\ntitle: "Candidate scores"\n---\n\n'
+        '---\ntitle: "Simulated demo candidate scores"\n---\n\n'
+        "**Simulated data:** These scores demonstrate the workflow; they are not results from real public studies.\n\n"
         "Transparent candidate prioritization from `data/demo/candidate_scores.tsv` "
         "([download]({}/raw/main/data/demo/candidate_scores.tsv)). Scores rank evidence convergence; "
         "they are not validation.\n\n".format(REPO_URL)
@@ -278,9 +283,33 @@ def candidates_page(scores, cards):
     )
 
 
+def study_detail_page(study):
+    parts = ['---\ntitle: "{}"\n---\n'.format(study["study_id"])]
+    if is_simulated(study["data_availability"]["status"]):
+        parts.append("**Simulated demo study:** All observations are synthetic.\n")
+    if "tank_clustering_unmodeled" in study["analysis_status"]:
+        parts.append("::: {.callout-warning}\n**Exploratory analysis: tank clustering is not modeled.** "
+                     "The 50 oysters are subsamples from ten tanks (five per pH band). "
+                     "Reported p-values, FDR values and standard errors assume independent oysters "
+                     "and may overstate precision. A tank-aware reanalysis is required before "
+                     "inferential use. These p-values receive no significance reward in candidate scoring.\n:::\n")
+    for label, field in [("Treatment", "experimental_treatment"), ("Control", "control_condition"),
+                         ("Biological replication", "biological_replication"),
+                         ("Phenotype interpretation", "phenotype_direction"),
+                         ("Analysis status", "analysis_status"), ("Quality control and results", "quality_control_status")]:
+        parts.append("## {}\n\n{}\n".format(label, study[field]))
+    parts.append("## Limitations\n")
+    parts.extend("- " + limitation for limitation in study["limitations"])
+    parts.append("\n## Sources\n")
+    parts.extend("- [Source {}]({})".format(i, url)
+                 for i, url in enumerate(study["provenance"]["source_links"], 1))
+    return "\n".join(parts) + "\n"
+
+
 def meta_page(meta):
     return (
-        '---\ntitle: "Meta-analysis"\n---\n\n'
+        '---\ntitle: "Simulated demo meta-analysis"\n---\n\n'
+        "**Simulated data:** These effects are synthetic; they are not results from real public studies.\n\n"
         "Random-effects meta-analysis results from `data/demo/meta_analysis.tsv` "
         "([download]({}/raw/main/data/demo/meta_analysis.tsv)).\n\n".format(REPO_URL)
         + md_table(meta) + "\n"
@@ -316,15 +345,27 @@ def build(out):
     scores = pd.read_csv(ROOT / "data" / "demo" / "candidate_scores.tsv", sep="\t", dtype=str)
     meta = pd.read_csv(ROOT / "data" / "demo" / "meta_analysis.tsv", sep="\t", dtype=str)
     evidence = pd.read_csv(ROOT / "data" / "demo" / "harmonized_evidence.tsv", sep="\t", dtype=str)
+    real_evidence_count = 0
+    for path in sorted((ROOT / "data" / "harmonized").glob("*.tsv")):
+        for chunk in pd.read_csv(path, sep="\t", usecols=["study_id"], chunksize=50000):
+            unknown = set(chunk["study_id"]) - set(registry["study_id"])
+            if unknown:
+                raise ValueError("Unregistered studies in real evidence: {}".format(sorted(unknown)))
+            real_ids = set(registry.loc[~registry["data_status"].map(is_simulated), "study_id"])
+            real_evidence_count += int(chunk["study_id"].isin(real_ids).sum())
 
     cards = {}
     for card in sorted((ROOT / "reports" / "evidence_cards").glob("*.md")):
         name = safe_name(card.stem)
         cards[name] = card.stem
-        copy_md(card, out / "evidence_cards" / (name + ".md"))
+        text = with_title(card.read_text())
+        # Put the simulation label after front matter so it is visible on each card.
+        title_end = text.index("---", 3) + 3
+        text = text[:title_end] + "\n\n**Simulated demo evidence:** This card does not describe real-study findings.\n" + text[title_end:]
+        write(out / "evidence_cards" / (name + ".md"), text)
     card_list = "\n".join("- [{}]({}.md)".format(orig, name) for name, orig in cards.items())
     write(out / "evidence_cards" / "index.qmd",
-          '---\ntitle: "Evidence cards"\n---\n\nOne card per candidate: association evidence only, not validated biomarkers.\n\n'
+          '---\ntitle: "Simulated demo evidence cards"\n---\n\nThese cards use synthetic observations, not real-study findings. Association evidence only, not validated biomarkers.\n\n'
           + (card_list or "_No evidence cards yet._") + "\n")
 
     for d in analyses:
@@ -337,10 +378,12 @@ def build(out):
     for name, _ in DOC_PAGES:
         if (ROOT / "docs" / name).exists():
             copy_md(ROOT / "docs" / name, out / "docs" / name)
+    for study_id, study in extra.items():
+        write(out / "studies" / (study_id + ".qmd"), study_detail_page(study))
 
     write(out / "_quarto.yml", quarto_config(analyses, cards))
     write(out / "styles.css", STYLES)
-    write(out / "index.qmd", progress_page(registry, extra, analyses, cards, scores, evidence))
+    write(out / "index.qmd", progress_page(registry, extra, analyses, cards, scores, evidence, real_evidence_count))
     write(out / "studies.qmd", studies_page(registry))
     write(out / "candidates.qmd", candidates_page(scores, cards))
     write(out / "meta-analysis.qmd", meta_page(meta))

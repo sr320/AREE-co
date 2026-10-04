@@ -72,7 +72,9 @@ python "$SCRIPT_DIR/summarize_salmon_qc.py" --quant-dir "$QUANT_DIR" \
 #
 # PC1 of the unadjusted model is male gametogenesis, which is active in far more control
 # than acidified oysters. That run is kept as a sensitivity analysis; the primary model
-# blocks on the gametogenesis call so the evidence records the direct response to pH.
+# blocks on the gametogenesis call. This remains exploratory: oysters within a tank
+# are subsamples, and this model does not account for tank clustering. Its p-values
+# and FDR values must not be used as tank-level inference.
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$UNADJUSTED_DIR" \
   --test=acidified --replicates=0 \
   "--ma-title=Juveniles at pHT 6.5-6.8 versus 7.4-7.8 (23 days), unadjusted"
