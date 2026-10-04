@@ -90,6 +90,7 @@ def findings_table(highlights, md_table, prefix=''):
 def real_card(feature, rows, studies, md_table):
     parts = ['---\ntitle: "Evidence card: {}"\n---\n'.format(feature),
              '**Real public-study evidence. Association evidence only; not a validated biomarker.**\n',
+             '[How to interpret expression as evidence for resilience](../docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience). Differential expression alone does not establish a resilience marker; higher expression does not necessarily mean greater resilience.\n',
              'This feature was selected among ten displayed findings in at least one study. All available rows for it are shown below, including nonsignificant and exploratory results. '
              'Presence in multiple datasets does not establish independent replication: exposures, tissues, life stages, and phenotype meanings differ. No cross-study score or pooled effect is calculated.\n',
              '## Study-specific effects\n']
@@ -135,6 +136,7 @@ def write_real_findings(out, evidence, summaries, highlights, studies, md_table,
              'For exploratory PRJNA735889, ten descriptive effects are ordered by absolute effect; nominal FDR is not used for selection. '
              'These are browsing selections, not global biomarker rankings. Full harmonized tables are linked for every available study. '
              'No cross-study effect pooling is presented because matching effect scales and broad phenotype labels alone do not establish comparable contrasts.\n',
+             '[How do expression findings relate to resilience?](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience) Differential expression identifies molecular differences; linking them to survival, performance or recovery requires outcome evidence and independent validation. Higher expression does not necessarily mean greater resilience.\n',
              '[Download displayed findings](downloads/real_findings.tsv) · [Download study summary](downloads/real_study_summary.tsv)\n']
     for row in summaries.itertuples(index=False):
         study = studies[row.study_id]
