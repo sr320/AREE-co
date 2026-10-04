@@ -60,7 +60,10 @@
     "ci_upper": {"type": ["number", "null"]},
     "p_value": {"type": ["number", "null"]},
     "adjusted_p_value": {"type": ["number", "null"]},
-    "sample_size": {"type": "integer"},
+    "sample_size": {
+      "type": "integer", "minimum": 1,
+      "description": "Final primary-analysis count from the study registry; its unit is defined in biological_replication. Do not interpret pooled library totals as individual animal or independent experimental-unit totals."
+    },
     "tissue": {"type": "string"},
     "life_stage": {"type": "string"},
     "stressor": {"type": "string"},
