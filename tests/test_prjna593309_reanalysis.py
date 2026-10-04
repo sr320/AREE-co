@@ -49,3 +49,13 @@ def test_records_export_with_the_shared_tank_dependence_group(tmp_path):
         rows = list(csv.DictReader(processed.open(), delimiter="\t"))
         assert rows[0]["sample_comparison"] == spec["sample_comparison"]
         assert "dependence_group=PRJNA593309_21C_tanks" in rows[0]["quality_flags"].split(";")
+
+
+def test_the_duplicated_29c_oyster_is_summed_into_one_animal():
+    from scripts.prepare_prjna593309_fastqs import SAME_ANIMAL
+
+    design = contrast_rows(load_manifest(MANIFEST), "heat")
+    animals = {row["animal"] for row in design if row["condition"] == "heat"}
+    assert SAME_ANIMAL == {"oshv_29C_12h_2": "oshv_29C_12h_1"}
+    assert len(animals) == 2
+    assert len({row["animal"] for row in design if row["condition"] == "control"}) == 3

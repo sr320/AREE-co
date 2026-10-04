@@ -28,10 +28,10 @@ biological_replication: "6 libraries, one whole 8-month-old oyster per tank: thr
 platform: "Illumina HiSeq 4000, TruSeq Stranded mRNA, 2 x 125 bp paired-end"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 12 downloaded libraries (96,206,490 read pairs) quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06; this record's six map 49.2-56.0% (0 h 51.5-56.0%, 48 h 49.2-54.3%). Expressed-SNP allele frequencies at 801 sites show each of the six libraries is a different diploid oyster (34-44% heterozygous sites; all pairs differ by 0.28 or more against 0.03 for one RNA resequenced). ~ condition (3 v 3): 846 of 14,555 tested genes reach FDR < 0.05 (663 higher, 183 lower at 48 h); the tank-paired model ~ tank + condition gives 1,025. PC1 explains 44.6% of variance. The response is the expected antiviral programme: all 12 significant interferon-pathway genes rise, with interferon regulatory factor 2, an MDA5-like helicase, baculoviral IAP repeat proteins and E3 ubiquitin ligases. The publication reports 1,413 genes at 48 h against 0 h with edgeR on the Ensembl genome."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1242/jeb.226233"

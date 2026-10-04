@@ -28,6 +28,11 @@ CONTRASTS = {
     "heat": {"control": "oshv_21C_12h", "heat": "oshv_29C_12h"},
 }
 
+# oshv_29C_12h_1 and _2 are one oyster: their expressed-SNP allele frequencies differ by 0.025,
+# below the 0.029 expected from resequencing one RNA (every other pair differs by 0.276 or more).
+# The two libraries are summed into one animal, leaving two independent 29 C oysters.
+SAME_ANIMAL = {"oshv_29C_12h_2": "oshv_29C_12h_1"}
+
 
 def load_manifest(path):
     return load_run_manifest(path, EXPECTED_CONDITIONS)
@@ -37,13 +42,14 @@ def contrast_rows(rows, contrast):
     """Design rows for one record; samples keep their manifest names so they match the Salmon output."""
     labels = {group: label for label, group in CONTRASTS[contrast].items()}
     return [{"sample": sample_name(row), "condition": labels[row["condition"]], "replicate": row["replicate"],
-             "run_accession": row["run_accession"], "tank": "{}_tank{}".format(row["condition"].split("_")[1], row["replicate"])}
+             "run_accession": row["run_accession"], "tank": "{}_tank{}".format(row["condition"].split("_")[1], row["replicate"]),
+             "animal": SAME_ANIMAL.get(sample_name(row), sample_name(row))}
             for row in rows if row["condition"] in labels]
 
 
 def write_contrast_sheet(rows, path):
     with Path(path).open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["sample", "condition", "replicate", "run_accession", "tank"])
+        writer = csv.DictWriter(handle, fieldnames=["sample", "condition", "replicate", "run_accession", "tank", "animal"])
         writer.writeheader()
         writer.writerows(rows)
     print("wrote DESeq2 design sheet {}".format(path))

@@ -73,6 +73,8 @@ Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$ANALYSIS_ROOT/
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$ANALYSIS_ROOT/deseq2_samplesheet_oshv1.csv" "$TX2GENE" \
   "$ANALYSIS_ROOT/deseq2_oshv1_tank_paired" --test=oshv1 --replicates=3 --covariate=tank \
   "--ma-title=OsHV-1 cohabitation 48 h versus 0 h at 21 C, tank-paired"
+# Two of the three 29 C libraries are one oyster (see SAME_ANIMAL in the prepare script), so the
+# libraries are summed per animal, leaving 3 v 2.
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$ANALYSIS_ROOT/deseq2_samplesheet_heat.csv" "$TX2GENE" \
-  "$ANALYSIS_ROOT/deseq2_heat" --test=heat --replicates=3 \
+  "$ANALYSIS_ROOT/deseq2_heat" --test=heat --replicates=0 --collapse-by=animal \
   "--ma-title=29 C versus 21 C at 12 h of OsHV-1 cohabitation"
