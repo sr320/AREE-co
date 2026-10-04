@@ -7,7 +7,7 @@ from aree.raw.deseq2_evidence import export_deseq2_evidence
 
 
 SAMPLE_COMPARISON = "ph_6.5_6.8_vs_ph_7.4_7.8_23d_juveniles"
-QUALITY_FLAGS = ["raw_reanalysis", "ocean_acidification_response", "ph_band_contrast_tipping_window_excluded", "no_ambient_ph_reference", "one_tank_per_ph_level", "gametogenesis_blocked_contrast"]
+QUALITY_FLAGS = ["raw_reanalysis", "ocean_acidification_response", "ph_band_contrast_tipping_window_excluded", "no_ambient_ph_reference", "one_tank_per_ph_level", "gametogenesis_blocked_contrast", "exploratory_tank_clustering_unmodeled"]
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"
 
 

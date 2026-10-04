@@ -15,6 +15,7 @@ FULL_WIDTH = {"width": "stretch"} if _STREAMLIT_VERSION >= (1, 49) else {"use_co
 
 st.set_page_config(page_title="AREE", layout="wide")
 st.title("Aquaculture Resilience Evidence Engine")
+st.warning("Evidence, candidate scores and cards below use simulated demo data. They are not findings from the registered real public studies.")
 
 registry_path = ROOT / "registry" / "study_registry.csv"
 evidence_path = ROOT / "data" / "demo" / "harmonized_evidence.tsv"
@@ -79,4 +80,3 @@ with tabs[3]:
         ]
     )
     st.dataframe(status, **FULL_WIDTH)
-

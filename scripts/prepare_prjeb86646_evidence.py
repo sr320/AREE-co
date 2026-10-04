@@ -7,7 +7,7 @@ from aree.raw.deseq2_evidence import export_deseq2_evidence
 
 
 SAMPLE_COMPARISON = "30C_vs_23C_fed_before_oshv1"
-QUALITY_FLAGS = ["raw_reanalysis", "temperature_response", "pre_infection_baseline", "family_blocked_contrast", "shared_control_group_with_PRJEB86618"]
+QUALITY_FLAGS = ["raw_reanalysis", "temperature_response", "pre_infection_baseline", "family_blocked_contrast", "dependence_group=DECICOMP_PRJEB86525_0h_controls", "shared_control_group_with_PRJEB86618"]
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"
 
 
