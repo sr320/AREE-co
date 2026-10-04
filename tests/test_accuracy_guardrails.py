@@ -130,11 +130,18 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     real_count = sum(len(read_tsv(path, usecols=['study_id'])) for path in (ROOT / 'data/harmonized').glob('*.tsv'))
     assert '>{:,}</div><div class="stat-label">Real harmonized evidence records'.format(real_count) in index
     assert '## Top candidates' not in index
-    assert 'not findings from the real public studies' in index
-    for path in [out / 'candidates.qmd', out / 'meta-analysis.qmd', out / 'evidence_cards/index.qmd']:
+    assert '## One displayed finding per harmonized study' in index
+    assert '## Simulated demo candidates' not in index
+    assert '(demo/index.qmd)' in index
+    for path in [out / 'demo/candidates.qmd', out / 'demo/meta-analysis.qmd', out / 'demo/evidence_cards/index.qmd']:
         assert 'simulated' in path.read_text().lower()
-    for path in (out / 'evidence_cards').glob('*.md'):
+    for path in (out / 'demo/evidence_cards').glob('*.md'):
         assert 'Simulated demo evidence' in path.read_text()
+    assert (out / 'evidence_cards/index.qmd').exists()
+    for path in (out / 'evidence_cards').glob('*.md'):
+        assert 'Real public-study evidence' in path.read_text()
+        assert 'Simulated demo evidence' not in path.read_text()
+    assert 'CGIG_HEAT_RNASEQ_001' not in (out / 'studies.qmd').read_text()
     ph = (out / 'studies/CGIG_OA_RNASEQ_PRJNA735889.qmd').read_text()
     assert 'tank clustering is not modeled' in ph
     assert 'ten tanks' in ph and 'no significance reward' in ph
