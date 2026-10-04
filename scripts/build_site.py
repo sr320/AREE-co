@@ -222,6 +222,8 @@ Last updated from commit [`{sha}`]({repo}/commit/{sha}) ({commit_date}); site bu
 
 Findings retain study-specific contrasts, gene descriptions, uncertainty and design limitations. They describe molecular associations, not validated predictors of resilience. The shared DECICOMP controls are not independent replication, and PRJNA735889's tank-dependent analysis remains exploratory.
 
+[How do expression findings relate to resilience?](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience) Learn what the comparison supports, why higher expression does not necessarily mean greater resilience, and what validation is needed.
+
 ## Real-study progress
 
 ::: {{.progress-table}}
