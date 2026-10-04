@@ -49,6 +49,8 @@ Candidate scores are prioritization aids. High-scoring candidates should be trea
 
 PRJEB86646 and PRJEB86618 share six DECICOMP control libraries and carry the same dependence group. Their agreement alone cannot establish independent cross-study replication.
 
+The two PRJNA913164 records (30 C seawater, and 30 C followed by 44 C emersion) share the same 23 diploid and triploid 20 C control oysters and carry the dependence group `PRJNA913164_20C_controls`, so they too count as one replication group.
+
 PRJNA735889 currently uses an oyster-level model on 50 oysters from ten tanks without accounting for tank clustering. Its p-values, FDR values and standard errors are exploratory until a tank-aware reanalysis is available. Evidence marked `exploratory_tank_clustering_unmodeled` receives no significance reward, cannot promote a candidate to the high-priority cross-study category, and remains visible with its limitations. `best_adjusted_p_value` in scores excludes these exploratory values; original nominal values remain in the evidence for provenance.
 
 ## Contradictory Findings
