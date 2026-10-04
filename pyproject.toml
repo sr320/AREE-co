@@ -19,7 +19,7 @@ authors = [{name = "AREE contributors"}]
 license = {file = "LICENSE"}
 
 [project.optional-dependencies]
-dev = ["pytest>=6", "ruff>=0.5"]
+dev = ["pytest>=7", "ruff>=0.5"]
 app = ["streamlit>=1.0"]
 
 [project.scripts]
@@ -33,6 +33,8 @@ aree = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Tests import the study scripts as the top-level ``scripts`` package.
+pythonpath = ["."]
 
 [tool.ruff]
 target-version = "py38"
