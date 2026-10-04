@@ -287,6 +287,9 @@ def study_detail_page(study):
     parts = ['---\ntitle: "{}"\n---\n'.format(study["study_id"])]
     if is_simulated(study["data_availability"]["status"]):
         parts.append("**Simulated demo study:** All observations are synthetic.\n")
+    parts.append("**Primary-analysis sample count:** {}. The counted unit and independent experimental units "
+                 "are described under Biological replication; counts may represent animals, pools or libraries.\n"
+                 .format(study["sample_size"]))
     if "tank_clustering_unmodeled" in study["analysis_status"]:
         parts.append("::: {.callout-warning}\n**Exploratory analysis: tank clustering is not modeled.** "
                      "The 50 oysters are subsamples from ten tanks (five per pH band). "

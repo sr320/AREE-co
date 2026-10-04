@@ -66,7 +66,10 @@
         "suggestive"
       ]
     },
-    "sample_size": {"type": "integer", "minimum": 1},
+    "sample_size": {
+      "type": "integer", "minimum": 1,
+      "description": "Count included in the final primary analysis, after exclusions or technical-replicate collapse. biological_replication must explain the counted unit (animals, pools or libraries) and the independent experimental units; this count is not necessarily independent biological replication."
+    },
     "biological_replication": {"type": "string"},
     "platform": {"type": ["string", "null"]},
     "data_availability": {
@@ -94,4 +97,3 @@
     "limitations": {"type": "array", "items": {"type": "string"}}
   }
 }
-

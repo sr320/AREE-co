@@ -127,6 +127,8 @@ def score_table(evidence):
     # A study must have one group across all its features; partial flagging is unsafe.
     if (evidence.groupby("study_id")["_dependence_group"].nunique() > 1).any():
         raise ValueError("Inconsistent dependence groups within a study")
+    if (evidence.groupby("study_id")["sample_size"].nunique(dropna=False) > 1).any():
+        raise ValueError("Inconsistent sample sizes within a study; regenerate evidence from the final registry")
     # Heterogeneity comes from the same evidence being scored, never from a previously written
     # (possibly filtered or stale) meta-analysis file. Groups with nothing poolable have no I2
     # and carry no heterogeneity information.
