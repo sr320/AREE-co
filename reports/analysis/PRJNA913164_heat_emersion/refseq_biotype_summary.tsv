@@ -1,0 +1,17 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	1587	0.08911725067385445	17808
+tested	misc_RNA	119	0.0066823899371069185	17808
+tested	protein_coding	16071	0.9024595687331537	17808
+tested	rRNA	15	0.0008423180592991914	17808
+tested	snRNA	10	0.0005615453728661276	17808
+tested	snoRNA	2	0.00011230907457322552	17808
+tested	transcribed_pseudogene	4	0.00022461814914645105	17808
+heat_emersion_higher_fdr_lt_0.05	lncRNA	128	0.07734138972809668	1655
+heat_emersion_higher_fdr_lt_0.05	misc_RNA	12	0.0072507552870090634	1655
+heat_emersion_higher_fdr_lt_0.05	protein_coding	1504	0.908761329305136	1655
+heat_emersion_higher_fdr_lt_0.05	snRNA	9	0.005438066465256798	1655
+heat_emersion_higher_fdr_lt_0.05	snoRNA	2	0.0012084592145015106	1655
+heat_emersion_lower_fdr_lt_0.05	lncRNA	77	0.048703352308665404	1581
+heat_emersion_lower_fdr_lt_0.05	misc_RNA	10	0.006325110689437065	1581
+heat_emersion_lower_fdr_lt_0.05	protein_coding	1493	0.9443390259329538	1581
+heat_emersion_lower_fdr_lt_0.05	transcribed_pseudogene	1	0.0006325110689437065	1581

@@ -18,8 +18,11 @@ DEFAULT_MANIFEST = Path("data/manifests/CGIG_HEATWAVE_RNASEQ_PRJNA913164_runs.ts
 EXPECTED_CONDITIONS = {"control": 24, "heat": 24, "heat_emersion": 24}
 # Each stressor is tested against the shared 20 C controls in its own design sheet.
 CONTRASTS = ("heat", "heat_emersion")
-# Libraries left out of the DESeq2 design sheets after QC (none yet; see the study YAML).
-EXCLUDED_SAMPLES = set()
+# Libraries left out of the DESeq2 design sheets after QC: median VST correlation with the
+# other libraries below the median minus three robust SDs (0.834) in a ~ ploidy + condition run on
+# all 72. Seven match the authors' exclusions; their eighth, D54, passes and is kept. R62 and N57
+# fall below the same cut-off and are also left out. See the study YAMLs.
+EXCLUDED_SAMPLES = {"N56", "X44", "X42", "T62", "R53", "N54", "M43", "R62", "N57"}
 
 
 def load_manifest(path):

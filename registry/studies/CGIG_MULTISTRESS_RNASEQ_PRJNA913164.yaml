@@ -22,15 +22,15 @@ phenotype: "thermal_tolerance"
 phenotype_direction: "Mortality after the multiple stressor was higher in triploids than diploids (36.4% versus 14.8%), with metabolic depression and reduced ctenidium Na/K-ATPase activity in triploids. AREE records the ctenidium transcriptional response averaged over ploidy, not survival per library."
 phenotype_units: "percent mortality"
 resilience_classification: "stress_response"
-sample_size: 48
-biological_replication: "48 ctenidium libraries, one oyster each: 24 controls and 24 30 C + 44 C emersion, 12 diploid and 12 triploid in each arm. The 24 control libraries are shared with CGIG_HEAT_RNASEQ_PRJNA913164 (30 C seawater only)."
+sample_size: 42
+biological_replication: "42 ctenidium libraries analysed, one oyster each (23 controls and 19 treated after QC exclusions), from 48 sequenced: 24 controls and 24 30 C + 44 C emersion, 12 diploid and 12 triploid in each arm. The 24 control libraries are shared with CGIG_HEAT_RNASEQ_PRJNA913164 (30 C seawater only)."
 platform: "Illumina NovaSeq 6000, QuantSeq 3' mRNA-Seq (Tag-seq), 101 bp single-end"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "Salmon 2.3.4 (--noLengthCorrection, sequence-bias correction) against GCF_963853765.1/RS_2024_06 on all 72 QuantSeq libraries; mapping rates are low for 3' tag-seq against the annotated transcriptome (18.7-46.4%, median 34.3%, among the 63 analysed libraries) but similar across arms (control 31.7%, 30 C + 44 C emersion 34.4%). Nine libraries were left out because their median VST correlation with the other libraries fell below the median minus three robust SDs (0.834): N56, X44, X42, T62, R53, N54 and M43, which the authors also excluded, and R62 and N57; the authors' eighth exclusion, D54, passes and is kept. Tested as ~ ploidy + condition on counts without the tximport length offset (23 control v 19 30 C + 44 C emersion): 3,236 of 17,808 tested genes reach FDR < 0.05 (1,655 higher, 1,581 lower); PC1 12.8%, PC2 10.3%. A ploidy-by-treatment likelihood-ratio test finds 26 genes with FDR < 0.05; within-ploidy Wald tests give 1,979 diploid and 1,347 triploid significant genes, with log2 fold changes correlated 0.30 across all tested genes. Of the publication's diploid and triploid multiple-stressor gene lists, 98.2% and 96.7% of genes tested here change in the same direction (99.7% and 99.5% among genes also significant here). The response: heat shock protein 68 genes rise up to about 360-fold (log2FC up to 8.5; 14 of 20 significant heat shock protein genes higher) with calreticulin and SR splicing factors, while high-mobility-group proteins and nucleolin fall."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1111/gcb.16880"
@@ -43,4 +43,5 @@ limitations:
   - "The study has three arms that share one control group. AREE records each stressor against the 20 C controls as its own study (CGIG_HEAT_RNASEQ_PRJNA913164 (30 C seawater only) is the other), so the two records share their reference group and their effect estimates are correlated; they must not be treated as independent in a meta-analysis."
   - "Diploids and triploids are pooled with ploidy as a blocking factor (~ ploidy + condition), so the effect is averaged over ploidy. The publication's main finding is that triploids respond differently, especially to the multiple stressor; the ploidy-by-treatment interaction is reported in the quality-control summary, and ploidy-specific effects are not part of this record."
   - "QuantSeq 3' tag-seq yields about one read per transcript, so Salmon was run with --noLengthCorrection and DESeq2 used the counts without the tximport length offset (--tag-seq=yes). Library sizes are small (0.9-8.3 million reads), and isoform-level information is not recoverable."
-  - "The authors excluded eight libraries as outliers in their DESeq2 analysis (D54, N56, X44, R53, M43, N54, X42, T62). AREE quantifies all 72 and applies its own QC; which libraries are excluded here, and why, is recorded in the quality-control summary."
+  - "The authors excluded eight libraries as outliers (D54, N56, X44, R53, M43, N54, X42, T62). AREE quantified all 72 and applied its own rule (median VST correlation below the median minus three robust SDs): seven of the authors' eight fail it, D54 passes and is kept, and R62 and N57 also fail and are left out. The exclusions live in scripts/prepare_prjna913164_fastqs.py and remove one or two libraries from some ploidy-by-treatment cells."
+  - "The expressed-SNP replicate check (scripts/check_replicate_genotypes.py) could not be run: 3' tags cover too little of the target transcripts (about 2,000 usable reads per library, even after poly-A and adapter trimming) to call allele frequencies. Each library is a single adult oyster according to the publication, so no pooling or resequencing is expected, but this was not verified genetically."
