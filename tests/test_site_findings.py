@@ -18,10 +18,10 @@ def findings():
 
 def test_real_findings_do_not_use_simulated_data_or_global_rankings(findings):
     studies, (evidence, summaries, selected) = findings
-    assert len(evidence) == 220849
-    assert len(summaries) == 10
-    assert len(selected) == 90
-    assert selected.study_id.nunique() == 9
+    assert len(evidence) == 256742
+    assert len(summaries) == 12
+    assert len(selected) == 110
+    assert selected.study_id.nunique() == 11
     assert selected.groupby('study_id').size().eq(10).all()
     assert all(not studies[study]['data_availability']['status'].startswith('simulated') for study in evidence.study_id.unique())
     assert 'score' not in selected

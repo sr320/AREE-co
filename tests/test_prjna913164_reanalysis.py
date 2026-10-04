@@ -58,4 +58,5 @@ def test_each_stressor_is_its_own_record_sharing_the_controls(tmp_path):
         assert rows[0]["sample_comparison"] == spec["sample_comparison"]
         assert rows[0]["molecular_direction"] == "up"
         flags = rows[0]["quality_flags"].split(";")
-        assert {"shared_control_group", "quantseq_3prime_tag_seq", "ploidy_blocked_contrast"} <= set(flags)
+        assert {"shared_control_group", "quantseq_3prime_tag_seq", "ploidy_blocked_contrast",
+                "dependence_group=PRJNA913164_20C_controls"} <= set(flags)
