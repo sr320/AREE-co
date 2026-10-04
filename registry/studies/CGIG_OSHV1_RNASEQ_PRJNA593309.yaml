@@ -1,0 +1,48 @@
+study_id: CGIG_OSHV1_RNASEQ_PRJNA593309
+doi: "10.1242/jeb.226233"
+accessions:
+  bioproject: "PRJNA593309"
+  pmid: "32816959"
+  pmcid: "PMC7578350"
+citation: "Delisle L, Pauletto M, Vidal-Dupiol J, Petton B, Bargelloni L, Montagnani C, Pernet F, Corporeau C, Fleury E. High temperature induces transcriptomic changes in Crassostrea gigas that hinder progress of ostreid herpesvirus (OsHV-1) and promote survival. J Exp Biol. 2020;223(Pt 20):jeb226233."
+species: "Crassostrea gigas"
+strain_population_family: "Specific-pathogen-free juveniles produced at the Ifremer Argenton hatchery"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "juvenile"
+experimental_treatment: "48 h after the start of cohabitation with OsHV-1 muVar-injected donor oysters at 21 C"
+control_condition: "Same 21 C tanks sampled at 0 h, when donors were added (uninfected baseline)"
+stressor_class: "pathogen_challenge"
+exposure:
+  intensity: "cohabitation in 45 l tanks with donor oysters injected with OsHV-1 muVar, at 21 C, the permissive temperature"
+  duration: "48 h of cohabitation"
+  timing: "acute infection; recipients acclimated 10 days at 21 C beforehand"
+phenotype: "immune_responsiveness"
+phenotype_direction: "At 21 C survival 14 days after cohabitation was 52.4%, and OsHV-1 DNA had reached high levels in all three oysters sampled at 48 h. AREE records the whole-oyster transcriptional response to infection, not survival per library."
+phenotype_units: "percent survival 14 days after OsHV-1 cohabitation"
+resilience_classification: "disease_associated"
+sample_size: 6
+biological_replication: "6 libraries, one whole 8-month-old oyster per tank: three at 0 h and three at 48 h, the same three 21 C tanks sampled at both times."
+platform: "Illumina HiSeq 4000, TruSeq Stranded mRNA, 2 x 125 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://doi.org/10.1242/jeb.226233"
+    - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7578350/"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA593309"
+  curator: "AREE contributors"
+  curation_date: "2026-10-04"
+limitations:
+  - "The 0 h and 48 h oysters come from the same three tanks. The primary model is unpaired (~ condition); a tank-paired model (~ tank + condition) is kept as a sensitivity analysis."
+  - "One whole oyster per tank was sequenced at each time point, with three replicate tanks per temperature (45 l tanks), so libraries are tank-level replicates and the contrast has three tanks per arm."
+  - "The two AREE records from this study use different oysters but the same three 21 C tanks (the 21 C 12 h oysters of CGIG_HEAT_RNASEQ_PRJNA593309 and the 21 C 0 h and 48 h oysters of CGIG_OSHV1_RNASEQ_PRJNA593309), so both carry the dependence group PRJNA593309_21C_tanks and count as one replication group."
+  - "The BioSamples give a collection date of 2019-05-19, but the publication dates the experiment to May 2016; the experimental groups follow the sample aliases (Cg_<CTR | OsHV>_<temperature>_<hours>hpc_<replicate>), which agree with the publication's design."
+  - "The study also deposited libraries at 26 C and at 24 and 96 h; the publication does not analyse the 26 C libraries, and AREE uses only the time points of its two contrasts."
+  - "The publication aligned reads with STAR to the Ensembl oyster genome v9.38 and tested with edgeR; AREE quantifies against GCF_963853765.1/RS_2024_06 with Salmon and DESeq2."
