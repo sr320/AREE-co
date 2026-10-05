@@ -27,10 +27,10 @@ biological_replication: "12 day-41 gill libraries, one oyster each: 6 controls a
 platform: "Illumina NovaSeq 6000, 76 bp single-end"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 18 day-41 gill libraries (124,984,054 single-end reads) quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping rates 37.3-53.1% and similar across arms (control 45.7%, leachate 46.9%, tire particles 43.8%). Expressed-SNP allele frequencies at 80 sites (few, because reads are 76 bp) show every library is a different oyster (all pairs differ by 0.213 or more against 0.037 for one RNA resequenced). No library is an outlier (median VST correlations 0.87-0.90). ~ condition (6 v 6): 8 of 15,141 tested genes reach FDR < 0.05 (5 higher, 3 lower with high tire particles), among them an ankyrin-like gene and baculoviral IAP repeat-containing protein 8; PC1 explains 14.8% of variance. The near-null response agrees with the publication, which reports transcriptional effects mainly for leachate."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1016/j.jhazmat.2024.135742"

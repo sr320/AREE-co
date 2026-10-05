@@ -37,6 +37,8 @@ The current real evidence cards are **study-specific molecular findings with var
 
 The primary website presents real study-level findings without cross-study pooling. The following describes the analysis engine; synthetic pooled results are available in the secondary demo section.
 
+If multiple usable effects in a feature/context group share a replication group, the engine retains the group with `pooling_status=dependent_effects_require_covariance` and no pooled effect, standard error or heterogeneity estimate. All effects in that group are listed as excluded from pooling; shared controls require a covariance-aware model rather than independent-effect weighting. Repeated effects from one study are guarded in the same way. This does not replace a biological review of contrast comparability.
+
 Comparable effects are pooled by feature, feature type, effect-size type, phenotype, and stressor; effects on different scales are never pooled. Effects without usable uncertainty or marked as exploratory because tank clustering is unmodeled cannot be pooled. They remain in the meta-analysis table with a `pooling_status` (`pooled`, `single_effect`, `no_standard_errors`, or `no_inference_eligible_effects`) and are counted in `n_effects_excluded`/`excluded_study_ids`; the report lists per-study coverage. Random-effects summaries report heterogeneity so contradictory findings remain visible.
 
 ## Candidate Scores
@@ -50,6 +52,8 @@ Candidate scores are prioritization aids. High-scoring candidates should be trea
 PRJEB86646 and PRJEB86618 share six DECICOMP control libraries and carry the same dependence group. Their agreement alone cannot establish independent cross-study replication.
 
 The two PRJNA913164 records (30 C seawater, and 30 C followed by 44 C emersion) share the same 23 diploid and triploid 20 C control oysters and carry the dependence group `PRJNA913164_20C_controls`, so they too count as one replication group.
+
+The PRJNA593309 records (OsHV-1 at 21 C, and 29 C versus 21 C during infection) use different oysters from the same three 21 C tanks and carry `PRJNA593309_21C_tanks`. The two PRJNA856813 tire records (high leachate and high microparticles) test against the same six gill control oysters and carry `PRJNA856813_gill_controls`.
 
 PRJNA735889 currently uses an oyster-level model on 50 oysters from ten tanks without accounting for tank clustering. Its p-values, FDR values and standard errors are exploratory until a tank-aware reanalysis is available. Evidence marked `exploratory_tank_clustering_unmodeled` receives no significance reward, cannot promote a candidate to the high-priority cross-study category, and remains visible with its limitations. `best_adjusted_p_value` in scores excludes these exploratory values; original nominal values remain in the evidence for provenance.
 

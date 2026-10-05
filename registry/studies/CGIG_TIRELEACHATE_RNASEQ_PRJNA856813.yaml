@@ -27,10 +27,10 @@ biological_replication: "12 day-41 gill libraries, one oyster each: 6 controls a
 platform: "Illumina NovaSeq 6000, 76 bp single-end"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 18 day-41 gill libraries (124,984,054 single-end reads) quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping rates 37.3-53.1% and similar across arms (control 45.7%, leachate 46.9%, tire particles 43.8%). Expressed-SNP allele frequencies at 80 sites (few, because reads are 76 bp) show every library is a different oyster (all pairs differ by 0.213 or more against 0.037 for one RNA resequenced). No library is an outlier (median VST correlations 0.87-0.90). ~ condition (6 v 6): 46 of 15,278 tested genes reach FDR < 0.05 (26 higher, 20 lower with high leachate); PC1 explains 21.5% of variance. Higher are innate RNA-sensing and antiviral genes (double-stranded RNA-specific adenosine deaminase, HELZ2-like exoribonuclease), acyl-CoA desaturase and agmatinase, consistent with the publication's activation of stress responses and energy metabolism under leachate; the small number of genes agrees with its conclusion of limited effects in adults."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1016/j.jhazmat.2024.135742"

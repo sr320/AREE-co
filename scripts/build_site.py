@@ -17,6 +17,8 @@ import yaml
 
 from aree.reporting.site_findings import load_findings, write_real_findings
 from aree.reporting.evidence_cards import card_filename
+from aree.intake.registry import flatten_for_registry, REGISTRY_COLUMNS
+from aree.validation.schemas import validate_study_file
 
 ROOT = Path(__file__).resolve().parents[1]
 REPO_URL = "https://github.com/sr320/AREE-co"
@@ -78,8 +80,13 @@ def load_registry():
     registry = pd.read_csv(ROOT / "registry" / "study_registry.csv", dtype=str)
     extra = {}
     for path in sorted((ROOT / "registry" / "studies").glob("*.yaml")):
-        record = yaml.safe_load(path.read_text()) or {}
+        record = validate_study_file(path)
         extra[record.get("study_id", path.stem)] = record
+    expected = pd.DataFrame([flatten_for_registry(study) for study in extra.values()], columns=REGISTRY_COLUMNS)
+    def normalized(frame):
+        return frame[REGISTRY_COLUMNS].fillna("").astype(str).sort_values("study_id").reset_index(drop=True)
+    if not set(REGISTRY_COLUMNS).issubset(registry.columns) or not normalized(expected).equals(normalized(registry)):
+        raise ValueError("Registry CSV is stale or inconsistent with study YAML files; regenerate it before building the site")
     return registry, extra
 
 
@@ -126,7 +133,10 @@ def quarto_config(analyses, cards):
             "title": "AREE",
             "site-url": "https://sr320.github.io/AREE-co/",
             "repo-url": REPO_URL,
-            "repo-actions": ["source", "issue"],
+            # Pages are generated outside the checkout, so Quarto's default source URLs
+            # point at files that do not exist in the repository. Keep the repository icon
+            # and issue action; cards carry explicit links to their committed inputs.
+            "repo-actions": ["issue"],
             "page-footer": "Aquaculture Resilience Evidence Engine · association evidence only, not validated biomarkers",
             "navbar": {
                 "left": [
@@ -151,15 +161,16 @@ def quarto_config(analyses, cards):
 
 def progress_page(registry, extra, summaries, cards, highlights, evidence):
     real = registry[~registry["data_status"].map(is_simulated)]
-    reanalyzed = registry[registry["data_status"].str.contains("reanalysis_complete", na=False)]
+    reanalyzed = real[real["data_status"].str.contains("reanalysis_complete", na=False)]
     sha = git("rev-parse", "--short", "HEAD")
     commit_date = git("log", "-1", "--format=%cd", "--date=format:%Y-%m-%d %H:%M %Z")
     built = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     tiles = [
-        ("Real public studies", len(real)),
-        ("Raw-data reanalyses complete", len(reanalyzed)),
-        ("Studies with harmonized evidence", int(summaries["records"].gt(0).sum())),
+        ("Real public BioProjects", real["study_id"].map(lambda study: bioproject_for(study, extra)).nunique()),
+        ("Registered real-study contrasts", len(real)),
+        ("BioProjects reanalysed", reanalyzed["study_id"].map(lambda study: bioproject_for(study, extra)).nunique()),
+        ("Contrasts with harmonized evidence", int(summaries["records"].gt(0).sum())),
         ("Real harmonized evidence records", len(evidence)),
         ("Real evidence cards", len(cards)),
     ]
@@ -196,8 +207,8 @@ def progress_page(registry, extra, summaries, cards, highlights, evidence):
     for rec in highlights.groupby("study_id", sort=True).head(1).itertuples(index=False):
         examples.append([bioproject_for(rec.study_id, extra),
                          "[{}](evidence_cards/{})".format(rec.feature_id_standardized, card_filename(rec.feature_id_standardized)),
-                         rec.description, rec.inference_status])
-    top = md_table(pd.DataFrame(examples, columns=["Study", "Feature / real evidence card", "RefSeq description", "Interpretation"])) if examples else "_No real findings available yet._"
+                         rec.sample_comparison, rec.description, rec.inference_status])
+    top = md_table(pd.DataFrame(examples, columns=["BioProject", "Feature / real evidence card", "Contrast", "RefSeq description", "Interpretation"])) if examples else "_No real findings available yet._"
 
     return """---
 title: "Aquaculture Resilience Evidence Engine"
@@ -221,6 +232,8 @@ Last updated from commit [`{sha}`]({repo}/commit/{sha}) ({commit_date}); site bu
 [Browse real-study findings](candidates.qmd) · [Browse real evidence cards](evidence_cards/index.qmd)
 
 Findings retain study-specific contrasts, gene descriptions, uncertainty and design limitations. They describe molecular associations, not validated predictors of resilience. The shared DECICOMP controls are not independent replication, and PRJNA735889's tank-dependent analysis remains exploratory.
+
+Counts distinguish public BioProjects from registered contrasts. PRJNA913164 contributes two contrasts with shared controls; neither the contrast count nor the BioProject count establishes independent replication.
 
 [How do expression findings relate to resilience?](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience) Learn what the comparison supports, why higher expression does not necessarily mean greater resilience, and what validation is needed.
 

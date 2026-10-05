@@ -5,7 +5,7 @@ import pytest
 import yaml
 
 from aree.reporting.site_findings import load_findings, real_card
-from scripts.build_site import md_table
+from scripts.build_site import md_table, load_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,11 +18,15 @@ def findings():
 
 def test_real_findings_do_not_use_simulated_data_or_global_rankings(findings):
     studies, (evidence, summaries, selected) = findings
-    assert len(evidence) == 286240
+    assert len(evidence) == 316659
     assert len(summaries) == 16
-    assert len(selected) == 130
-    assert selected.study_id.nunique() == 13
-    assert selected.groupby('study_id').size().eq(10).all()
+    assert len(selected) == 148
+    assert selected.study_id.nunique() == 15
+    # Each study features ten findings, or all of them when fewer reach FDR < 0.05.
+    sizes = selected.groupby('study_id').size()
+    assert sizes.le(10).all()
+    assert sizes.drop('CGIG_TIREPARTICLE_RNASEQ_PRJNA856813').eq(10).all()
+    assert sizes['CGIG_TIREPARTICLE_RNASEQ_PRJNA856813'] == 8
     assert all(not studies[study]['data_availability']['status'].startswith('simulated') for study in evidence.study_id.unique())
     assert 'score' not in selected
     assert 'CGIG_OA_RNASEQ_PRJNA1196326' not in set(evidence.study_id)
@@ -80,3 +84,17 @@ def test_build_rejects_stale_sample_metadata(findings):
     studies[study] = dict(studies[study], sample_size=26)
     with pytest.raises(ValueError, match='final sample count'):
         load_findings(ROOT, studies)
+
+
+def test_site_rejects_stale_registry_csv(tmp_path, monkeypatch):
+    import shutil
+    import scripts.build_site as site
+
+    shutil.copytree(ROOT / 'registry', tmp_path / 'registry')
+    path = tmp_path / 'registry/study_registry.csv'
+    registry = pd.read_csv(path)
+    registry.loc[0, 'quality_control_status'] = 'stale metadata'
+    registry.to_csv(path, index=False)
+    monkeypatch.setattr(site, 'ROOT', tmp_path)
+    with pytest.raises(ValueError, match='Registry CSV is stale'):
+        load_registry()

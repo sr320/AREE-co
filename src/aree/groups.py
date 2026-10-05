@@ -1,6 +1,27 @@
 import math
 
 
+def dependence_group(study_id, flags):
+    """Explicit replication groups travel with evidence outside the checkout."""
+    groups = {flag.split("=", 1)[1] for flag in str(flags).split(";")
+              if flag.startswith("dependence_group=")}
+    if len(groups) > 1 or "" in groups:
+        raise ValueError("Invalid dependence group for {}".format(study_id))
+    return "group:" + next(iter(groups)) if groups else "study:" + str(study_id)
+
+
+def dependence_groups(evidence):
+    flags = evidence["quality_flags"] if "quality_flags" in evidence else [None] * len(evidence)
+    groups, seen = [], {}
+    for study, flag in zip(evidence["study_id"], flags):
+        group = dependence_group(study, flag)
+        if study in seen and seen[study] != group:
+            raise ValueError("Inconsistent dependence groups within a study")
+        seen[study] = group
+        groups.append(group)
+    return groups
+
+
 def is_missing(value):
     return value is None or (isinstance(value, float) and math.isnan(value))
 

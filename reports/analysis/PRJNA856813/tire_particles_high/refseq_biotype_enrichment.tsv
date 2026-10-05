@@ -1,0 +1,15 @@
+gene_set	gene_biotype	observed	expected	fold_enrichment	p_value_upper_tail	adjusted_p_value_bh
+tire_particles_high_higher_fdr_lt_0.05	lncRNA	2	0.31602932435109965	6.328526645768025	0.0351094007744481	0.4915316108422734
+tire_particles_high_higher_fdr_lt_0.05	misc_RNA	0	0.02972062611452348	0.0	1.0	1.0
+tire_particles_high_higher_fdr_lt_0.05	protein_coding	3	4.648636153490522	0.6453505718547986	0.9968925279726781	1.0
+tire_particles_high_higher_fdr_lt_0.05	rRNA	0	0.003302291790502609	0.0	1.0	1.0
+tire_particles_high_higher_fdr_lt_0.05	snRNA	0	0.0013209167162010435	0.0	1.0	1.0
+tire_particles_high_higher_fdr_lt_0.05	snoRNA	0	0.00033022917905026086	0.0	0.9999999999881742	1.0
+tire_particles_high_higher_fdr_lt_0.05	transcribed_pseudogene	0	0.0006604583581005217	0.0	0.9999999999964727	1.0
+tire_particles_high_lower_fdr_lt_0.05	lncRNA	1	0.1896175946106598	5.273772204806686	0.17789614835612017	1.0
+tire_particles_high_lower_fdr_lt_0.05	misc_RNA	0	0.01783237566871409	0.0	1.0	1.0
+tire_particles_high_lower_fdr_lt_0.05	protein_coding	2	2.7891816920943135	0.7170561909497762	0.9858903919413954	1.0
+tire_particles_high_lower_fdr_lt_0.05	rRNA	0	0.0019813750743015654	0.0	1.0	1.0
+tire_particles_high_lower_fdr_lt_0.05	snRNA	0	0.0007925500297206261	0.0	1.0	1.0
+tire_particles_high_lower_fdr_lt_0.05	snoRNA	0	0.00019813750743015652	0.0	0.9999999999843077	1.0
+tire_particles_high_lower_fdr_lt_0.05	transcribed_pseudogene	0	0.00039627501486031304	0.0	0.9999999999906007	1.0

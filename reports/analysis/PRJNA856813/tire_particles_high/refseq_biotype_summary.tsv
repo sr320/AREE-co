@@ -1,0 +1,12 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	957	0.06320586487021994	15141
+tested	misc_RNA	90	0.005944125222904696	15141
+tested	protein_coding	14077	0.9297272306981045	15141
+tested	rRNA	10	0.0006604583581005217	15141
+tested	snRNA	4	0.0002641833432402087	15141
+tested	snoRNA	1	6.604583581005217e-05	15141
+tested	transcribed_pseudogene	2	0.00013209167162010435	15141
+tire_particles_high_higher_fdr_lt_0.05	lncRNA	2	0.4	5
+tire_particles_high_higher_fdr_lt_0.05	protein_coding	3	0.6	5
+tire_particles_high_lower_fdr_lt_0.05	lncRNA	1	0.3333333333333333	3
+tire_particles_high_lower_fdr_lt_0.05	protein_coding	2	0.6666666666666666	3
