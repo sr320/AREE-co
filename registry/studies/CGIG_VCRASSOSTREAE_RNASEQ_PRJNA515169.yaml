@@ -1,0 +1,46 @@
+study_id: CGIG_VCRASSOSTREAE_RNASEQ_PRJNA515169
+doi: "10.1073/pnas.1905747116"
+accessions:
+  bioproject: "PRJNA515169"
+  pmid: "31221761"
+  pmcid: "PMC6628822"
+citation: "Rubio T, Oyanedel D, Labreuche Y, Toulza E, Luo X, Bruto M, Chaparro C, Torres M, de Lorgeril J, Haffner P, Vidal-Dupiol J, Lagorce A, Petton B, Mitta G, Jacq A, Le Roux F, Charriere GM, Destoumieux-Garzon D. Species-specific mechanisms of cytotoxicity toward immune cells determine the successful outcome of Vibrio infections. Proc Natl Acad Sci U S A. 2019;116(28):14238-14247."
+species: "Crassostrea gigas"
+strain_population_family: "Diploid juvenile spat from Ifremer biparental families (Decipher 1, 14 and 15) and a standardized Ifremer batch (NSI) from a pool of 120 genitors; which batch each experiment used is not recorded in the public metadata"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "spat"
+experimental_treatment: "Injected into the adductor muscle with 7.5 x 10^7 CFU of the virulent Vibrio crassostreae J2-9 and sampled 8 h later"
+control_condition: "Mock-injected with sterile seawater and sampled 8 h later (sample alias 'anesthesis')"
+stressor_class: "pathogen_challenge"
+exposure:
+  intensity: "7.5 x 10^7 CFU per oyster by intramuscular injection at 20 C"
+  duration: "8 h"
+  timing: "acute infection; virulent strains cause about 60% mortality within 3 days, while nonvirulent strains of the same species are cleared"
+phenotype: "immune_responsiveness"
+phenotype_direction: "Virulent V. crassostreae J2-9 killed about 60% of oysters within 3 days, through contact-dependent hemocyte lysis requiring the r5.7 gene. AREE records the 8 h whole-spat transcriptional response to infection, not survival per library."
+phenotype_units: "percent survival after injection"
+resilience_classification: "disease_associated"
+sample_size: 6
+biological_replication: "6 libraries, each a pool of 30 spat: one mock and one V. crassostreae J2-9 pool from each of three independent infection experiments. Pools of 30 animals average out individual variation, so replication is at the level of experiments."
+platform: "Illumina HiSeq, directional poly(A) libraries, 2 x 75 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://doi.org/10.1073/pnas.1905747116"
+    - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6628822/"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA515169"
+  curator: "AREE contributors"
+  curation_date: "2026-10-05"
+limitations:
+  - "The two AREE records from this study (the other is CGIG_VTASMANIENSIS_RNASEQ_PRJNA515169, V. tasmaniensis LGP32) test against the same three mock-injected pools, so they carry the dependence group PRJNA515169_mock_pools and count as one replication group."
+  - "Replicate numbers in the sample aliases are taken to identify the independent infection experiment, as the publication describes one pool per condition per experiment; the model blocks on experiment (~ experiment + condition)."
+  - "The mock control is an injection of sterile seawater, so the contrast isolates the response to the bacteria, not to injection; the study's untreated oysters and its nonvirulent strains (V. tasmaniensis LMG20012T, V. crassostreae J2-8) are not used."
+  - "The publication reports 331 oyster genes modulated by Vibrio relative to mock across strains, analysed in the IHPE Galaxy pipeline; AREE quantifies against GCF_963853765.1/RS_2024_06 with Salmon and DESeq2."
