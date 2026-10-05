@@ -37,6 +37,8 @@ The current real evidence cards are **study-specific molecular findings with var
 
 The primary website presents real study-level findings without cross-study pooling. The following describes the analysis engine; synthetic pooled results are available in the secondary demo section.
 
+If multiple usable effects in a feature/context group share a replication group, the engine retains the group with `pooling_status=dependent_effects_require_covariance` and no pooled effect, standard error or heterogeneity estimate. All effects in that group are listed as excluded from pooling; shared controls require a covariance-aware model rather than independent-effect weighting. Repeated effects from one study are guarded in the same way. This does not replace a biological review of contrast comparability.
+
 Comparable effects are pooled by feature, feature type, effect-size type, phenotype, and stressor; effects on different scales are never pooled. Effects without usable uncertainty or marked as exploratory because tank clustering is unmodeled cannot be pooled. They remain in the meta-analysis table with a `pooling_status` (`pooled`, `single_effect`, `no_standard_errors`, or `no_inference_eligible_effects`) and are counted in `n_effects_excluded`/`excluded_study_ids`; the report lists per-study coverage. Random-effects summaries report heterogeneity so contradictory findings remain visible.
 
 ## Candidate Scores

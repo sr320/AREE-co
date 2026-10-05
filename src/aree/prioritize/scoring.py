@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from aree.groups import column_groups, is_missing, present
+from aree.groups import column_groups, dependence_group, is_missing, present
 from aree.harmonize.identifiers import mapping_score
 from aree.io import read_evidence
 from aree.meta_analysis.random_effects import EXPLORATORY_FLAG, meta_analysis_table
@@ -69,15 +69,6 @@ SCORED_COLUMNS = [
     "life_stage",
     "_dependence_group",
 ]
-
-
-def dependence_group(study_id, flags):
-    """Explicit groups travel with evidence, including when scored outside this checkout."""
-    groups = {flag.split("=", 1)[1] for flag in str(flags).split(";")
-              if flag.startswith("dependence_group=")}
-    if len(groups) > 1 or "" in groups:
-        raise ValueError("Invalid dependence group for {}".format(study_id))
-    return "group:" + next(iter(groups)) if groups else "study:" + str(study_id)
 
 
 def _mean(values):

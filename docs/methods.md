@@ -6,6 +6,8 @@ Comparable evidence is grouped by standardized feature, feature type, effect-siz
 
 ## Published real-study findings
 
+The meta-analysis engine withholds pooled estimates for any feature/context group containing multiple usable effects from the same replication group. These groups remain visible as `dependent_effects_require_covariance`; their heterogeneity is also withheld from scoring. A covariance-aware model and biological comparability review are required before pooling correlated contrasts.
+
 The primary website derives findings directly from the committed real harmonized release and its versioned RefSeq annotation tables. It selects ten genes per study for browsing: inference-eligible genes with adjusted p < 0.05, ordered by adjusted p-value, absolute effect, and feature identifier. The exploratory PRJNA735889 analysis instead supplies ten descriptive effects ordered by absolute effect, without using nominal significance for selection. Full study tables remain downloadable, and the selection method is shown alongside the findings.
 
 Real evidence cards cover the union of these selections and retain every available real-study observation for each feature, including nonsignificant effects. They display study-specific contrasts, uncertainty, phenotype interpretation, biological replication, limitations and input provenance. The primary website does not apply a global cross-context biomarker score or pool effects across studies: comparability and experimental dependence require review beyond shared identifiers and broad phenotype labels. Synthetic scoring and meta-analysis remain available in the separate workflow demo.

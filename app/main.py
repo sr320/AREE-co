@@ -48,7 +48,7 @@ with tabs[1]:
             if values:
                 filtered = filtered[filtered[column].isin(values)]
         if query:
-            mask = filtered.astype(str).apply(lambda col: col.str.contains(query, case=False, na=False)).any(axis=1)
+            mask = filtered.astype(str).apply(lambda col: col.str.contains(query, case=False, na=False, regex=False)).any(axis=1)
             filtered = filtered[mask]
         st.dataframe(filtered, **FULL_WIDTH)
         st.download_button("Download filtered evidence TSV", filtered.to_csv(sep="\t", index=False), "aree_filtered_evidence.tsv")

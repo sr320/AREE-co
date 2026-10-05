@@ -14,6 +14,8 @@ The site leads with real-study findings and real evidence cards, derived from co
 
 ## What Is Runnable Now
 
+Website counts distinguish public BioProjects from registered study contrasts: one BioProject can contribute multiple contrasts, and shared controls constrain independent replication. The site build checks the registry CSV against the study YAML files to prevent stale metadata from being published.
+
 - Study registration validation against JSON Schema.
 - Registry ingestion from YAML into `registry/study_registry.csv`.
 - Processed-result harmonization for RNA-seq, methylation, proteomics, and metabolomics-style tables.
@@ -40,7 +42,7 @@ If you prefer to use an existing Python environment:
 python3 -m pip install -e ".[dev,app]"
 ```
 
-AREE supports Python 3.8 and newer; CI tests Python 3.8 with the lowest dependency versions `pyproject.toml` allows and Python 3.13 with the newest.
+AREE supports Python 3.8 and newer; CI tests Python 3.8 with the lowest dependency versions `pyproject.toml` allows and Python 3.13 with the highest compatible dependency versions.
 
 Commands read and write project files (`registry/`, `data/`, `reports/`). With an editable install from this checkout they use the checkout. With a regular install (`pip install .`), run `aree` from inside the project directory (any subdirectory works) or set `AREE_ROOT=/path/to/project`.
 
@@ -140,6 +142,8 @@ AREE/
 
 ## Production Status
 
+The meta-analysis engine retains correlated feature/context groups as `dependent_effects_require_covariance` without a pooled estimate or heterogeneity penalty. Shared-sample covariance and biological comparability require review before real synthesis.
+
 | Area | Status |
 |---|---|
 | Study schema validation | Complete and runnable. |
@@ -151,7 +155,7 @@ AREE/
 | Streamlit app | Complete lightweight browser; production search and visualizations remain future work. |
 | Raw RNA-seq Nextflow pipeline | Runnable; tested end to end on synthetic reads in CI. Other assays enter as processed results. |
 | Containers | Scaffolded. |
-| CI | Included; depends on runner availability for optional Quarto/Streamlit dependencies. |
+| CI | Python compatibility tests, lint, wheel installation, demo reproducibility and a synthetic Nextflow pipeline run. A separate Pages workflow builds and deploys the website. |
 
 ## First Curation Targets
 
