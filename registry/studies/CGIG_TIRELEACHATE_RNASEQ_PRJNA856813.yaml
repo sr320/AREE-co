@@ -1,0 +1,44 @@
+study_id: CGIG_TIRELEACHATE_RNASEQ_PRJNA856813
+doi: "10.1016/j.jhazmat.2024.135742"
+accessions:
+  bioproject: "PRJNA856813"
+  pmid: "39276742"
+citation: "Bernardini I, Tallec K, Paul-Pont I, Peruzza L, Dalla Rovere G, Huber M, Di Poi C, Koechlin H, Quere C, Quillien V, Le Grand J, Le Goic N, Lambert C, Lagarde F, Detree C, Trevisan R, Corporeau C, Patarnello T, Milan M, Huvet A. Effects of tire particles and associated-chemicals on the Pacific oyster (Magallana gigas) physiology, reproduction and next-generation. J Hazard Mater. 2024;480:135742."
+species: "Crassostrea gigas"
+strain_population_family: "Adult oysters conditioned at the Ifremer Argenton station (TOYOTA project); origin not recorded in the public metadata"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "adult"
+experimental_treatment: "Exposed for 41 days to the high concentration of tire leachate (chemicals released from tire particles, without the particles)"
+control_condition: "Unexposed control oysters, gill sampled on day 41"
+stressor_class: "pollutant_exposure"
+exposure:
+  intensity: "high-concentration tire leachate; concentration not recorded in the public metadata"
+  duration: "41 days of exposure before gill sampling"
+  timing: "chronic exposure during reproductive conditioning; gill sampled 2021-04-13"
+phenotype: "metabolic_resilience"
+phenotype_direction: "The publication reports activation of energy metabolism and stress responses under leachate exposure, signs of microbiota dysbiosis at high concentrations, reduced sperm motility and oocyte transcriptional changes, but no significant ecophysiological change in adults and no effect on offspring growth, which it interprets as possible resilience. AREE records the gill transcriptional response, not a measured phenotype per library."
+phenotype_units: null
+resilience_classification: "stress_response"
+sample_size: 12
+biological_replication: "12 day-41 gill libraries, one oyster each: 6 controls and 6 high-concentration leachate oysters."
+platform: "Illumina NovaSeq 6000, 76 bp single-end"
+data_availability:
+  raw: true
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 18 day-41 gill libraries (124,984,054 single-end reads) quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping rates 37.3-53.1% and similar across arms (control 45.7%, leachate 46.9%, tire particles 43.8%). Expressed-SNP allele frequencies at 80 sites (few, because reads are 76 bp) show every library is a different oyster (all pairs differ by 0.213 or more against 0.037 for one RNA resequenced). No library is an outlier (median VST correlations 0.87-0.90). ~ condition (6 v 6): 46 of 15,278 tested genes reach FDR < 0.05 (26 higher, 20 lower with high leachate); PC1 explains 21.5% of variance. Higher are innate RNA-sensing and antiviral genes (double-stranded RNA-specific adenosine deaminase, HELZ2-like exoribonuclease), acyl-CoA desaturase and agmatinase, consistent with the publication's activation of stress responses and energy metabolism under leachate; the small number of genes agrees with its conclusion of limited effects in adults."
+analysis_status: "raw_reanalysis_harmonized"
+provenance:
+  source_links:
+    - "https://doi.org/10.1016/j.jhazmat.2024.135742"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA856813"
+  curator: "AREE contributors"
+  curation_date: "2026-10-05"
+limitations:
+  - "The publication is not open access and was not read in full; exposure concentrations, tank layout and the number of tanks per treatment are therefore not recorded here. If each treatment was held in a single tank, oyster-level replicates would not account for tank clustering."
+  - "Both AREE records from this study test against the same six day-41 gill control oysters, so they carry the dependence group PRJNA856813_gill_controls and count as one replication group."
+  - "AREE uses only the day-41 gill libraries of the control, high-concentration leachate and high-concentration tire microparticle groups. The deposited study also has low concentrations, a natural-particle control, digestive gland (day 44), gonad (day 44, four per group), time-zero baselines and 16S amplicon data, which are not used."
+  - "Groups come from the SRA sample names (D41_GI_<CTL | LEA_H | MR_H>_<replicate>; D41 = day 41, GI = gill); the BioSamples record the tissue as gills. The ENA portal was unavailable when the study was staged, so the reads come from NCBI .sra archives checked against NCBI's MD5s, and each converted FASTQ must match the SRA spot count."

@@ -1,0 +1,12 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	981	0.0642099751276345	15278
+tested	misc_RNA	90	0.005890823406205001	15278
+tested	protein_coding	14190	0.9287864903783217	15278
+tested	rRNA	10	0.0006545359340227779	15278
+tested	snRNA	4	0.0002618143736091111	15278
+tested	snoRNA	1	6.545359340227778e-05	15278
+tested	transcribed_pseudogene	2	0.00013090718680455556	15278
+leachate_high_higher_fdr_lt_0.05	lncRNA	5	0.19230769230769232	26
+leachate_high_higher_fdr_lt_0.05	protein_coding	21	0.8076923076923077	26
+leachate_high_lower_fdr_lt_0.05	lncRNA	3	0.15	20
+leachate_high_lower_fdr_lt_0.05	protein_coding	17	0.85	20

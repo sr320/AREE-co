@@ -1,0 +1,15 @@
+gene_set	gene_biotype	observed	expected	fold_enrichment	p_value_upper_tail	adjusted_p_value_bh
+leachate_high_higher_fdr_lt_0.05	lncRNA	5	1.6694593533184972	2.9949815729632245	0.022984808980920715	0.32178732573289004
+leachate_high_higher_fdr_lt_0.05	misc_RNA	0	0.15316140856133	0.0	0.9999999999855465	1.0
+leachate_high_higher_fdr_lt_0.05	protein_coding	21	24.148448749836366	0.8696210765978208	0.991385601922808	1.0
+leachate_high_higher_fdr_lt_0.05	rRNA	0	0.017017934284592223	0.0	1.0	1.0
+leachate_high_higher_fdr_lt_0.05	snRNA	0	0.0068071737138368895	0.0	0.9999999999937337	1.0
+leachate_high_higher_fdr_lt_0.05	snoRNA	0	0.0017017934284592224	0.0	1.0	1.0
+leachate_high_higher_fdr_lt_0.05	transcribed_pseudogene	0	0.0034035868569184447	0.0	1.0	1.0
+leachate_high_lower_fdr_lt_0.05	lncRNA	3	1.2841995025526902	2.336085626911315	0.13352264677983042	0.934658527458813
+leachate_high_lower_fdr_lt_0.05	misc_RNA	0	0.11781646812410002	0.0	1.0	1.0
+leachate_high_lower_fdr_lt_0.05	protein_coding	17	18.575729807566436	0.9151726568005638	0.9504175751812494	1.0
+leachate_high_lower_fdr_lt_0.05	rRNA	0	0.013090718680455558	0.0	1.0	1.0
+leachate_high_lower_fdr_lt_0.05	snRNA	0	0.005236287472182223	0.0	0.9999999999740246	1.0
+leachate_high_lower_fdr_lt_0.05	snoRNA	0	0.0013090718680455558	0.0	1.0	1.0
+leachate_high_lower_fdr_lt_0.05	transcribed_pseudogene	0	0.0026181437360911115	0.0	1.0	1.0
