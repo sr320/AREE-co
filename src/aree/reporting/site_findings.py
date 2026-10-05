@@ -95,8 +95,11 @@ def real_card(feature, rows, studies, md_table):
              'Presence in multiple datasets does not establish independent replication: exposures, tissues, life stages, and phenotype meanings differ. No cross-study score or pooled effect is calculated.\n',
              '## Study-specific effects\n']
     effect_rows = []
+    projects = [studies[study]['accessions']['bioproject'] for study in rows.study_id]
     for row in rows.itertuples(index=False):
-        effect_rows.append(['[{}](../studies/{}.qmd)'.format(studies[row.study_id]['accessions']['bioproject'], row.study_id), row.description,
+        project = studies[row.study_id]['accessions']['bioproject']
+        label = row.study_id if projects.count(project) > 1 else project
+        effect_rows.append(['[{}](../studies/{}.qmd)'.format(label, row.study_id), row.description,
                             row.sample_comparison, row.effect_size_type.replace('_', ' '), number(row.effect_size),
                             number(row.standard_error),
                             number(row.adjusted_p_value) + (' (nominal only)' if row.inference_status.startswith('Exploratory') else ''),
@@ -140,7 +143,7 @@ def write_real_findings(out, evidence, summaries, highlights, studies, md_table,
              '[Download displayed findings](downloads/real_findings.tsv) · [Download study summary](downloads/real_study_summary.tsv)\n']
     for row in summaries.itertuples(index=False):
         study = studies[row.study_id]
-        parts.extend(['## {}\n'.format(study['accessions']['bioproject']),
+        parts.extend(['## {} — {} {{#{}}}\n'.format(study['accessions']['bioproject'], study['stressor_class'].replace('_', ' '), row.study_id.lower()),
                       '[Study design, replication and limitations](studies/{}.qmd)\n'.format(row.study_id),
                       study['phenotype_direction'] + '\n'])
         if row.records == 0:

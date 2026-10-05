@@ -13,7 +13,7 @@ jobs:
       matrix:
         include:
           # Oldest supported Python with the lowest dependency versions pyproject.toml allows,
-          # and the newest Python with the newest dependencies.
+          # and Python 3.13 with the highest compatible dependencies.
           - python: "3.8"
             resolution: lowest-direct
             extras: dev
@@ -85,4 +85,3 @@ jobs:
       - run: pytest -v tests/test_nextflow_rnaseq.py
         env:
           AREE_REQUIRE_PIPELINE: "1"
-

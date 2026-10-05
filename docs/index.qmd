@@ -5,7 +5,9 @@ format: html
 
 AREE converts public aquaculture omics studies into harmonized, comparable evidence for resilience-associated biomarker discovery.
 
-The MVP focuses on *Crassostrea gigas* and demonstrates study registration, processed-result harmonization, cross-study meta-analysis, candidate scoring, and evidence-card generation using simulated data.
+The current release focuses on *Crassostrea gigas* and includes real public RNA-seq and Tag-seq reanalyses, harmonized molecular findings, and study-specific evidence cards. The [results website](https://sr320.github.io/AREE-co/) leads with real evidence and keeps synthetic scoring and meta-analysis in a separate demonstration section.
+
+Registered contrasts can share a BioProject or control samples. Their counts do not establish independent replication. See [Interpreting Evidence](interpreting-evidence.md) for the distinction between stress responses, resilience-associated findings and validated markers.
 
 ## Run the Demo
 
@@ -20,4 +22,3 @@ aree build-demo-report
 ## Guardrail
 
 AREE identifies associations and evidence convergence. It does not claim that single-study significant features are validated biomarkers.
-

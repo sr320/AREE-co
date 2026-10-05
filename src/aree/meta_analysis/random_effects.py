@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from aree.groups import column_groups, is_missing
+from aree.groups import column_groups, dependence_groups, is_missing
 from aree.io import read_evidence
 from aree.paths import root_path
 
@@ -49,7 +49,7 @@ def poolable(evidence):
             & (evidence["standard_error"] > 0) & inference_eligible(evidence))
 
 
-def _pool(effects, standard_errors, study_ids, eligible=None):
+def _pool(effects, standard_errors, study_ids, eligible=None, replication_groups=None):
     """DerSimonian-Laird pooling of one group's arrays, reporting effects that could not be pooled.
 
     Sums are plain sequential sums, which are deterministic on every platform.
@@ -60,6 +60,16 @@ def _pool(effects, standard_errors, study_ids, eligible=None):
     ]
     if eligible is not None:
         usable = [ok and bool(allowed) for ok, allowed in zip(usable, eligible)]
+    if replication_groups is not None:
+        included_groups = [group for group, ok in zip(replication_groups, usable) if ok]
+        if len(set(included_groups)) < len(included_groups):
+            # Shared samples require covariances that the evidence table does not supply.
+            # Retain the whole context for review rather than choose an arbitrary contrast.
+            result = {column: float("nan") for column in RESULT_COLUMNS}
+            result.update(n_effects=0, n_studies=0, study_ids="",
+                          pooling_status="dependent_effects_require_covariance",
+                          n_effects_excluded=len(effects), excluded_study_ids=";".join(sorted(set(study_ids))))
+            return result
     excluded = sorted({study for study, ok in zip(study_ids, usable) if not ok})
     exclusion = {
         "n_effects_excluded": usable.count(False),
@@ -109,6 +119,7 @@ def random_effects(group):
     return _pool(
         group["effect_size"].to_numpy(), group["standard_error"].to_numpy(), group["study_id"].to_numpy(),
         inference_eligible(group).to_numpy(),
+        dependence_groups(group),
     )
 
 
@@ -118,11 +129,12 @@ GROUP_COLUMNS = ["feature_id_standardized", "feature_type", "effect_size_type", 
 def meta_analysis_table(evidence):
     """Pool effects per feature and context; only effects on the same scale (effect_size_type) are pooled."""
     rows = []
-    evidence = evidence.assign(_inference_eligible=inference_eligible(evidence))
-    groups = column_groups(evidence, GROUP_COLUMNS, ["effect_size", "standard_error", "study_id", "_inference_eligible"])
+    evidence = evidence.assign(_inference_eligible=inference_eligible(evidence),
+                               _replication_group=dependence_groups(evidence))
+    groups = column_groups(evidence, GROUP_COLUMNS, ["effect_size", "standard_error", "study_id", "_inference_eligible", "_replication_group"])
     for keys, columns in groups:
         row = dict(zip(GROUP_COLUMNS, keys))
-        row.update(_pool(columns["effect_size"], columns["standard_error"], columns["study_id"], columns["_inference_eligible"]))
+        row.update(_pool(columns["effect_size"], columns["standard_error"], columns["study_id"], columns["_inference_eligible"], columns["_replication_group"]))
         rows.append(row)
     return pd.DataFrame(rows, columns=GROUP_COLUMNS + RESULT_COLUMNS)
 

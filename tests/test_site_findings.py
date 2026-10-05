@@ -5,7 +5,7 @@ import pytest
 import yaml
 
 from aree.reporting.site_findings import load_findings, real_card
-from scripts.build_site import md_table
+from scripts.build_site import md_table, load_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -80,3 +80,17 @@ def test_build_rejects_stale_sample_metadata(findings):
     studies[study] = dict(studies[study], sample_size=26)
     with pytest.raises(ValueError, match='final sample count'):
         load_findings(ROOT, studies)
+
+
+def test_site_rejects_stale_registry_csv(tmp_path, monkeypatch):
+    import shutil
+    import scripts.build_site as site
+
+    shutil.copytree(ROOT / 'registry', tmp_path / 'registry')
+    path = tmp_path / 'registry/study_registry.csv'
+    registry = pd.read_csv(path)
+    registry.loc[0, 'quality_control_status'] = 'stale metadata'
+    registry.to_csv(path, index=False)
+    monkeypatch.setattr(site, 'ROOT', tmp_path)
+    with pytest.raises(ValueError, match='Registry CSV is stale'):
+        load_registry()

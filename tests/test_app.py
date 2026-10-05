@@ -25,3 +25,11 @@ def test_evidence_search_and_card_selection(tmp_path):
     app.selectbox[0].select("NCBI:LOC105317001").run()
     assert not app.exception
     assert any("Evidence Card: NCBI:LOC105317001" in block.value for block in app.markdown)
+
+
+@pytest.mark.parametrize('query', ['[', '(', '.*'])
+def test_search_treats_user_text_as_literal(query):
+    app = AppTest.from_file(str(APP), default_timeout=60).run()
+    app.text_input[0].input(query).run()
+    assert not app.exception
+    assert app.dataframe[1].value.empty

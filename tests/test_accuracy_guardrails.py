@@ -57,6 +57,28 @@ def test_inconsistent_dependence_metadata_fails_closed():
         score_table(evidence([dict(study_id='A'), dict(study_id='A', quality_flags='dependence_group=shared')]))
 
 
+@pytest.mark.parametrize('third', [[], [dict(study_id='C')]])
+def test_correlated_effects_are_visible_without_independence_based_pooling(third):
+    from aree.meta_analysis.random_effects import random_effects
+
+    frame = evidence([dict(study_id='A', quality_flags='dependence_group=shared'),
+                      dict(study_id='B', quality_flags='dependence_group=shared')] + third)
+    for result in [random_effects(frame), meta_analysis_table(frame).iloc[0]]:
+        assert result['pooling_status'] == 'dependent_effects_require_covariance'
+        assert pd.isna(result['pooled_effect']) and pd.isna(result['i2_percent'])
+        assert result['n_effects_excluded'] == len(frame)
+        assert set(result['excluded_study_ids'].split(';')) == set(frame.study_id)
+    assert not score_table(frame).empty
+
+
+def test_excluded_exploratory_effect_does_not_block_independent_pooling():
+    frame = evidence([dict(study_id='A', quality_flags='dependence_group=shared;' + EXPLORATORY_FLAG),
+                      dict(study_id='B', quality_flags='dependence_group=shared'), dict(study_id='C')])
+    result = meta_analysis_table(frame).iloc[0]
+    assert result.pooling_status == 'pooled'
+    assert result.n_effects == 2 and result.excluded_study_ids == 'A'
+
+
 def test_inconsistent_study_sample_counts_fail_before_scoring():
     with pytest.raises(ValueError, match='Inconsistent sample sizes'):
         score_table(evidence([dict(study_id='A', sample_size=24),
@@ -133,6 +155,14 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     assert '## One displayed finding per harmonized study' in index
     assert '## Simulated demo candidates' not in index
     assert '(demo/index.qmd)' in index
+    studies = [yaml.safe_load(path.read_text()) for path in (ROOT / 'registry/studies').glob('*.yaml')]
+    real_studies = [study for study in studies if not study['data_availability']['status'].startswith('simulated')]
+    projects = {study['accessions']['bioproject'] for study in real_studies}
+    assert '>{}</div><div class="stat-label">Real public BioProjects'.format(len(projects)) in index
+    assert '>{}</div><div class="stat-label">Registered real-study contrasts'.format(len(real_studies)) in index
+    findings = (out / 'candidates.qmd').read_text()
+    assert '{#cgig_heat_rnaseq_prjna913164}' in findings
+    assert '{#cgig_multistress_rnaseq_prjna913164}' in findings
     for path in [out / 'demo/candidates.qmd', out / 'demo/meta-analysis.qmd', out / 'demo/evidence_cards/index.qmd']:
         assert 'simulated' in path.read_text().lower()
     for path in (out / 'demo/evidence_cards').glob('*.md'):
