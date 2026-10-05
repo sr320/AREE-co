@@ -1,0 +1,50 @@
+study_id: CGIG_HEAT_RNASEQ_PRJNA593309
+doi: "10.1242/jeb.226233"
+accessions:
+  bioproject: "PRJNA593309"
+  pmid: "32816959"
+  pmcid: "PMC7578350"
+citation: "Delisle L, Pauletto M, Vidal-Dupiol J, Petton B, Bargelloni L, Montagnani C, Pernet F, Corporeau C, Fleury E. High temperature induces transcriptomic changes in Crassostrea gigas that hinder progress of ostreid herpesvirus (OsHV-1) and promote survival. J Exp Biol. 2020;223(Pt 20):jeb226233."
+species: "Crassostrea gigas"
+strain_population_family: "Specific-pathogen-free juveniles produced at the Ifremer Argenton hatchery"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "juvenile"
+experimental_treatment: "Acclimated 10 days at 29 C (ramped 2 C per day from 21 C) and sampled 12 h after the start of OsHV-1 muVar cohabitation"
+control_condition: "Acclimated at 21 C and sampled 12 h after the start of OsHV-1 muVar cohabitation"
+stressor_class: "temperature"
+exposure:
+  intensity: "29 C against 21 C, both during OsHV-1 muVar cohabitation"
+  duration: "10-day acclimation, then 12 h of cohabitation"
+  timing: "the temperature contrast is measured during early infection, the time point at which the publication finds the largest temperature effect (1,189 genes)"
+phenotype: "disease_resistance"
+phenotype_direction: "Survival 14 days after cohabitation was higher at 29 C (85.7%) than at 21 C (52.4%), and viral load rose more slowly at 29 C. AREE records the whole-oyster transcriptional difference at 12 h, not survival per library."
+phenotype_units: "percent survival 14 days after OsHV-1 cohabitation"
+resilience_classification: "resilience_associated"
+sample_size: 5
+biological_replication: "5 oysters from 6 libraries: three at 21 C, each from a different tank, and two at 29 C, because two of the three 29 C libraries are the same oyster and were summed. The publication describes one oyster per tank, so the duplicated 29 C oyster means either one tank was sampled twice or one RNA was sequenced twice."
+platform: "Illumina HiSeq 4000, TruSeq Stranded mRNA, 2 x 125 bp paired-end"
+data_availability:
+  raw: true
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 12 downloaded libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06; mapping is lower at 29 C (44.5-47.6%) than at 21 C (53.5-57.8%) at 12 h. Expressed-SNP allele frequencies at 801 sites show oshv_29C_12h_1 and oshv_29C_12h_2 are one oyster (mean difference 0.025 against 0.029 expected for one RNA resequenced; every other pair differs by 0.28 or more), so their libraries were summed and the contrast is 3 oysters at 21 C against 2 at 29 C. ~ condition: 198 of 14,943 tested genes reach FDR < 0.05 (30 higher, 168 lower at 29 C), against 684 when the duplicated oyster is counted twice. PC1 explains 49.3% of variance. Lower at 29 C are cholesterol transport (NPC intracellular cholesterol transporter) and other metabolic genes, in line with the publication's down-regulation of metabolism at 29 C; its up-regulated E3 ubiquitin ligase and synaptic receptor genes are not significant here. The publication reports 1,189 genes at 12 h with three libraries per temperature."
+analysis_status: "raw_reanalysis_harmonized"
+provenance:
+  source_links:
+    - "https://doi.org/10.1242/jeb.226233"
+    - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7578350/"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA593309"
+  curator: "AREE contributors"
+  curation_date: "2026-10-04"
+limitations:
+  - "Both arms are infected, so the contrast is temperature in the context of early OsHV-1 infection, not temperature alone; before infection the publication finds only nine genes differing between 29 and 21 C."
+  - "One whole oyster per tank was sequenced at each time point, with three replicate tanks per temperature (45 l tanks), so libraries are tank-level replicates and the contrast has three tanks per arm."
+  - "The two AREE records from this study use different oysters but the same three 21 C tanks (the 21 C 12 h oysters of CGIG_HEAT_RNASEQ_PRJNA593309 and the 21 C 0 h and 48 h oysters of CGIG_OSHV1_RNASEQ_PRJNA593309), so both carry the dependence group PRJNA593309_21C_tanks and count as one replication group."
+  - "The BioSamples give a collection date of 2019-05-19, but the publication dates the experiment to May 2016; the experimental groups follow the sample aliases (Cg_<CTR | OsHV>_<temperature>_<hours>hpc_<replicate>), which agree with the publication's design."
+  - "The study also deposited libraries at 26 C and at 24 and 96 h; the publication does not analyse the 26 C libraries, and AREE uses only the time points of its two contrasts."
+  - "The publication aligned reads with STAR to the Ensembl oyster genome v9.38 and tested with edgeR; AREE quantifies against GCF_963853765.1/RS_2024_06 with Salmon and DESeq2."
+  - "Two of the three 29 C libraries at 12 h are the same oyster by expressed-SNP genotype, so this record has two independent 29 C oysters, little power, and fewer significant genes than the publication, whose three-replicate analysis counted that oyster twice."
+  - "Mapping is about eight points lower at 29 C than at 21 C at 12 h, a systematic shift that may reflect more viral or unspliced RNA at 29 C or a batch difference."
