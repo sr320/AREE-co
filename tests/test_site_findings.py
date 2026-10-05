@@ -19,7 +19,7 @@ def findings():
 def test_real_findings_do_not_use_simulated_data_or_global_rankings(findings):
     studies, (evidence, summaries, selected) = findings
     assert len(evidence) == 286240
-    assert len(summaries) == 14
+    assert len(summaries) == 16
     assert len(selected) == 130
     assert selected.study_id.nunique() == 13
     assert selected.groupby('study_id').size().eq(10).all()
