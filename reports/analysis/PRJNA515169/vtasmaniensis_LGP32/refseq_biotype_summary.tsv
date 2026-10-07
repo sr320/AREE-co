@@ -1,0 +1,12 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	2395	0.09985823882588392	23984
+tested	misc_RNA	213	0.008880920613742495	23984
+tested	protein_coding	21357	0.8904686457638425	23984
+tested	rRNA	15	0.0006254169446297532	23984
+tested	transcribed_pseudogene	4	0.0001667778519012675	23984
+vtasmaniensis_LGP32_higher_fdr_lt_0.05	lncRNA	18	0.04534005037783375	397
+vtasmaniensis_LGP32_higher_fdr_lt_0.05	protein_coding	379	0.9546599496221663	397
+vtasmaniensis_LGP32_lower_fdr_lt_0.05	lncRNA	8	0.08695652173913043	92
+vtasmaniensis_LGP32_lower_fdr_lt_0.05	misc_RNA	1	0.010869565217391304	92
+vtasmaniensis_LGP32_lower_fdr_lt_0.05	protein_coding	73	0.7934782608695652	92
+vtasmaniensis_LGP32_lower_fdr_lt_0.05	rRNA	10	0.10869565217391304	92

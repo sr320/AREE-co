@@ -1,0 +1,13 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	2433	0.10081213226153973	24134
+tested	misc_RNA	218	0.009032899643656252	24134
+tested	protein_coding	21462	0.8892848263860115	24134
+tested	rRNA	15	0.0006215297919946963	24134
+tested	snRNA	2	8.287063893262616e-05	24134
+tested	transcribed_pseudogene	4	0.00016574127786525233	24134
+vcrassostreae_J2_9_higher_fdr_lt_0.05	lncRNA	21	0.046357615894039736	453
+vcrassostreae_J2_9_higher_fdr_lt_0.05	protein_coding	432	0.9536423841059603	453
+vcrassostreae_J2_9_lower_fdr_lt_0.05	lncRNA	15	0.14150943396226415	106
+vcrassostreae_J2_9_lower_fdr_lt_0.05	misc_RNA	1	0.009433962264150943	106
+vcrassostreae_J2_9_lower_fdr_lt_0.05	protein_coding	80	0.7547169811320755	106
+vcrassostreae_J2_9_lower_fdr_lt_0.05	rRNA	10	0.09433962264150944	106
