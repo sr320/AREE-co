@@ -19,7 +19,7 @@ def findings():
 def test_real_findings_do_not_use_simulated_data_or_global_rankings(findings):
     studies, (evidence, summaries, selected) = findings
     assert len(evidence) == 364777
-    assert len(summaries) == 18
+    assert len(summaries) == 20
     assert len(selected) == 168
     assert selected.study_id.nunique() == 17
     # Each study features ten findings, or all of them when fewer reach FDR < 0.05.

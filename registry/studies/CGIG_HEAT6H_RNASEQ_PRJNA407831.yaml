@@ -1,0 +1,48 @@
+study_id: CGIG_HEAT6H_RNASEQ_PRJNA407831
+doi: "10.3389/fphys.2018.00825"
+accessions:
+  bioproject: "PRJNA407831"
+  pmid: "30210351"
+  pmcid: "PMC6120431"
+citation: "Li A, Li L, Wang W, Song K, Zhang G. Transcriptomics and fitness data reveal adaptive plasticity of thermal tolerance in oysters inhabiting different tidal zones. Front Physiol. 2018;9:825."
+species: "Crassostrea gigas"
+strain_population_family: "F1 offspring of wild intertidal and subtidal oysters from Bayuquan (40 18 N) and Laoting (39 16 N), Bohai Sea, China, produced by mass spawning (30 females x 30 males per population) and reared in a common garden"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "adult"
+experimental_treatment: "Held in 35 C seawater (sublethal) for 6 h"
+control_condition: "Same tanks sampled at 0 h, before the temperature was raised (laboratory acclimation 14.2-18.2 C)"
+stressor_class: "temperature"
+exposure:
+  intensity: "35 C seawater, a sublethal temperature for this species"
+  duration: "6 h"
+  timing: "acute heat stress after two weeks of laboratory acclimation; the publication identifies 6-24 h as the transition from aerobic to anaerobic metabolism"
+phenotype: "thermal_tolerance"
+phenotype_direction: "Intertidal-origin F1 oysters showed higher survival after acute heat stress (42 C, 1 h) and higher metabolic rates at 35 C than subtidal-origin oysters, with slower growth, and more transcriptional plasticity. AREE records the gill transcriptional response to 35 C averaged over the four populations, not survival per library."
+phenotype_units: "percent survival after acute heat stress"
+resilience_classification: "stress_response"
+sample_size: 24
+biological_replication: "24 libraries: 12 at 0 h and 12 at 6 h. Each library pools equal gill RNA from five oysters of one culture tank; four populations (two sites x intertidal or subtidal origin) x three tanks, and the same tanks are sampled at each time."
+platform: "Illumina HiSeq 2000, TruSeq Stranded mRNA, about 2 x 150 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://doi.org/10.3389/fphys.2018.00825"
+    - "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6120431/"
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA407831"
+  curator: "AREE contributors"
+  curation_date: "2026-10-06"
+limitations:
+  - "Both AREE records from this study (the other is CGIG_HEAT24H_RNASEQ_PRJNA407831, 24 h) test against the same twelve 0 h pools, so they carry the dependence group PRJNA407831_0h_pools and count as one replication group."
+  - "Each library pools gill RNA of five oysters, so the error model describes tank-pool variation, not variation between animals. The sister IOCAS study PRJNA826964 deposited resequenced RNA as replicates, so these pools were checked with the expressed-SNP test (scripts/check_replicate_genotypes.py) before analysis."
+  - "The model blocks on the four source populations (~ population + condition), so the effect is averaged over intertidal and subtidal origins and the two sites; the publication's main result, that intertidal oysters respond with more plasticity, is not part of this record. A tank-paired model (~ tank + condition) is kept as a sensitivity analysis."
+  - "Sample aliases code tidal origin as J or X (for example BYQJ01, LTX243); the publication uses I (intertidal) and S (subtidal), and the BioSamples do not record it. J and X are read as the Chinese jian (intertidal) and xia (subtidal), but no AREE result depends on that reading because population is a blocking factor."
+  - "The publication discarded one library, LT-I_0h_2, as an outlier; AREE applies its own QC to all 36 libraries."
+  - "ENA served other studies at 0.05-0.35 MB/s in October 2026, so all runs come from NCBI .sra archives checked against NCBI's MD5s, with read counts checked against the manifest on conversion."
