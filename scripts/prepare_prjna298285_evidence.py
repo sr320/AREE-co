@@ -1,4 +1,4 @@
-"""Build current-reference processed evidence and mappings for the three PRJNA298285 larval records."""
+"""Build current-reference processed evidence and mappings for the PRJNA298285 larval acidification record."""
 
 import argparse
 from pathlib import Path
@@ -8,24 +8,17 @@ from scripts.prepare_prjna913164_evidence import merge_annotations
 
 
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"
-# All three records test against the same six ambient larval libraries.
+# The three PRJNA298285 records test against the same six ambient larval libraries.
 COMMON_FLAGS = ["raw_reanalysis", "larval_development", "pooled_libraries", "stage_blocked_contrast",
                 "shared_control_group", "dependence_group=PRJNA298285_ambient_larvae", "no_linked_publication"]
+# Only the acidification contrast is exported. Warmed larvae develop faster (at the same age they sit
+# further along the developmental PC1), so the warmed and acidified + warmed contrasts mostly measure
+# developmental stage; they are recorded as raw_reanalysis_complete_not_harmonized.
 CONTRASTS = {
     "acidified": {
         "study_id": "CGIG_LARVAL_OA_RNASEQ_PRJNA298285",
         "sample_comparison": "pH7.9_vs_pH8.1_20C_larvae",
-        "quality_flags": [*COMMON_FLAGS, "ocean_acidification_response"],
-    },
-    "warmed": {
-        "study_id": "CGIG_LARVAL_HEAT_RNASEQ_PRJNA298285",
-        "sample_comparison": "22C_vs_20C_pH8.1_larvae",
-        "quality_flags": [*COMMON_FLAGS, "temperature_response"],
-    },
-    "acidified_warmed": {
-        "study_id": "CGIG_LARVAL_MULTISTRESS_RNASEQ_PRJNA298285",
-        "sample_comparison": "pH7.9_22C_vs_pH8.1_20C_larvae",
-        "quality_flags": [*COMMON_FLAGS, "multiple_stressor_response"],
+        "quality_flags": [*COMMON_FLAGS, "ocean_acidification_response", "replicate_culture_independence_unverified"],
     },
 }
 

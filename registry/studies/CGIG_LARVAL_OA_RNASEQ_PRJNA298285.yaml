@@ -27,10 +27,10 @@ biological_replication: "12 whole-larva libraries: 6 ambient and 6 acidified (pH
 platform: "Illumina HiSeq 2000, paired-end (101 bp; one library, D5236_Trc_warmA, 126 bp)"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 24 larval libraries (598,102,958 read pairs) quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping rates are low and variable for whole larvae (29.2-56.8%, median 48.4%; ambient 49.1%, acidified 44.8%, warmed 49.6%, acidified + warmed 46.4%). Expressed-SNP allele frequencies at 898 sites show every library is a pool from one larval cohort: all pairs lie within about 0.01-0.03 of same-RNA noise, so treatment is not confounded with parentage. The A and B libraries of a cell are no closer genetically than libraries of other treatments at the same stage (excess over noise 0.008 against 0.0085), so there is no sign of resequenced RNA, but pools of one cohort cannot show whether A and B are separate cultures; their expression profiles are nearly identical, so they may be subsamples of one culture. Allele frequencies diverge more between stages than within (excess 0.017 against 0.0085), consistent with selection or allele-specific expression during development. PC1 (77-81% of variance) is developmental stage. Acidified larvae show no developmental shift along PC1 (trochophore -34.3 against -34.5, early veliger 8.3 against 5.6, late veliger 27.4 against 27.6). ~ stage + condition (6 v 6): 38 of 19,723 tested genes reach FDR < 0.05 (25 higher, 13 lower at pH 7.9), with small effects (|log2FC| mostly below 1) that include shell-matrix genes (shematrin-like protein 1 higher; prisilkin-39 lower), a near-null response to a 0.2-unit pH drop."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA298285"
@@ -44,3 +44,4 @@ limitations:
   - "The treatments are mild (pH 7.9 against 8.1; 22 C against 20 C), so small transcriptional effects are expected."
   - "Treatment, stage and replicate come from the ENA sample aliases (C.gigas_<stage>_<treatment>) and library names (<id>_<Trc | Vg1 | Vg2>_<ambi | acid | warm | intr><A | B>), and agree with the BioSample pH, temperature, dev_stage and age attributes. One library name is a file name (C3759_TAGCTT_L003_R1_001.fastq.gz, late-veliger warmed); it is taken as replicate B because the other late-veliger warmed library is C3752_Vg2_warmA. One library (D5236_Trc_warmA) is from a later sequencing batch at 126 bp."
   - "All runs come from NCBI .sra archives checked against NCBI's MD5s, with read counts checked against the manifest on conversion."
+  - "The A and B libraries of each cell have nearly identical expression profiles and cannot be distinguished genetically from libraries of other treatments, so they may be subsamples of one culture; if so, the error model understates variability and significance is optimistic. The record carries the flag replicate_culture_independence_unverified."

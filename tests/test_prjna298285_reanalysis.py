@@ -58,7 +58,8 @@ def test_records_share_the_ambient_dependence_group(tmp_path):
             "chr1\tRefSeq\tgene\t1\t10\t.\t+\t.\t"
             "ID=gene-A;Dbxref=GeneID:1;Name=A;description=alpha;gene=A;gene_biotype=protein_coding\n"
         )
-    assert len({spec["study_id"] for spec in CONTRASTS.values()}) == 3
+    # Only acidification is exported; the warming contrasts are confounded with developmental rate.
+    assert [spec["study_id"] for spec in CONTRASTS.values()] == ["CGIG_LARVAL_OA_RNASEQ_PRJNA298285"]
     for contrast, spec in CONTRASTS.items():
         processed = tmp_path / "{}.tsv".format(contrast)
         prepare(contrast, results, gff, processed, tmp_path / "mapping.tsv", tmp_path / "annotations.tsv")
