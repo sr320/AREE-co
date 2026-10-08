@@ -1,0 +1,46 @@
+study_id: CGIG_LARVAL_OA_RNASEQ_PRJNA298285
+doi: null
+accessions:
+  bioproject: "PRJNA298285"
+  sra: "SRP064660"
+citation: "University of Brest. RNA-seq of Pacific oyster Crassostrea gigas larvae (trochophore, early and late veliger) reared under two pH and two temperature levels. NCBI BioProject PRJNA298285; public 2015. No linked publication identified."
+species: "Crassostrea gigas"
+strain_population_family: "Larvae from broodstock of Point du Chateau, Finistere, France (2013); number of parents and crosses not recorded"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "larva"
+experimental_treatment: "Reared at pH 7.9 and 20 C (acidified)"
+control_condition: "Reared at pH 8.1 and 20 C (ambient)"
+stressor_class: "ocean_acidification_pH"
+exposure:
+  intensity: "pH 7.9 against 8.1, both at 20 C"
+  duration: "from fertilization to sampling at 14 h (trochophore), 24 h (early veliger) or 36 h (late veliger)"
+  timing: "early development; the three stages are blocked in the model"
+phenotype: "acidification_tolerance"
+phenotype_direction: "No phenotype is deposited and no publication is linked; AREE records the larval transcriptional response averaged over three developmental stages."
+phenotype_units: null
+resilience_classification: "environmental_exposure"
+sample_size: 12
+biological_replication: "12 whole-larva libraries: 6 ambient and 6 acidified (pH 7.9, 20 C), two per developmental stage. Each library is presumably a pool of many larvae; whether the two libraries per cell are separate cultures or one culture is not recorded and is tested with the expressed-SNP check."
+platform: "Illumina HiSeq 2000, paired-end (101 bp; one library, D5236_Trc_warmA, 126 bp)"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA298285"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA298285"
+  curator: "AREE contributors"
+  curation_date: "2026-10-07"
+limitations:
+  - "No publication is linked to the BioProject, and searches of PubMed and Europe PMC (including the accessions PRJNA298285 and SRP064660) on 2026-10-07 found none, so there are no published methods, carbonate chemistry, survival data or results to reconcile against."
+  - "The three AREE records from this study (acidified, warmed, acidified + warmed) test against the same six ambient libraries, so they carry the dependence group PRJNA298285_ambient_larvae and count as one replication group."
+  - "There are two libraries per stage and treatment. The stage block (~ stage + condition) treats them as replicates; whether they come from separate cultures is not recorded and is checked with scripts/check_replicate_genotypes.py."
+  - "The treatments are mild (pH 7.9 against 8.1; 22 C against 20 C), so small transcriptional effects are expected."
+  - "Treatment, stage and replicate come from the ENA sample aliases (C.gigas_<stage>_<treatment>) and library names (<id>_<Trc | Vg1 | Vg2>_<ambi | acid | warm | intr><A | B>), and agree with the BioSample pH, temperature, dev_stage and age attributes. One library name is a file name (C3759_TAGCTT_L003_R1_001.fastq.gz, late-veliger warmed); it is taken as replicate B because the other late-veliger warmed library is C3752_Vg2_warmA. One library (D5236_Trc_warmA) is from a later sequencing batch at 126 bp."
+  - "All runs come from NCBI .sra archives checked against NCBI's MD5s, with read counts checked against the manifest on conversion."
