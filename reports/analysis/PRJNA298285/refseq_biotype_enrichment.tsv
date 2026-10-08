@@ -1,0 +1,15 @@
+gene_set	gene_biotype	observed	expected	fold_enrichment	p_value_upper_tail	adjusted_p_value_bh
+acidified_higher_fdr_lt_0.05	lncRNA	9	2.120620595244131	4.244040645546922	0.00012971224658768471	0.001815971452227586
+acidified_higher_fdr_lt_0.05	misc_RNA	0	0.12548800892359174	0.0	1.0	1.0
+acidified_higher_fdr_lt_0.05	protein_coding	16	22.72347006033565	0.7041178111228873	0.9999652534648461	1.0
+acidified_higher_fdr_lt_0.05	rRNA	0	0.01901333468539269	0.0	0.999999999981662	1.0
+acidified_higher_fdr_lt_0.05	snRNA	0	0.0025351112913856917	0.0	1.0	1.0
+acidified_higher_fdr_lt_0.05	snoRNA	0	0.0038026669370785377	0.0	1.0	1.0
+acidified_higher_fdr_lt_0.05	transcribed_pseudogene	0	0.005070222582771383	0.0	1.0	1.0
+acidified_lower_fdr_lt_0.05	lncRNA	4	1.1027227095269483	3.6273851671341215	0.01978957516407607	0.1385270261485325
+acidified_lower_fdr_lt_0.05	misc_RNA	0	0.0652537646402677	0.0	1.0	1.0
+acidified_lower_fdr_lt_0.05	protein_coding	9	11.816204431374537	0.7616659014550463	0.9957052178747328	1.0
+acidified_lower_fdr_lt_0.05	rRNA	0	0.009886934036404197	0.0	1.0	1.0
+acidified_lower_fdr_lt_0.05	snRNA	0	0.0013182578715205597	0.0	1.0	1.0
+acidified_lower_fdr_lt_0.05	snoRNA	0	0.0019773868072808396	0.0	1.0	1.0
+acidified_lower_fdr_lt_0.05	transcribed_pseudogene	0	0.0026365157430411194	0.0	1.0	1.0

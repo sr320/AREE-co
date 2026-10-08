@@ -1,0 +1,48 @@
+study_id: CGIG_LARVAL_HEAT_RNASEQ_PRJNA298285
+doi: null
+accessions:
+  bioproject: "PRJNA298285"
+  sra: "SRP064660"
+citation: "University of Brest. RNA-seq of Pacific oyster Crassostrea gigas larvae (trochophore, early and late veliger) reared under two pH and two temperature levels. NCBI BioProject PRJNA298285; public 2015. No linked publication identified."
+species: "Crassostrea gigas"
+strain_population_family: "Larvae from broodstock of Point du Chateau, Finistere, France (2013); number of parents and crosses not recorded"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "larva"
+experimental_treatment: "Reared at pH 8.1 and 22 C (warmed)"
+control_condition: "Reared at pH 8.1 and 20 C (ambient)"
+stressor_class: "temperature"
+exposure:
+  intensity: "22 C against 20 C, both at pH 8.1"
+  duration: "from fertilization to sampling at 14 h (trochophore), 24 h (early veliger) or 36 h (late veliger)"
+  timing: "early development; the three stages are blocked in the model"
+phenotype: "thermal_tolerance"
+phenotype_direction: "No phenotype is deposited and no publication is linked; AREE records the larval transcriptional response averaged over three developmental stages."
+phenotype_units: null
+resilience_classification: "environmental_exposure"
+sample_size: 12
+biological_replication: "12 whole-larva libraries: 6 ambient and 6 warmed (pH 8.1, 22 C), two per developmental stage. Each library is presumably a pool of many larvae; whether the two libraries per cell are separate cultures or one culture is not recorded and is tested with the expressed-SNP check."
+platform: "Illumina HiSeq 2000, paired-end (101 bp; one library, D5236_Trc_warmA, 126 bp)"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 24 larval libraries (598,102,958 read pairs) quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping rates are low and variable for whole larvae (29.2-56.8%, median 48.4%; ambient 49.1%, acidified 44.8%, warmed 49.6%, acidified + warmed 46.4%). Expressed-SNP allele frequencies at 898 sites show every library is a pool from one larval cohort: all pairs lie within about 0.01-0.03 of same-RNA noise, so treatment is not confounded with parentage. The A and B libraries of a cell are no closer genetically than libraries of other treatments at the same stage (excess over noise 0.008 against 0.0085), so there is no sign of resequenced RNA, but pools of one cohort cannot show whether A and B are separate cultures; their expression profiles are nearly identical, so they may be subsamples of one culture. Allele frequencies diverge more between stages than within (excess 0.017 against 0.0085), consistent with selection or allele-specific expression during development. PC1 (77-81% of variance) is developmental stage. Warmed larvae are developmentally ahead of ambient larvae of the same age: on PC1 the early veligers move from -6.8 to 22.2 (about 70% of the way to the late-veliger profile at 35.0), with smaller shifts at the trochophore (-49.8 to -40.8) and late veliger (35.0 to 40.1) stages. ~ stage + condition (6 v 6) gives 3,295 of 19,864 tested genes at FDR < 0.05, but most reflect developmental stage rather than a thermal response, and with two libraries per cell developmental progress cannot be modelled separately, so the record is not harmonized."
+analysis_status: "raw_reanalysis_complete_not_harmonized"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA298285"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJNA298285"
+  curator: "AREE contributors"
+  curation_date: "2026-10-07"
+limitations:
+  - "No publication is linked to the BioProject, and searches of PubMed and Europe PMC (including the accessions PRJNA298285 and SRP064660) on 2026-10-07 found none, so there are no published methods, carbonate chemistry, survival data or results to reconcile against."
+  - "The three AREE records from this study (acidified, warmed, acidified + warmed) test against the same six ambient libraries, so they carry the dependence group PRJNA298285_ambient_larvae and count as one replication group."
+  - "There are two libraries per stage and treatment. The stage block (~ stage + condition) treats them as replicates; whether they come from separate cultures is not recorded and is checked with scripts/check_replicate_genotypes.py."
+  - "The treatments are mild (pH 7.9 against 8.1; 22 C against 20 C), so small transcriptional effects are expected."
+  - "Treatment, stage and replicate come from the ENA sample aliases (C.gigas_<stage>_<treatment>) and library names (<id>_<Trc | Vg1 | Vg2>_<ambi | acid | warm | intr><A | B>), and agree with the BioSample pH, temperature, dev_stage and age attributes. One library name is a file name (C3759_TAGCTT_L003_R1_001.fastq.gz, late-veliger warmed); it is taken as replicate B because the other late-veliger warmed library is C3752_Vg2_warmA. One library (D5236_Trc_warmA) is from a later sequencing batch at 126 bp."
+  - "All runs come from NCBI .sra archives checked against NCBI's MD5s, with read counts checked against the manifest on conversion."
+  - "The A and B libraries of each cell have nearly identical expression profiles and cannot be distinguished genetically from libraries of other treatments, so they may be subsamples of one culture; if so, the error model understates variability and significance is optimistic. The record carries the flag replicate_culture_independence_unverified."
+  - "Not harmonized into the evidence base (decision 2026-10-08): warming accelerates larval development, so at a fixed age the warmed larvae are at a later developmental stage and the contrast mostly measures stage-specific genes. With two libraries per cell, developmental progress cannot be separated from a thermal response. The DESeq2 results are kept outside the repository."

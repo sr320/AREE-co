@@ -59,6 +59,8 @@ The two PRJNA515169 Vibrio records (virulent V. crassostreae J2-9 and V. tasmani
 
 The two PRJNA407831 heat records (35 C for 6 h and for 24 h) test against the same twelve 0 h gill pools and carry `PRJNA407831_0h_pools`.
 
+The PRJNA298285 larval records (acidified, warmed, and acidified + warmed) test against the same six ambient larval libraries; only the acidification record is harmonized, with the dependence group `PRJNA298285_ambient_larvae`, because warming accelerates development and the warming contrasts mostly measure developmental stage.
+
 PRJNA735889 currently uses an oyster-level model on 50 oysters from ten tanks without accounting for tank clustering. Its p-values, FDR values and standard errors are exploratory until a tank-aware reanalysis is available. Evidence marked `exploratory_tank_clustering_unmodeled` receives no significance reward, cannot promote a candidate to the high-priority cross-study category, and remains visible with its limitations. `best_adjusted_p_value` in scores excludes these exploratory values; original nominal values remain in the evidence for provenance.
 
 ## Contradictory Findings
