@@ -29,6 +29,10 @@ DEFAULT_LOCATIONS = Path("data/manifests/CGIG_HEAT_RNASEQ_PRJNA407831_sra_locati
 EXPECTED_CONDITIONS = {"h0": 12, "h6": 12, "h24": 12}
 # Each heat time is tested against 0 h in its own design sheet.
 CONTRASTS = ("h6", "h24")
+# Left out of the DESeq2 design sheets after QC: median VST correlation 0.906-0.908 against a
+# cut-off of 0.957 (median minus three robust SDs). It is the library the publication discarded as
+# an outlier (LT-I_0h_2), which also matches LTJ to the publication's Laoting intertidal population.
+EXCLUDED_SAMPLES = {"h0_LTJ_2"}
 def load_manifest(path):
     return load_run_manifest(path, EXPECTED_CONDITIONS)
 
@@ -39,7 +43,7 @@ def write_contrast_sheet(rows, test, path):
         writer = csv.DictWriter(handle, fieldnames=["sample", "condition", "replicate", "run_accession", "population", "tank"])
         writer.writeheader()
         for row in rows:
-            if row["condition"] in ("h0", test):
+            if row["condition"] in ("h0", test) and sample_name(row) not in EXCLUDED_SAMPLES:
                 writer.writerow({"sample": sample_name(row), "condition": "control" if row["condition"] == "h0" else test,
                                  "replicate": row["replicate"], "run_accession": row["run_accession"],
                                  "population": row["population"], "tank": row["tank"]})

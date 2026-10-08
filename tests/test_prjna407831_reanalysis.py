@@ -47,3 +47,16 @@ def test_both_records_share_the_0h_dependence_group(tmp_path):
         rows = list(csv.DictReader(processed.open(), delimiter="\t"))
         assert rows[0]["sample_comparison"] == spec["sample_comparison"]
         assert {"dependence_group=PRJNA407831_0h_pools", "pooled_libraries"} <= set(rows[0]["quality_flags"].split(";"))
+
+
+def test_the_0h_outlier_is_left_out_of_both_design_sheets(tmp_path):
+    from scripts.prepare_prjna407831_fastqs import EXCLUDED_SAMPLES, write_contrast_sheet
+
+    rows = load_manifest(MANIFEST)
+    assert EXCLUDED_SAMPLES == {"h0_LTJ_2"}
+    for test in ("h6", "h24"):
+        path = tmp_path / "{}.csv".format(test)
+        write_contrast_sheet(rows, test, path)
+        design = list(csv.DictReader(path.open()))
+        assert Counter(row["condition"] for row in design) == {"control": 11, test: 12}
+        assert "h0_LTJ_2" not in {row["sample"] for row in design}
