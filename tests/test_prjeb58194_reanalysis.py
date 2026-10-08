@@ -61,7 +61,7 @@ def test_only_f1_records_share_the_tt_dependence_group(tmp_path):
             "chr1\tRefSeq\tgene\t1\t10\t.\t+\t.\t"
             "ID=gene-A;Dbxref=GeneID:1;Name=A;description=alpha;gene=A;gene_biotype=protein_coding\n"
         )
-    for contrast, spec in EVIDENCE.items():
+    for contrast in EVIDENCE:
         processed = tmp_path / "{}.tsv".format(contrast)
         prepare(contrast, results, gff, processed, tmp_path / "mapping.tsv", tmp_path / "annotations.tsv")
         flags = list(csv.DictReader(processed.open(), delimiter="\t"))[0]["quality_flags"].split(";")
