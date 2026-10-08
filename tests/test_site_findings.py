@@ -18,10 +18,10 @@ def findings():
 
 def test_real_findings_do_not_use_simulated_data_or_global_rankings(findings):
     studies, (evidence, summaries, selected) = findings
-    assert len(evidence) == 364777
-    assert len(summaries) == 18
-    assert len(selected) == 168
-    assert selected.study_id.nunique() == 17
+    assert len(evidence) == 411725
+    assert len(summaries) == 20
+    assert len(selected) == 188
+    assert selected.study_id.nunique() == 19
     # Each study features ten findings, or all of them when fewer reach FDR < 0.05.
     sizes = selected.groupby('study_id').size()
     assert sizes.le(10).all()
