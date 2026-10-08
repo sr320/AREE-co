@@ -1,0 +1,46 @@
+study_id: CGIG_PESTO_F1PARENTAL_RNASEQ_PRJEB58194
+doi: "10.1021/acs.est.3c08201"
+accessions:
+  bioproject: "PRJEB58194"
+  pmid: "38217500"
+citation: "Sol Dourdin T, Guyomard K, Rabiller M, Houssais N, Cormier A, Le Monier P, Sussarellu R, Riviere G. Ancestors' gift: parental early exposure to the environmentally realistic pesticide mixture drives offspring phenotype in a larger extent than direct exposure in the Pacific oyster, Crassostrea gigas. Environ Sci Technol. 2024;58(4):1865-1876."
+species: "Crassostrea gigas"
+strain_population_family: "Hatchery-produced oysters (Ifremer, Bouin, Pays de la Loire, France); F1 generation from F0 parents exposed or not during their own embryo-larval development"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "whole_organism"
+life_stage: "embryo_larva"
+experimental_treatment: "Unexposed F1 offspring of parents that were exposed to the pesticide mixture during their own embryo-larval development (ET); sampled as gastrulae (6 hpf) and metamorphosis-competent pediveligers"
+control_condition: "F1 offspring of control parents, unexposed (TT)"
+stressor_class: "pollutant_exposure"
+exposure:
+  intensity: "mixture of 18 pesticides and metals, nominal sum 2.85 ug/L"
+  duration: "0-48 h post fertilization"
+  timing: "intergenerational: the exposure happened to the parents' generation, from 0 to 48 h post fertilization; stage is blocked in the model"
+phenotype: "larval_viability"
+phenotype_direction: "The publication found that parental exposure drove the offspring phenotype more than direct exposure: offspring of exposed parents had lower epinephrine-induced metamorphosis and field survival, and RNA-seq and methyl-seq separated offspring by F0 treatment. AREE records the intergenerational transcriptional effect averaged over two stages."
+phenotype_units: null
+resilience_classification: "environmental_exposure"
+sample_size: 12
+biological_replication: "12 libraries: 6 TT and 6 ET, three per stage."
+platform: "Illumina NovaSeq 6000, paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_no_processed_results"
+quality_control_status: "pending_aree_reanalysis"
+analysis_status: "pending_raw_reanalysis"
+provenance:
+  source_links:
+    - "https://doi.org/10.1021/acs.est.3c08201"
+    - "https://www.ebi.ac.uk/ena/browser/view/PRJEB58194"
+  curator: "AREE contributors"
+  curation_date: "2026-10-08"
+limitations:
+  - "The two F1 records (direct exposure TE and parental exposure ET) test against the same six TT libraries, so they carry the dependence group PRJEB58194_F1_TT and count as one replication group."
+  - "The contrast compares offspring of different parents, so a parental-exposure effect can be confounded with parentage; the expressed-SNP check measures the genetic distance between the ET and TT pools."
+  - "The exposure is a mixture of 18 pesticides and metals at environmentally relevant concentration (nominal sum 2.85 ug/L; measured 3.74 ug/L in F0) during embryo-larval development (0-48 h post fertilization) at the Ifremer Bouin hatchery."
+  - "Each library is presumably a pool of many embryos or larvae; pool size, culture vessels and the meaning of the F0 group digits (1-3) are not recorded in the public metadata, and pools were checked with the expressed-SNP test (scripts/check_replicate_genotypes.py) before analysis."
+  - "All runs come from NCBI .sra archives checked against NCBI's MD5s (11 F0 runs have no ENA FASTQ), with read counts checked against the NCBI spot counts on conversion."
+  - "The study also deposited F0 pediveligers (sampled after exposure) and F1 offspring exposed in both generations (EE); AREE does not use them."
