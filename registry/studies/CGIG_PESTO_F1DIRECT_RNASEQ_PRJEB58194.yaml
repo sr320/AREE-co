@@ -27,10 +27,10 @@ biological_replication: "12 libraries: 6 TT and 6 TE, three per stage."
 platform: "Illumina NovaSeq 6000, paired-end"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 12 libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping 42.0% in TT and 47.2% in TE pools on average. Expressed-SNP allele frequencies at 310 sites show TE and TT pools are genetically equivalent (excess over same-RNA noise 0.0131 between against 0.0144 within, same stage), as expected for offspring of the same parents, with no resequenced RNA. PC1 (99%) is developmental stage. ~ stage + condition (6 v 6): 17 of 24,306 tested genes reach FDR < 0.05 (1 higher, 16 lower with direct exposure), a near-null response that agrees with the publication's finding that direct exposure affects the F1 phenotype less than parental exposure."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1021/acs.est.3c08201"
@@ -38,7 +38,7 @@ provenance:
   curator: "AREE contributors"
   curation_date: "2026-10-08"
 limitations:
-  - "The two F1 records (direct exposure TE and parental exposure ET) test against the same six TT libraries, so they carry the dependence group PRJEB58194_F1_TT and count as one replication group."
+  - "The two F1 records (direct exposure TE and parental exposure ET) test against the same six TT libraries, so they carry the dependence group PRJEB58194_F1_TT; only the direct-exposure record is harmonized."
   - "The exposure is a mixture of 18 pesticides and metals at environmentally relevant concentration (nominal sum 2.85 ug/L; measured 3.74 ug/L in F0) during embryo-larval development (0-48 h post fertilization) at the Ifremer Bouin hatchery."
   - "Each library is presumably a pool of many embryos or larvae; pool size, culture vessels and the meaning of the F0 group digits (1-3) are not recorded in the public metadata, and pools were checked with the expressed-SNP test (scripts/check_replicate_genotypes.py) before analysis."
   - "All runs come from NCBI .sra archives checked against NCBI's MD5s (11 F0 runs have no ENA FASTQ), with read counts checked against the NCBI spot counts on conversion."

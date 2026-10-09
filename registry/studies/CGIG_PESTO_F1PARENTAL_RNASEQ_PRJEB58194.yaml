@@ -28,9 +28,9 @@ platform: "Illumina NovaSeq 6000, paired-end"
 data_availability:
   raw: true
   processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 12 libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping 42.0% in TT and 43.8% in ET pools on average. Expressed-SNP allele frequencies at 295 sites show ET and TT pools are genetically distinct: they differ 3.6 times more than pools of one group (excess over same-RNA noise 0.058 against 0.016 at the same stage), because offspring of exposed and of control F0 parents necessarily have different parents. ~ stage + condition (6 v 6) gives 307 of 24,153 genes at FDR < 0.05, led by CD109 antigen-like genes (log2FC -5 to -6) whose very large changes are typical of lineage presence-absence variation, so parental exposure cannot be separated from parentage and the record is not harmonized."
+analysis_status: "raw_reanalysis_complete_not_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1021/acs.est.3c08201"
@@ -44,3 +44,4 @@ limitations:
   - "Each library is presumably a pool of many embryos or larvae; pool size, culture vessels and the meaning of the F0 group digits (1-3) are not recorded in the public metadata, and pools were checked with the expressed-SNP test (scripts/check_replicate_genotypes.py) before analysis."
   - "All runs come from NCBI .sra archives checked against NCBI's MD5s (11 F0 runs have no ENA FASTQ), with read counts checked against the NCBI spot counts on conversion."
   - "The study also deposited F0 pediveligers (sampled after exposure) and F1 offspring exposed in both generations (EE); AREE does not use them."
+  - "Not harmonized into the evidence base (decision 2026-10-09): the parental-exposure contrast is confounded with parentage (ET and TT pools differ genetically 3.6 times more than pools within a group), as in CGIG_OA_RNASEQ_PRJNA1196326. The DESeq2 results are kept outside the repository."

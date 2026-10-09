@@ -27,10 +27,10 @@ biological_replication: "36 libraries: 18 control and 18 exposed, nine per stage
 platform: "Illumina NovaSeq 6000, paired-end"
 data_availability:
   raw: true
-  processed: false
-  status: "public_raw_no_processed_results"
-quality_control_status: "pending_aree_reanalysis"
-analysis_status: "pending_raw_reanalysis"
+  processed: true
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 36 F0 libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping 52.8% in controls and 50.3% in exposed pools on average (31.7-65.6% across the 54 PESTO libraries). Expressed-SNP allele frequencies at 460 sites show the F0 pools come from one cohort: control and exposed pools at the same stage differ no more than pools of one treatment (excess over same-RNA noise 0.0165 against 0.0158), so exposure is not confounded with parentage, and no pair is resequenced RNA; the two runs sharing the title BT2Ed are different pools (excess 0.0138). Allele frequencies diverge more between stages (excess 0.032), as in other larval studies. PC1 (96%) is developmental stage. ~ stage + condition (18 v 18): 644 of 21,104 tested genes reach FDR < 0.05 (255 higher, 389 lower with the mixture); adding the F0 group digit as a block gives 642 (566 shared, 643 of 644 same direction, log2FC r = 0.905). Three group-3 control D larvae are the least correlated libraries, a group effect absorbed by that sensitivity model. The response includes five homeobox genes (engrailed-1-B lower), M-phase inducer phosphatase (cdc25) higher and seven cytochrome P450 genes lower, matching the publication's development-related genes (Hox orthologues, cell-cycle regulators)."
+analysis_status: "raw_reanalysis_harmonized"
 provenance:
   source_links:
     - "https://doi.org/10.1016/j.envpol.2023.121472"

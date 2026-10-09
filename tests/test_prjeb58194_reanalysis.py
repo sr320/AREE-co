@@ -50,6 +50,8 @@ def test_contrast_sheets(tmp_path):
 
 
 def test_only_f1_records_share_the_tt_dependence_group(tmp_path):
+    # The parental-exposure contrast is confounded with parentage and is not exported.
+    assert set(EVIDENCE) == {"f0_exposed", "f1_direct"}
     results = tmp_path / "results.tsv"
     results.write_text(
         "feature_id_standardized\tlog2FoldChange\tlfcSE\tpvalue\tpadj\n"

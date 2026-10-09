@@ -10,7 +10,9 @@ from scripts.prepare_prjna913164_evidence import merge_annotations
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"
 COMMON_FLAGS = ["raw_reanalysis", "pollutant_exposure_response", "pesticide_mixture", "pooled_libraries",
                 "stage_blocked_contrast"]
-# The two F1 records test against the same six TT libraries.
+# The F1 records test against the same six TT libraries. Only F1 direct exposure is exported: the
+# parental-exposure contrast (ET v TT) compares offspring of different parents, whose pools differ
+# genetically 3.6 times more than pools within a group, so it is recorded as not harmonized.
 F1_FLAGS = ["shared_control_group", "dependence_group=PRJEB58194_F1_TT"]
 CONTRASTS = {
     "f0_exposed": {
@@ -22,11 +24,6 @@ CONTRASTS = {
         "study_id": "CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194",
         "sample_comparison": "pesticide_mixture_TE_vs_TT_F1_gastrula_pediveliger",
         "quality_flags": [*COMMON_FLAGS, *F1_FLAGS, "direct_exposure"],
-    },
-    "f1_parental": {
-        "study_id": "CGIG_PESTO_F1PARENTAL_RNASEQ_PRJEB58194",
-        "sample_comparison": "parental_pesticide_mixture_ET_vs_TT_F1_gastrula_pediveliger",
-        "quality_flags": [*COMMON_FLAGS, *F1_FLAGS, "intergenerational_exposure"],
     },
 }
 
