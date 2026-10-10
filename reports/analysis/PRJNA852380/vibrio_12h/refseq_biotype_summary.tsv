@@ -1,0 +1,12 @@
+gene_set	gene_biotype	count	fraction	gene_set_size
+tested	lncRNA	1737	0.0836826130943778	20757
+tested	misc_RNA	154	0.007419183889772125	20757
+tested	protein_coding	18853	0.9082719082719083	20757
+tested	rRNA	10	0.00048176518764754057	20757
+tested	transcribed_pseudogene	3	0.00014452955629426219	20757
+vibrio_12h_higher_fdr_lt_0.05	lncRNA	22	0.025611175785797437	859
+vibrio_12h_higher_fdr_lt_0.05	misc_RNA	4	0.004656577415599534	859
+vibrio_12h_higher_fdr_lt_0.05	protein_coding	833	0.969732246798603	859
+vibrio_12h_lower_fdr_lt_0.05	lncRNA	22	0.058823529411764705	374
+vibrio_12h_lower_fdr_lt_0.05	misc_RNA	3	0.008021390374331552	374
+vibrio_12h_lower_fdr_lt_0.05	protein_coding	349	0.9331550802139037	374
