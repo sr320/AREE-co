@@ -1,0 +1,43 @@
+study_id: CGIG_HEAT42_RNASEQ_PRJNA1511593
+doi: null
+accessions:
+  bioproject: "PRJNA1511593"
+citation: "Chinese Academy of Sciences. Gill transcriptomes of Pacific oyster (Magallana gigas) and a backcross Crassostrea line under control and heat conditions. NCBI BioProject PRJNA1511593; public 2026. No linked publication identified."
+species: "Crassostrea gigas"
+strain_population_family: "Domesticated Magallana gigas (GG line) from a Chinese Academy of Sciences breeding programme, sampled 2024 near 37.65 N, 122.0 E (Shandong, China); a backcross Crassostrea line (BC3) in the same BioProject is not used"
+genome_assembly: "GCF_963853765.1"
+annotation_version: "RS_2024_06"
+assay_type: "rnaseq"
+tissue: "gill"
+life_stage: "adult"
+experimental_treatment: "Heat, read from the sample-name code H42H1 as 42 C for 1 h"
+control_condition: "Control gill (sample-name code H0)"
+stressor_class: "temperature"
+exposure:
+  intensity: "42 C (inferred from sample name)"
+  duration: "1 h (inferred from sample name)"
+  timing: "acute heat stress; temperatures and durations are read from the sample names"
+phenotype: "thermal_tolerance"
+phenotype_direction: "No phenotype is deposited and no publication is linked; AREE records the gill transcriptional response to acute heat."
+phenotype_units: null
+resilience_classification: "stress_response"
+sample_size: 6
+biological_replication: "6 gill libraries: 3 controls and 3 42 C for 1 h. Each library is a pool by expressed-SNP genotype; pool size is not recorded."
+platform: "Illumina, 2 x 151 bp paired-end"
+data_availability:
+  raw: true
+  processed: false
+  status: "public_raw_aree_reanalysis_complete"
+quality_control_status: "All 9 GG gill libraries quantified with Salmon 2.3.4 against GCF_963853765.1/RS_2024_06 from NCBI .sra archives that match NCBI's MD5s; mapping 68.7-69.5% by group. The sample-name reading is confirmed by heat-shock induction: heat shock protein 68 genes rise up to log2FC 10.6 at 37 C for 12 h and 8.5 at 42 C for 1 h, with BAG3 and the Hsp90 co-chaperone Cdc37. Expressed-SNP allele frequencies at 2,523 sites show every library is a pool and that the three groups are genetically distinct (mean difference 0.187 between groups against 0.072 within, 0.049-0.052 expected for one RNA resequenced), so heat is confounded with genetic background; the modest excess within groups also leaves open that a group's three pools are subsamples of one batch. ~ condition (3 v 3) gives 14,382 of 21,576 tested genes at FDR < 0.05 (67%), a count inflated by the genetic difference between groups, so the record is not harmonized."
+analysis_status: "raw_reanalysis_complete_not_harmonized"
+provenance:
+  source_links:
+    - "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1511593"
+  curator: "AREE contributors"
+  curation_date: "2026-10-09"
+limitations:
+  - "No publication is linked, and PubMed searches on 2026-10-09 found none. The BioSamples record no temperature or duration, and the BioProject describes the samples as 'under normal conditions'. The treatments are read from the sample names (GGH0S = control, GGH37H12S = 37 C for 12 h, GGH42H1S = 42 C for 1 h) and checked against heat-shock gene induction in the data, recorded in the quality-control summary."
+  - "The two AREE records from this study (37 C for 12 h and 42 C for 1 h) test against the same three control libraries; neither is harmonized."
+  - "The BioProject also contains a backcross line (BC3, deposited as Crassostrea sp.); AREE uses only the Magallana gigas (GG) libraries."
+  - "All runs come from NCBI .sra archives checked against NCBI's MD5s, with read counts checked against the NCBI spot counts on conversion."
+  - "Not harmonized into the evidence base (decision 2026-10-09): the control, 37 C and 42 C groups are genetically distinct sets of oysters (allele-frequency difference 0.187 between groups against 0.072 within), so heat cannot be separated from genetic background, and the resulting gene counts (37% and 67% of tested genes) are not credible as a heat response. The heat-shock induction confirms the treatments. The DESeq2 results are kept outside the repository."
