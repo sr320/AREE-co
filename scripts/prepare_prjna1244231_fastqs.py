@@ -3,8 +3,9 @@
 
 Seawater-injected (SW) and ERK-inhibitor (ERK) oysters sampled at 0 and 12 h, three libraries each;
 "0" and "12" are read as hours of heat stress, which the metadata do not state and no publication
-describes. The SW 12 h against SW 0 h contrast is the candidate heat record; it is built only after
-the expressed-SNP check and a heat-shock-gene check.
+describes. The SW 12 h against SW 0 h contrast is the heat contrast; heat-shock genes are induced,
+but the expressed-SNP check shows each group's three libraries are one RNA pool resequenced, so the
+record is registered as not harmonized.
 
 All runs come from the NCBI Open Data S3 mirror as ``.sra`` archives listed in
 ``*_sra_locations.tsv``: verified against NCBI's published size and MD5 (``--verify``), then
