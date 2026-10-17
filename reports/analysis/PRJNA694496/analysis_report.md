@@ -46,7 +46,7 @@ Formal version-matched g:Profiler analysis mapped all direction-specific RefSeq 
 
 Of 60 mapped, published significant heat-response genes in PRJNA516762, 52 occur among the genes retained here; 33 are significant here. The overlap table retains both effect directions and the earlier study's inferred mapping confidence.
 
-No pooled effect or enrichment test is calculated. PRJNA516762 provides a significant-only gene list without standard errors, and its acute heat response in juvenile gill differs from constitutive expression in selected larvae. Direction agreement is descriptive and does not establish a common protective mechanism.
+No pooled effect or enrichment test is calculated. This historical overlap uses the publication-derived, significant-only PRJNA516762 list, which lacks standard errors. A later raw-data reanalysis of PRJNA516762 is now available in the harmonized release; it is not the input to this historical overlap. Acute heat response in juvenile gill differs from constitutive expression in selected larvae. Direction agreement is descriptive and does not establish a common protective mechanism.
 
 ## Interpretation limits
 

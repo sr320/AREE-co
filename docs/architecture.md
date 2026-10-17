@@ -12,5 +12,5 @@ The CLI is implemented in Python under `src/aree`.
 
 Study-specific scripts in `scripts/` keep each study's contrasts, QC gates and report text, and import the shared machinery from `aree.raw`, so they work both as `python scripts/NAME.py` and when imported.
 
-Raw RNA-seq reanalysis runs through the Nextflow pipeline in `workflows/rnaseq/` (see its README). Methylation, proteomics and metabolomics studies currently enter through processed-result harmonization; raw-data pipelines for them are on the roadmap.
+The reusable Nextflow pipeline in `workflows/rnaseq/` supports paired-end RNA-seq reanalysis (see its README). Committed public-study analyses also use the study-specific scripts and shell wrappers in `scripts/`; these preserve design-specific choices, including QuantSeq processing. Methylation, proteomics and metabolomics studies currently enter through processed-result harmonization; raw-data pipelines for them are on the roadmap.
 

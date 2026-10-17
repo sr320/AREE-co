@@ -3,13 +3,19 @@ title: "Aquaculture Resilience Evidence Engine"
 format: html
 ---
 
-AREE converts public aquaculture omics studies into harmonized, comparable evidence for resilience-associated biomarker discovery.
+AREE re-examines public Pacific oyster RNA-sequencing experiments to help researchers investigate stress responses and potential links to survival, growth or recovery. It checks study designs, estimates gene activity, and records expression differences together with uncertainty and biological limitations.
 
-The current release focuses on *Crassostrea gigas* and includes real public RNA-seq and Tag-seq reanalyses, harmonized molecular findings, and study-specific evidence cards. The [results website](https://sr320.github.io/AREE-co/) leads with real evidence and keeps synthetic scoring and meta-analysis in a separate demonstration section.
+The [results website](https://sr320.github.io/AREE-co/) presents real study-level findings, evidence cards and downloadable tables. Its counts are calculated from the committed registry and evidence. A separate synthetic demo exercises meta-analysis and candidate scoring. The published website is assembled by `scripts/build_site.py`; this document is an introduction for local documentation browsing.
 
-Registered contrasts can share a BioProject or control samples. Their counts do not establish independent replication. See [Interpreting Evidence](interpreting-evidence.md) for the distinction between stress responses, resilience-associated findings and validated markers.
+## Start here
 
-## Run the Demo
+- [Why this matters and what the work involves](why-this-matters.md).
+- [Methods and a guide to reading results](methods.md).
+- [How expression findings relate to resilience](interpreting-evidence.md).
+
+Expression differences provide clues for follow-up experiments. They do not establish validated predictors of resilience.
+
+## Run the synthetic demo
 
 ```bash
 aree harmonize-demo
@@ -18,7 +24,3 @@ aree score-candidates
 aree build-evidence-cards
 aree build-demo-report
 ```
-
-## Guardrail
-
-AREE identifies associations and evidence convergence. It does not claim that single-study significant features are validated biomarkers.

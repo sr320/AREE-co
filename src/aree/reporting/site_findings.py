@@ -91,8 +91,9 @@ def real_card(feature, rows, studies, md_table):
     parts = ['---\ntitle: "Evidence card: {}"\n---\n'.format(feature),
              '**Real public-study evidence. Association evidence only; not a validated biomarker.**\n',
              '[How to interpret expression as evidence for resilience](../docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience). Differential expression alone does not establish a resilience marker; higher expression does not necessarily mean greater resilience.\n',
-             'This feature was selected among ten displayed findings in at least one study. All available rows for it are shown below, including nonsignificant and exploratory results. '
+             'This feature was selected among up to ten displayed findings in at least one study. All available rows for it are shown below, including nonsignificant and exploratory results. '
              'Presence in multiple datasets does not establish independent replication: exposures, tissues, life stages, and phenotype meanings differ. No cross-study score or pooled effect is calculated.\n',
+             '[Guide to effect sizes, uncertainty and gene descriptions](../docs/methods.md#reading-the-results).\n',
              '## Study-specific effects\n']
     effect_rows = []
     projects = [studies[study]['accessions']['bioproject'] for study in rows.study_id]
@@ -132,14 +133,15 @@ def write_real_findings(out, evidence, summaries, highlights, studies, md_table,
                            ', '.join(sorted(set(highlights.loc[highlights.feature_id_standardized == feature, 'study_id'])))]
                           for feature in features], columns=['Real evidence card', 'Selected in studies'])
     write(out / 'evidence_cards/index.qmd', '---\ntitle: "Real-study evidence cards"\n---\n\n'
-          'Cards cover the union of ten displayed findings per harmonized study; each retains all available study rows and design limitations. '
+          'Cards cover the union of up to ten displayed findings per harmonized study; each retains all available study rows and design limitations. '
           'They are selected associations, not a complete gene catalog or validated biomarkers.\n\n' + md_table(cards) + '\n')
     parts = ['---\ntitle: "Real-study findings"\n---\n',
-             'Findings are reported within each study. For inference-eligible studies, ten genes are selected from adjusted p < 0.05, ordered by adjusted p-value, then absolute effect and feature ID. '
+             'Findings are reported within each study. For inference-eligible studies, up to ten genes are selected from adjusted p < 0.05, ordered by adjusted p-value, then absolute effect and feature ID. '
              'For exploratory PRJNA735889, ten descriptive effects are ordered by absolute effect; nominal FDR is not used for selection. '
              'These are browsing selections, not global biomarker rankings. Full harmonized tables are linked for every available study. '
              'No cross-study effect pooling is presented because matching effect scales and broad phenotype labels alone do not establish comparable contrasts.\n',
              '[How do expression findings relate to resilience?](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience) Differential expression identifies molecular differences; linking them to survival, performance or recovery requires outcome evidence and independent validation. Higher expression does not necessarily mean greater resilience.\n',
+             '[Guide to effect sizes, uncertainty and gene descriptions](docs/methods.md#reading-the-results).\n',
              '[Download displayed findings](downloads/real_findings.tsv) · [Download study summary](downloads/real_study_summary.tsv)\n']
     for row in summaries.itertuples(index=False):
         study = studies[row.study_id]

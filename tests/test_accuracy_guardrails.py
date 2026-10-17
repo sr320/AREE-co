@@ -151,6 +151,8 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     index = (out / 'index.qmd').read_text()
     real_count = sum(len(read_tsv(path, usecols=['study_id'])) for path in (ROOT / 'data/harmonized').glob('*.tsv'))
     assert '>{:,}</div><div class="stat-label">Real harmonized evidence records'.format(real_count) in index
+    assert '## What the work involves' in index
+    assert 'Records are neither unique genes nor validated biomarkers' in index
     assert '## Top candidates' not in index
     assert '## One displayed finding per harmonized study' in index
     assert '## Simulated demo candidates' not in index
@@ -168,6 +170,9 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     for path in (out / 'demo/evidence_cards').glob('*.md'):
         assert 'Simulated demo evidence' in path.read_text()
     assert (out / 'evidence_cards/index.qmd').exists()
+    assert 'up to ten' in (out / 'evidence_cards/index.qmd').read_text()
+    assert 'up to ten' in (out / 'candidates.qmd').read_text()
+    assert '## Reading the results' in (out / 'docs/methods.md').read_text()
     for path in (out / 'evidence_cards').glob('*.md'):
         assert 'Real public-study evidence' in path.read_text()
         assert 'Simulated demo evidence' not in path.read_text()

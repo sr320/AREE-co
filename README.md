@@ -10,7 +10,13 @@ AREE is not a static list of papers. It provides a versioned path from public st
 python scripts/build_site.py && quarto render _site_src
 ```
 
-The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
+The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays up to ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
+
+## For biologists
+
+AREE asks which genes differ between oyster groups exposed to stress, or between populations with different performance. It checks the original experimental design, reprocesses public RNA-sequencing data, and puts the results into a consistent format with gene descriptions, uncertainty and limitations. This helps researchers choose genes and biological processes for follow-up experiments.
+
+A change in RNA abundance can indicate a protective response or damage. It does not establish that a gene predicts survival or causes greater resilience. The current public findings are study-level expression results; cross-study pooling and scoring are demonstrated separately with synthetic data. See the [biological overview](docs/why-this-matters.md) and [guide to reading results](docs/methods.md#reading-the-results).
 
 ## What Is Runnable Now
 
@@ -26,7 +32,7 @@ Website counts distinguish public BioProjects from registered study contrasts: o
 - A Streamlit browser for studies, evidence, and candidate cards.
 - A Nextflow RNA-seq reanalysis pipeline (`workflows/rnaseq`): FastQC, Salmon, tximport/DESeq2, and export to harmonizable evidence. Methylation, proteomics and metabolomics studies currently enter as processed results.
 
-Synthetic demo data are clearly labeled as simulated and are intended to exercise the full system shape before raw public datasets are curated.
+Synthetic demo data are clearly labeled as simulated and exercise the analysis and reporting workflow alongside the separately curated real public datasets.
 
 ## Install
 
@@ -72,6 +78,8 @@ aree meta-analyze --evidence data/harmonized --output results/meta_analysis.tsv
 aree score-candidates --evidence data/harmonized --output results/candidate_scores.tsv
 aree build-evidence-cards --evidence data/harmonized --scores results/candidate_scores.tsv --output-dir results/evidence_cards
 ```
+
+Before pooling real evidence, review biological comparability and shared samples: the engine does not model covariance from shared controls. The primary website presents study-level results without pooled effects or a global score.
 
 Scoring recomputes heterogeneity from the evidence it scores, so `meta_analysis.tsv` is for inspection only and a filtered or stale copy cannot change the ranking. Effects are pooled and summarized only within one `effect_size_type`; candidates remain one row per feature so cross-context and multi-omics convergence still count. Use `--phenotype`/`--stressor` on `score-candidates` for a context-specific ranking.
 

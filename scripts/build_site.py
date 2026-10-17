@@ -217,7 +217,7 @@ toc: false
 page-layout: full
 ---
 
-AREE converts public aquaculture omics studies into harmonized, comparable evidence for resilience-associated biomarker discovery. This page is rebuilt automatically every time results are pushed to `main`.
+AREE re-examines public Pacific oyster gene-expression experiments to help researchers investigate how oysters respond to stress and what may contribute to survival, growth or recovery. It brings the results into a common format while keeping each experiment's biological context and limitations. This page is rebuilt automatically every time results are pushed to `main`.
 
 ::: {{.callout-tip appearance="simple"}}
 Last updated from commit [`{sha}`]({repo}/commit/{sha}) ({commit_date}); site built {built}.
@@ -236,6 +236,16 @@ Findings retain study-specific contrasts, gene descriptions, uncertainty and des
 Counts distinguish public BioProjects from registered contrasts. PRJNA913164 contributes two contrasts with shared controls; neither the contrast count nor the BioProject count establishes independent replication.
 
 [How do expression findings relate to resilience?](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience) Learn what the comparison supports, why higher expression does not necessarily mean greater resilience, and what validation is needed.
+
+## What the work involves
+
+For each experiment, we check which oysters were compared, recover the public RNA-sequencing data, estimate gene activity using a documented genome reference, and assess the quality of the samples and the experimental design. We then record expression differences, their uncertainty, and the reasons to treat a result cautiously. Some comparisons are withheld when treatment cannot be separated from parentage, developmental stage or inadequate replication.
+
+The result is a resource for choosing follow-up experiments. A gene that changes after heat exposure may reflect protection, damage or both. Showing that it predicts survival requires independent animals with measured outcomes.
+
+**Reading the counts:** A BioProject is a public dataset collection. A contrast is one treatment-versus-control comparison; a single project can supply several. An evidence record is one gene's result in one comparison, including results without a statistically supported difference. Records are neither unique genes nor validated biomarkers. An evidence card collects available results for one displayed gene.
+
+[Read the biological overview](docs/why-this-matters.md) · [Understand the methods and terms](docs/methods.md)
 
 ## Real-study progress
 
