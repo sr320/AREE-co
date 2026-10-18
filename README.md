@@ -10,7 +10,7 @@ AREE is not a static list of papers. It provides a versioned path from public st
 python scripts/build_site.py && quarto render _site_src
 ```
 
-The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays up to ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
+The site's Query page loads every harmonized evidence record into an in-browser DuckDB instance (from a Parquet file regenerated on each build), so visitors can search any gene, stressor or tissue across all studies without a server; the same Parquet download works in pandas, DuckDB or an AI assistant. The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays up to ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
 
 ## For biologists
 
@@ -28,6 +28,7 @@ Website counts distinguish public BioProjects from registered study contrasts: o
 - Demo cross-study random-effects meta-analysis.
 - Transparent biomarker candidate scoring.
 - Markdown evidence-card generation.
+- An in-browser website query page over all harmonized evidence (DuckDB-WASM reading a build-generated Parquet; requires the `site` extra at build time).
 - Demo report generation.
 - A Streamlit browser for studies, evidence, and candidate cards.
 - A Nextflow RNA-seq reanalysis pipeline (`workflows/rnaseq`): FastQC, Salmon, tximport/DESeq2, and export to harmonizable evidence. Methylation, proteomics and metabolomics studies currently enter as processed results.

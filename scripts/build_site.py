@@ -15,7 +15,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from aree.reporting.site_findings import load_findings, write_real_findings
+from aree.reporting.site_findings import load_findings, write_query_parquet, write_real_findings
 from aree.reporting.evidence_cards import card_filename
 from aree.intake.registry import flatten_for_registry, REGISTRY_COLUMNS
 from aree.validation.schemas import validate_study_file
@@ -117,7 +117,7 @@ def write(path, text):
     path.write_text(text)
 
 
-def quarto_config(analyses, cards):
+def quarto_config(analyses, cards, queryable):
     analysis_menu = [
         {"text": d.name, "href": "analysis/{}/analysis_report.md".format(d.name)}
         for d in analyses
@@ -143,6 +143,7 @@ def quarto_config(analyses, cards):
                     {"text": "Progress", "href": "index.qmd"},
                     {"text": "Studies", "href": "studies.qmd"},
                     {"text": "Real-study findings", "href": "candidates.qmd"},
+                ] + ([{"text": "Query", "href": "query.qmd"}] if queryable else []) + [
                     {"text": "Reanalyses", "menu": [{"text": "All reanalyses", "href": "analyses.qmd"}] + analysis_menu},
                     {"text": "Real evidence cards ({})".format(len(cards)), "href": "evidence_cards/index.qmd"},
                     {"text": "Synthetic demo", "href": "demo/index.qmd"},
@@ -372,6 +373,12 @@ def build(out):
     meta = pd.read_csv(ROOT / "data" / "demo" / "meta_analysis.tsv", sep="\t", dtype=str)
     real_evidence, summaries, highlights = load_findings(ROOT, extra)
     real_cards = write_real_findings(out, real_evidence, summaries, highlights, extra, md_table, write)
+    queryable = write_query_parquet(out, real_evidence, extra)
+    if queryable:
+        shutil.copy(ROOT / "site_assets" / "query.qmd", out / "query.qmd")
+        shutil.copy(ROOT / "site_assets" / "query.js", out / "query.js")
+    else:
+        print("pyarrow unavailable; skipping the query page (install the 'site' extra to publish it)")
 
     cards = {}
     for card in sorted((ROOT / "reports" / "evidence_cards").glob("*.md")):
@@ -408,7 +415,7 @@ def build(out):
         base = out / "demo" if is_simulated(study["data_availability"]["status"]) else out
         write(base / "studies" / (study_id + ".qmd"), study_detail_page(study))
 
-    write(out / "_quarto.yml", quarto_config(analyses, real_cards))
+    write(out / "_quarto.yml", quarto_config(analyses, real_cards, queryable))
     write(out / "styles.css", STYLES)
     write(out / "index.qmd", progress_page(registry, extra, summaries, real_cards, highlights, real_evidence))
     write(out / "studies.qmd", studies_page(registry[~registry["data_status"].map(is_simulated)]))

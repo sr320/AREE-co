@@ -21,6 +21,7 @@ license = {file = "LICENSE"}
 [project.optional-dependencies]
 dev = ["pytest>=7", "ruff>=0.5"]
 app = ["streamlit>=1.0"]
+site = ["pyarrow>=8"]  # Parquet export behind the website's in-browser query page
 
 [project.scripts]
 aree = "aree.cli:app"

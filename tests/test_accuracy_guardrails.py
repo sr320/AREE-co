@@ -185,3 +185,17 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     hab = (out / 'studies/CGIG_HAB_RNASEQ_PRJEB18614.qmd').read_text()
     assert '**Primary-analysis sample count:** 24.' in hab
     assert 'not individual oysters or independent tanks' in hab
+    # The query page ships only alongside its data, and keeps the interpretive caveats.
+    config = (out / '_quarto.yml').read_text()
+    try:
+        import pyarrow  # noqa: F401
+    except ImportError:
+        assert 'query.qmd' not in config
+        assert not (out / 'query.qmd').exists()
+    else:
+        assert 'query.qmd' in config
+        assert (out / 'downloads/aree_evidence.parquet').exists()
+        assert (out / 'query.js').exists()
+        query = (out / 'query.qmd').read_text()
+        assert 'not validated biomarkers' in query
+        assert 'nominal' in query

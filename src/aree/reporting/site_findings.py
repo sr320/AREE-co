@@ -167,3 +167,33 @@ def write_real_findings(out, evidence, summaries, highlights, studies, md_table,
     highlights.to_csv(out / 'downloads/real_findings.tsv', sep='\t', index=False)
     summaries.to_csv(out / 'downloads/real_study_summary.tsv', sep='\t', index=False)
     return features
+
+
+# Harmonized-evidence column names are kept so query results match the TSV downloads.
+QUERY_PARQUET_COLUMNS = [
+    'study_id', 'bioproject', 'feature_id_standardized', 'description', 'sample_comparison',
+    'effect_size', 'effect_size_type', 'standard_error', 'p_value', 'adjusted_p_value',
+    'sample_size', 'tissue', 'life_stage', 'stressor', 'phenotype',
+    'resilience_classification', 'inference_status', 'quality_flags',
+]
+
+
+def write_query_parquet(out, evidence, studies):
+    """Write every real evidence record as Parquet for the in-browser query page.
+
+    Returns False when pyarrow (the optional ``site`` extra) is unavailable, so
+    environments without it can still build the rest of the site; the Pages
+    workflow installs the extra, which keeps the published query page complete.
+    """
+    try:
+        import pyarrow  # noqa: F401
+    except ImportError:
+        return False
+    table = evidence.assign(bioproject=evidence.study_id.map(
+        lambda study: studies[study]['accessions']['bioproject']))[QUERY_PARQUET_COLUMNS].copy()
+    for column in ['effect_size', 'standard_error', 'p_value', 'adjusted_p_value']:
+        table[column] = table[column].astype('float64')
+    table['sample_size'] = table['sample_size'].astype('int32')
+    (out / 'downloads').mkdir(exist_ok=True)
+    table.to_parquet(out / 'downloads/aree_evidence.parquet', index=False, compression='zstd')
+    return True

@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from aree.reporting.site_findings import load_findings, real_card
+from aree.reporting.site_findings import QUERY_PARQUET_COLUMNS, load_findings, real_card, write_query_parquet
 from scripts.build_site import md_table, load_registry
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -75,6 +75,23 @@ def test_real_card_preserves_all_observations_and_shared_control_caveats(finding
     assert 'SHA-256' in card
     assert 'nominal only' in card
     assert len(rows) == len(evidence[evidence.feature_id_standardized == feature])
+
+
+def test_query_parquet_preserves_every_record_and_caveat(findings, tmp_path):
+    pytest.importorskip('pyarrow')
+    studies, (evidence, _, _) = findings
+    assert write_query_parquet(tmp_path, evidence, studies)
+    table = pd.read_parquet(tmp_path / 'downloads/aree_evidence.parquet')
+    assert list(table.columns) == QUERY_PARQUET_COLUMNS
+    assert len(table) == len(evidence)
+    assert (table.study_id == evidence.study_id).all()
+    assert (table.effect_size == evidence.effect_size.astype(float)).all()
+    assert (table.bioproject == evidence.study_id.map(lambda s: studies[s]['accessions']['bioproject'])).all()
+    exploratory = table[table.inference_status.str.startswith('Exploratory')]
+    assert set(exploratory.study_id) == {'CGIG_OA_RNASEQ_PRJNA735889'}
+    assert len(exploratory) == (evidence.study_id == 'CGIG_OA_RNASEQ_PRJNA735889').sum()
+    assert table.quality_flags.notna().all()
+    assert 'score' not in table.columns
 
 
 def test_build_rejects_stale_sample_metadata(findings):
