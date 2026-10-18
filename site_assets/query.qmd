@@ -1,0 +1,115 @@
+---
+title: "Query the evidence"
+page-layout: full
+toc: false
+# Leave the raw result/SQL tables alone: Quarto's table postprocessing drops the
+# sibling elements that the query script needs.
+html-table-processing: none
+resources:
+  - query.js
+---
+
+Search every harmonized evidence record — all genes in all reanalysed study contrasts, including
+nonsignificant results — not just the ten displayed findings per study. The full table
+(~17&nbsp;MB) downloads into your browser once; every query then runs locally, and nothing you
+type leaves the page.
+
+::: {.callout-warning appearance="simple"}
+These are study-level molecular associations, not validated biomarkers. Higher expression does not
+necessarily mean greater resilience, rows that share controls are not independent replication, and
+no cross-study pooled effect is computed. Rows marked **exploratory** come from the tank-dependent
+PRJNA735889 analysis: their p-values are nominal only. See
+[how expression findings relate to resilience](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience)
+and the [guide to reading results](docs/methods.md#reading-the-results).
+:::
+
+```{=html}
+<style>
+.aree-query-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .75rem; align-items: end; margin: 1rem 0; }
+.aree-query-controls label { display: block; font-size: .8rem; opacity: .75; margin-bottom: .15rem; }
+.aree-query-controls input[type="text"], .aree-query-controls input[type="number"], .aree-query-controls select { width: 100%; }
+#aree-status { font-size: .9rem; opacity: .8; margin: .5rem 0 1rem; }
+#aree-count { font-size: .9rem; margin: .75rem 0 .25rem; }
+#aree-results td, #aree-results th { font-size: .85rem; white-space: nowrap; }
+#aree-results td.aree-desc { max-width: 22rem; overflow: hidden; text-overflow: ellipsis; }
+#aree-results td.aree-flags { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; opacity: .75; }
+#aree-results td.aree-num { text-align: right; font-variant-numeric: tabular-nums; }
+.aree-badge { display: inline-block; padding: .1rem .45rem; border-radius: .5rem; font-size: .75rem; border: 1px solid rgba(127,127,127,.4); }
+.aree-badge.exploratory { border-color: var(--bs-warning, #f0ad4e); }
+#aree-sql { width: 100%; font-family: var(--bs-font-monospace, monospace); font-size: .85rem; }
+</style>
+
+<div class="aree-query-controls">
+  <div style="grid-column: span 2;">
+    <label for="aree-gene">Gene ID or description contains</label>
+    <input type="text" id="aree-gene" placeholder="e.g. 105327837 or heat shock protein" disabled>
+  </div>
+  <div>
+    <label for="aree-stressor">Stressor</label>
+    <select id="aree-stressor" disabled><option value="">All</option></select>
+  </div>
+  <div>
+    <label for="aree-tissue">Tissue</label>
+    <select id="aree-tissue" disabled><option value="">All</option></select>
+  </div>
+  <div>
+    <label for="aree-study">Study contrast</label>
+    <select id="aree-study" disabled><option value="">All</option></select>
+  </div>
+  <div>
+    <label for="aree-direction">Direction</label>
+    <select id="aree-direction" disabled>
+      <option value="">Any</option>
+      <option value="up">Higher in treatment</option>
+      <option value="down">Lower in treatment</option>
+    </select>
+  </div>
+  <div>
+    <label for="aree-fdr">Significance</label>
+    <select id="aree-fdr" disabled>
+      <option value="">All records</option>
+      <option value="0.05">Adjusted p &lt; 0.05</option>
+      <option value="0.01">Adjusted p &lt; 0.01</option>
+    </select>
+  </div>
+</div>
+
+<div id="aree-status">Loading the query engine…</div>
+<div id="aree-count"></div>
+<div style="overflow-x: auto;">
+  <table id="aree-results" class="table table-sm table-striped" hidden>
+    <thead><tr>
+      <th>Gene</th><th>Description</th><th>Study</th><th>Contrast</th><th>Tissue</th>
+      <th>Stage</th><th>Stressor</th><th>Effect (log2FC)</th><th>SE</th><th>Adj. p</th>
+      <th>Interpretation</th><th>Quality flags</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+<p style="font-size:.85rem; opacity:.75;">Positive effects indicate higher expression in the
+treatment relative to the control. Adjusted p-values from the exploratory PRJNA735889 contrast are
+nominal only. Hover a truncated cell for the full text; follow a study link for its design,
+replication and limitations.</p>
+
+<details>
+  <summary>Advanced: run SQL against the <code>evidence</code> table</summary>
+  <p style="font-size:.85rem; margin:.5rem 0;">Columns match the harmonized evidence schema:
+  <code>study_id, bioproject, feature_id_standardized, description, sample_comparison, effect_size,
+  effect_size_type, standard_error, p_value, adjusted_p_value, sample_size, tissue, life_stage,
+  stressor, phenotype, resilience_classification, inference_status, quality_flags</code>.</p>
+  <textarea id="aree-sql" rows="4" spellcheck="false">SELECT stressor, count(*) AS records, count(DISTINCT study_id) AS contrasts
+FROM evidence GROUP BY stressor ORDER BY records DESC</textarea>
+  <button id="aree-sql-run" class="btn btn-sm btn-primary" style="margin:.5rem 0;" disabled>Run SQL</button>
+  <div id="aree-sql-error" style="color: var(--bs-danger, #d9534f); font-size:.85rem;"></div>
+  <div style="overflow-x: auto;">
+    <table id="aree-sql-results" class="table table-sm table-striped" hidden><thead></thead><tbody></tbody></table>
+  </div>
+</details>
+
+<script type="module" src="query.js"></script>
+```
+
+Prefer a script or a chatbot? The same file powers both: download
+[`aree_evidence.parquet`](downloads/aree_evidence.parquet) and query it with DuckDB, pandas or
+polars, or hand its URL to an AI assistant. Full per-study TSVs with complete provenance columns
+are linked from [real-study findings](candidates.qmd).
