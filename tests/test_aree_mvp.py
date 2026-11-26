@@ -598,3 +598,18 @@ def test_schemas_ship_inside_the_package():
 
     assert package_path("schemas", "study.schema.json").is_file()
     assert package_path("schemas", "evidence.schema.json").is_file()
+
+
+def test_markdown_tables_escape_pipes_and_newlines():
+    from aree.reporting.tables import dataframe_to_markdown, rows_to_markdown
+
+    rendered = rows_to_markdown(["col|1", "col\n2"], [["a|b", "line1\nline2\r\nline3"]])
+    lines = rendered.splitlines()
+    assert len(lines) == 3
+    assert "col\\|1" in lines[0] and "col 2" in lines[0]
+    assert "a\\|b" in lines[2] and "line1 line2 line3" in lines[2]
+    for line in lines:
+        assert line.replace("\\|", "").count("|") == 3
+
+    df_rendered = dataframe_to_markdown(pd.DataFrame([{"col|1": "x|y", "col 2": "p\nq"}]))
+    assert "x\\|y" in df_rendered and "p q" in df_rendered

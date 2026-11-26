@@ -117,6 +117,12 @@ def test_several_covariates_enter_the_model_in_order(tmp_path):
     result = _run(quant_dir, design, tx2gene, output_dir, "--replicates=9", "--covariate=timepoint+batch")
     assert result.returncode == 0, result.stderr
     assert (output_dir / "design_formula.txt").read_text().strip() == "~timepoint + batch + condition"
+    with (output_dir / "analysis_summary.tsv").open(newline="") as handle:
+        summary = {row["metric"]: float(row["value"]) for row in csv.DictReader(handle, delimiter="\t")}
+    expected_cutoff = float(
+        subprocess.check_output(["Rscript", "-e", "cat(qf(0.99, 6, 12))"], text=True)
+    )
+    assert summary["cooks_cutoff"] == pytest.approx(expected_cutoff, rel=1e-6)
 
 
 def test_aliased_covariates_are_refused(tmp_path):

@@ -87,12 +87,12 @@ def pileup(sam, targets_path, transcripts_path, output):
         # Only full-length matches ("<read length>M") are kept, whatever the read length.
         if transcript not in counts or fields[5] != "{}M".format(len(fields[9])) or int(fields[1]) & 0x904:
             continue
-        if "NH:i:1\t" not in fields[11]:
+        if len(fields) < 12 or "NH:i:1" not in fields[11].rstrip("\r\n").split("\t"):
             continue
         start, read = int(fields[3]) - 1, fields[9]
         if start < 0 or start + len(read) > counts[transcript].shape[0]:
             continue
-        bases_read = lookup[np.frombuffer(read.encode(), np.uint8)]
+        bases_read = lookup[np.frombuffer(read.upper().encode(), np.uint8)]
         differences = int((bases_read != reference[transcript][start:start + len(read)]).sum())
         if differences > MAX_MISMATCHES:
             continue
@@ -120,6 +120,12 @@ def compare(paths, min_depth=30, min_pooled_minor=0.15, seed=1):
         if keep.any():
             frequencies.append(stacked[:, positions, minor][:, keep] / depth[:, keep])
             depths.append(depth[:, keep])
+    if not frequencies:
+        raise ValueError(
+            "No sites met min_depth={} and min_pooled_minor={} across {} libraries".format(
+                min_depth, min_pooled_minor, len(names)
+            )
+        )
     af, dp = np.concatenate(frequencies, 1), np.concatenate(depths, 1)
     print(f"{af.shape[1]} sites with pooled minor-allele frequency >= {min_pooled_minor} "
           f"and depth >= {min_depth} in all {len(names)} libraries")

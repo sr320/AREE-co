@@ -199,3 +199,54 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
         query = (out / 'query.qmd').read_text()
         assert 'not validated biomarkers' in query
         assert 'nominal' in query
+
+
+def test_exploratory_study_does_not_veto_qualified_candidate_or_inflate_replication():
+    qualified = [
+        dict(study_id='A', sample_size=20, effect_size=1.2, adjusted_p_value=1e-4),
+        dict(study_id='B', sample_size=20, effect_size=1.4, adjusted_p_value=1e-4),
+    ]
+    exp = dict(
+        study_id='EXP',
+        sample_size=50,
+        effect_size=1.0,
+        adjusted_p_value=0.9,
+        resilience_classification='environmental_exposure',
+        quality_flags=EXPLORATORY_FLAG,
+    )
+    row = score_table(evidence(qualified + [exp])).iloc[0]
+    assert row.n_studies == 3 and row.n_independent_studies == 3
+    assert row.category == 'High-priority cross-study candidate'
+    # Changing exploratory sample size or p-value gives no replication or significance reward.
+    exp_inflated = dict(exp, sample_size=500, adjusted_p_value=1e-100)
+    assert score_table(evidence(qualified + [exp_inflated])).iloc[0].score == row.score
+
+    # One eligible study + one exploratory study cannot promote to high priority.
+    one_plus_exp = score_table(evidence([qualified[0], exp])).iloc[0]
+    assert pd.isna(one_plus_exp.direction_consistency)
+    assert one_plus_exp.category != 'High-priority cross-study candidate'
+
+    # Exploratory agreement cannot mask conflicting eligible studies.
+    conflicting = [
+        dict(study_id='A', effect_size=2.0),
+        dict(study_id='B', effect_size=-2.0),
+        exp,
+    ]
+    conflict_row = score_table(evidence(conflicting)).iloc[0]
+    assert conflict_row.direction_consistency == 0.5
+    assert conflict_row.category != 'High-priority cross-study candidate'
+
+
+def test_provenance_quality_flags_do_not_penalize_data_quality():
+    clean_none = score_table(evidence([dict(study_id='A', quality_flags='none')])).iloc[0]
+    clean_provenance = score_table(
+        evidence([dict(
+            study_id='A',
+            quality_flags='raw_reanalysis;lineage_balanced_contrast;pathogen_challenge_response;fdr_lt_0.05;dependence_group=G1',
+        )])
+    ).iloc[0]
+    assert clean_provenance.score == clean_none.score
+
+    for caveat in ('raw_reanalysis;pooled_libraries', 'raw_reanalysis;no_linked_publication'):
+        caveated = score_table(evidence([dict(study_id='A', quality_flags=caveat)])).iloc[0]
+        assert caveated.score < clean_none.score

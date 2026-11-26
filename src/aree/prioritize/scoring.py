@@ -109,6 +109,61 @@ def _typed_effect_summary(group):
     return _typed_effect_summary_arrays(group["effect_size"].to_numpy(), group["effect_size_type"].to_numpy())
 
 
+NON_PENALTY_QUALITY_FLAGS = frozenset({
+    "",
+    "none",
+    "raw_reanalysis",
+    "fdr_lt_0.05",
+    "qc_reviewed",
+    "sensitivity_direction_robust",
+    "lineage_balanced_contrast",
+    "constitutive_expression",
+    "direct_exposure",
+    "during_oshv1_infection",
+    "heat_6h",
+    "heat_24h",
+    "infection_background_all_arms",
+    "larval_development",
+    "one_oyster_per_tank",
+    "pesticide_mixture",
+    "population_selection_association",
+    "pre_infection_baseline",
+    "quantseq_3prime_tag_seq",
+    "time_averaged_over_diurnal_cycle",
+    "tire_leachate",
+    "tire_microparticles",
+    "unpaired_primary_tank_paired_sensitivity",
+    "vibrio_12h",
+    "vibrio_24h",
+    "virulent_vibrio_crassostreae",
+    "virulent_vibrio_tasmaniensis",
+})
+
+
+def _is_non_penalty_flag(flag):
+    return (
+        flag in NON_PENALTY_QUALITY_FLAGS
+        or flag.startswith("dependence_group=")
+        or flag.endswith("_blocked_contrast")
+        or flag.endswith("_response")
+    )
+
+
+def has_quality_caveat(flags):
+    """Return True if quality_flags contains any limitation or caveat beyond provenance/context tags."""
+    if is_missing(flags):
+        return False
+    tokens = [token.strip() for token in str(flags).split(";")]
+    return any(not _is_non_penalty_flag(token) for token in tokens)
+
+
+def _collapse_by_group(dep_groups, effects, types):
+    independent_effects = {}
+    for key, kind, effect in zip(dep_groups, types, effects):
+        independent_effects.setdefault((key, kind), []).append(effect)
+    return [_mean(values) for values in independent_effects.values()], [key[1] for key in independent_effects]
+
+
 def score_table(evidence):
     evidence = evidence.copy()
     evidence["_dependence_group"] = [
@@ -140,27 +195,47 @@ def score_table(evidence):
         # a dependence group and effect scale before comparing independent groups.
         effects, types = group["effect_size"], group["effect_size_type"]
         if dependent:
-            independent_effects = {}
-            for key, kind, effect in zip(group["_dependence_group"], types, effects):
-                independent_effects.setdefault((key, kind), []).append(effect)
-            effects = [_mean(values) for values in independent_effects.values()]
-            types = [key[1] for key in independent_effects]
-        effect_magnitude, direction_consistency = _typed_effect_summary_arrays(
-            effects, types
-        )
+            effects, types = _collapse_by_group(group["_dependence_group"], effects, types)
+        effect_magnitude, _ = _typed_effect_summary_arrays(effects, types)
+
+        eligible = [EXPLORATORY_FLAG not in str(flags).split(";") for flags in group["quality_flags"]]
+        eligible_studies = len(set(present([s for s, ok in zip(group["study_id"], eligible) if ok])))
+        eligible_groups = {dep for dep, ok in zip(group["_dependence_group"], eligible) if ok}
+        n_eligible_independent = len(eligible_groups)
+        eligible_sizes = {}
+        for key, size, ok in zip(group["_dependence_group"], group["sample_size"], eligible):
+            if ok and not is_missing(size):
+                eligible_sizes[key] = max(eligible_sizes.get(key, 0), size)
+        eligible_total_n = sum(eligible_sizes.values())
+        if n_eligible_independent == 0:
+            direction_consistency = float("nan")
+        else:
+            eligible_dep_groups = [dep for dep, ok in zip(group["_dependence_group"], eligible) if ok]
+            eligible_effects = [eff for eff, ok in zip(group["effect_size"], eligible) if ok]
+            eligible_types = [kind for kind, ok in zip(group["effect_size_type"], eligible) if ok]
+            if n_eligible_independent < eligible_studies:
+                eligible_effects, eligible_types = _collapse_by_group(
+                    eligible_dep_groups, eligible_effects, eligible_types
+                )
+            _, direction_consistency = _typed_effect_summary_arrays(eligible_effects, eligible_types)
+
         phenotype_relevance = _mean([value == "resilience_associated" for value in group["resilience_classification"]])
+        eligible_classifications = [v for v, ok in zip(group["resilience_classification"], eligible) if ok]
+        eligible_phenotype_relevance = (
+            _mean([v == "resilience_associated" for v in eligible_classifications])
+            if eligible_classifications else 0.0
+        )
         mapping_conf = _mean([mapping_score(value) for value in group["mapping_confidence"]])
-        data_quality = 1.0 - min(_mean([value != "none" for value in group["quality_flags"]]), 1.0) * 0.4
-        adjusted = present([q for q, flags in zip(group["adjusted_p_value"], group["quality_flags"])
-                            if EXPLORATORY_FLAG not in str(flags).split(";")])
+        data_quality = 1.0 - min(_mean([has_quality_caveat(value) for value in group["quality_flags"]]), 1.0) * 0.4
+        adjusted = present([q for q, ok in zip(group["adjusted_p_value"], eligible) if ok])
         best_q = min(adjusted) if adjusted else float("nan")
         heterogeneity_penalty = 0.0
         if feature in max_i2:
             heterogeneity_penalty = min(max_i2[feature] / 100.0, 1.0) * 0.15
         context_breadth = len(set(present(group["tissue"]))) + len(set(present(group["life_stage"])))
         components = {
-            "n_studies": _bounded(n_independent, 4),
-            "total_sample_size": _bounded(total_n, 100),
+            "n_studies": _bounded(n_eligible_independent, 4),
+            "total_sample_size": _bounded(eligible_total_n, 100),
             "effect_magnitude": effect_magnitude,
             "significance": _significance_score(best_q),
             # Unreplicated evidence is neither rewarded nor penalized for direction.
@@ -173,8 +248,12 @@ def score_table(evidence):
         }
         weighted = sum(SCORE_WEIGHTS[key] * components[key] for key in SCORE_WEIGHTS) / _WEIGHT_TOTAL
         score = weighted - heterogeneity_penalty
-        exploratory = any(EXPLORATORY_FLAG in str(flags).split(";") for flags in group["quality_flags"])
-        if n_independent >= 2 and direction_consistency >= 0.67 and phenotype_relevance >= 0.5 and not exploratory:
+        if (
+            n_eligible_independent >= 2
+            and not pd.isna(direction_consistency)
+            and direction_consistency >= 0.67
+            and eligible_phenotype_relevance >= 0.5
+        ):
             category = "High-priority cross-study candidate"
         elif assay_diversity >= 2:
             category = "Multi-omics convergence candidate"

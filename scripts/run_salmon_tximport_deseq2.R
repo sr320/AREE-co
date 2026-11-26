@@ -198,7 +198,10 @@ write.csv(correlations, file.path(output_dir, "sample_vst_correlations.csv"), qu
 
 # Retain diagnostics for every library; flags require review, not automatic removal.
 cooks <- assays(dds)[["cooks"]]
-cooks_cutoff <- qf(0.99, 2, ncol(dds) - 2)
+model_matrix <- attr(dds, "modelMatrix")
+n_params <- if (is.null(model_matrix)) ncol(model.matrix(design(dds), colData(dds))) else ncol(model_matrix)
+n_samples <- ncol(dds)
+cooks_cutoff <- if (n_samples > n_params) qf(0.99, n_params, n_samples - n_params) else NA_real_
 sample_qc <- data.frame(sample = samples$sample, condition = samples$condition,
                         # Tag-seq runs have one size factor per library instead of per-gene factors.
                         normalization_factor_median = if (is.null(normalizationFactors(dds))) {
