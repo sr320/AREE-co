@@ -2,7 +2,7 @@
 
 ## Assumptions
 
-- Public studies will vary in raw-data availability, so AREE supports raw-data reanalysis and processed-results harmonization.
+- Public studies will vary in raw-data availability, so AREC supports raw-data reanalysis and processed-results harmonization.
 - The first production species is *Crassostrea gigas*, but evidence records include species and ortholog fields from the start.
 - Identifier mappings are versioned data products with confidence levels, not silent replacements.
 - Phenotype labels need controlled terms while preserving original study descriptions.
@@ -10,7 +10,7 @@
 
 ## Architecture
 
-AREE has five connected layers:
+AREC has five connected layers:
 
 1. Study registry and dataset intake.
 2. Standardized raw-data reanalysis (Nextflow RNA-seq pipeline).

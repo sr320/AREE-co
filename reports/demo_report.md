@@ -1,4 +1,4 @@
-# AREE Demo Report
+# AREC Demo Report
 
 This report uses simulated demo evidence to demonstrate the MVP evidence-generation workflow.
 

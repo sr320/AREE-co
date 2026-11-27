@@ -2,7 +2,7 @@
 
 Oyster farmers and researchers want to understand why some oysters survive environmental stress or disease better than others. Public gene-expression experiments offer clues, but studies often use different tissues, ages, treatments and gene names. A list of genes from one experiment can be difficult to compare with another.
 
-AREE brings these results together with enough context to judge what each experiment can tell us. The current real-study collection focuses on Pacific oyster (*Crassostrea gigas*) RNA sequencing, which measures RNA abundance as an indicator of gene activity. The software also accepts processed methylation, protein and metabolite results; these additional assay types are currently illustrated in the synthetic demo.
+AREC brings these results together with enough context to judge what each experiment can tell us. The current real-study collection focuses on Pacific oyster (*Crassostrea gigas*) RNA sequencing, which measures RNA abundance as an indicator of gene activity. The software also accepts processed methylation, protein and metabolite results; these additional assay types are currently illustrated in the synthetic demo.
 
 ## What the effort involves
 
@@ -14,7 +14,7 @@ AREE brings these results together with enough context to judge what each experi
 
 ## What a biologist can use it for
 
-Use AREE to identify genes and processes worth investigating, inspect whether a finding occurs in the tissue and life stage of interest, and plan experiments that connect molecular changes to survival, maintained growth, disease burden or recovery.
+Use AREC to identify genes and processes worth investigating, inspect whether a finding occurs in the tissue and life stage of interest, and plan experiments that connect molecular changes to survival, maintained growth, disease burden or recovery.
 
 For example, expression after a heat challenge can reveal a heat response. Baseline expression in a population selected for better heat survival can suggest a link to tolerance. These are different comparisons: agreement may be interesting, but it does not establish a shared protective mechanism.
 

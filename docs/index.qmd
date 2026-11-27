@@ -1,9 +1,9 @@
 ---
-title: "Aquaculture Resilience Evidence Engine"
+title: "Aquaculture Resilience Evidence Companion"
 format: html
 ---
 
-AREE re-examines public Pacific oyster RNA-sequencing experiments to help researchers investigate stress responses and potential links to survival, growth or recovery. It checks study designs, estimates gene activity, and records expression differences together with uncertainty and biological limitations.
+AREC re-examines public Pacific oyster RNA-sequencing experiments to help researchers investigate stress responses and potential links to survival, growth or recovery. It checks study designs, estimates gene activity, and records expression differences together with uncertainty and biological limitations.
 
 The [results website](https://sr320.github.io/AREE-co/) presents real study-level findings, evidence cards and downloadable tables. Its counts are calculated from the committed registry and evidence. A separate synthetic demo exercises meta-analysis and candidate scoring. The published website is assembled by `scripts/build_site.py`; this document is an introduction for local documentation browsing.
 

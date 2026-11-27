@@ -149,6 +149,7 @@ def test_committed_shared_controls_and_tank_flags_are_enforced():
 def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_path):
     out = build(tmp_path / 'site')
     index = (out / 'index.qmd').read_text()
+    assert 'title: "Aquaculture Resilience Evidence Companion"' in index
     real_count = sum(len(read_tsv(path, usecols=['study_id'])) for path in (ROOT / 'data/harmonized').glob('*.tsv'))
     assert '>{:,}</div><div class="stat-label">Real harmonized evidence records'.format(real_count) in index
     assert '## What the work involves' in index
@@ -187,6 +188,8 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     assert 'not individual oysters or independent tanks' in hab
     # The query page ships only alongside its data, and keeps the interpretive caveats.
     config = (out / '_quarto.yml').read_text()
+    assert 'title: AREC' in config
+    assert 'Aquaculture Resilience Evidence Companion' in config
     try:
         import pyarrow  # noqa: F401
     except ImportError:

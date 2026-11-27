@@ -26,7 +26,7 @@ def build_demo_report(output_path=None, registry_path=None, evidence_path=None, 
     evidence = read_evidence(evidence_path or root_path("data", "demo", "harmonized_evidence.tsv"))
     scores = read_tsv(scores_path or root_path("data", "demo", "candidate_scores.tsv"))
     body = [
-        "# AREE Demo Report",
+        "# AREC Demo Report",
         "",
         "This report uses simulated demo evidence to demonstrate the MVP evidence-generation workflow.",
         "",

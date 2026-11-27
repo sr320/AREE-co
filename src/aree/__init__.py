@@ -1,4 +1,4 @@
-"""Aquaculture Resilience Evidence Engine."""
+"""Aquaculture Resilience Evidence Companion."""
 
 __version__ = "0.1.0"
 

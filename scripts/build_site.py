@@ -1,4 +1,4 @@
-"""Assemble the AREE progress website from committed registry, reports, and docs.
+"""Assemble the AREC progress website from committed registry, reports, and docs.
 
 Writes a Quarto website project to ``_site_src/``; render it with
 ``quarto render _site_src`` (output lands in ``_site/``). The site is rebuilt
@@ -130,14 +130,14 @@ def quarto_config(analyses, cards, queryable):
             "resources": ["analysis/**", "downloads/**"],
         },
         "website": {
-            "title": "AREE",
+            "title": "AREC",
             "site-url": "https://sr320.github.io/AREE-co/",
             "repo-url": REPO_URL,
             # Pages are generated outside the checkout, so Quarto's default source URLs
             # point at files that do not exist in the repository. Keep the repository icon
             # and issue action; cards carry explicit links to their committed inputs.
             "repo-actions": ["issue"],
-            "page-footer": "Aquaculture Resilience Evidence Engine · association evidence only, not validated biomarkers",
+            "page-footer": "Aquaculture Resilience Evidence Companion · association evidence only, not validated biomarkers",
             "navbar": {
                 "left": [
                     {"text": "Progress", "href": "index.qmd"},
@@ -212,13 +212,13 @@ def progress_page(registry, extra, summaries, cards, highlights, evidence):
     top = md_table(pd.DataFrame(examples, columns=["BioProject", "Feature / real evidence card", "Contrast", "RefSeq description", "Interpretation"])) if examples else "_No real findings available yet._"
 
     return """---
-title: "Aquaculture Resilience Evidence Engine"
+title: "Aquaculture Resilience Evidence Companion"
 subtitle: "Results to date"
 toc: false
 page-layout: full
 ---
 
-AREE re-examines public Pacific oyster gene-expression experiments to help researchers investigate how oysters respond to stress and what may contribute to survival, growth or recovery. It brings the results into a common format while keeping each experiment's biological context and limitations. This page is rebuilt automatically every time results are pushed to `main`.
+AREC re-examines public Pacific oyster gene-expression experiments to help researchers investigate how oysters respond to stress and what may contribute to survival, growth or recovery. It brings the results into a common format while keeping each experiment's biological context and limitations. This page is rebuilt automatically every time results are pushed to `main`.
 
 ::: {{.callout-tip appearance="simple"}}
 Last updated from commit [`{sha}`]({repo}/commit/{sha}) ({commit_date}); site built {built}.

@@ -1,8 +1,8 @@
-# Aquaculture Resilience Evidence Engine (AREE)
+# Aquaculture Resilience Evidence Companion (AREC)
 
-AREE is an open, reproducible evidence-generation system for aquaculture resilience biomarker discovery. The MVP focuses on Pacific oyster (*Crassostrea gigas*) and is structured so additional shellfish species and aquaculture organisms can be added without changing the core model.
+AREC is an open, reproducible evidence-generation system for aquaculture resilience biomarker discovery. The MVP focuses on Pacific oyster (*Crassostrea gigas*) and is structured so additional shellfish species and aquaculture organisms can be added without changing the core model.
 
-AREE is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw RNA-seq reanalysis, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
+AREC is not a static list of papers. It provides a versioned path from public study registration, through harmonized processed-result intake or raw RNA-seq reanalysis, into cross-study evidence tables, meta-analysis summaries, transparent candidate prioritization, evidence cards, and user-facing reports.
 
 **Results to date:** <https://sr320.github.io/AREE-co/>. The site rebuilds automatically on every push to `main` (`.github/workflows/pages.yml`) from the committed registry, real `data/harmonized/` evidence, versioned annotations in `reports/`, and a separate synthetic demo. To preview locally:
 
@@ -14,7 +14,7 @@ The site's Query page loads every harmonized evidence record into an in-browser 
 
 ## For biologists
 
-AREE asks which genes differ between oyster groups exposed to stress, or between populations with different performance. It checks the original experimental design, reprocesses public RNA-sequencing data, and puts the results into a consistent format with gene descriptions, uncertainty and limitations. This helps researchers choose genes and biological processes for follow-up experiments.
+AREC asks which genes differ between oyster groups exposed to stress, or between populations with different performance. It checks the original experimental design, reprocesses public RNA-sequencing data, and puts the results into a consistent format with gene descriptions, uncertainty and limitations. This helps researchers choose genes and biological processes for follow-up experiments.
 
 A change in RNA abundance can indicate a protective response or damage. It does not establish that a gene predicts survival or causes greater resilience. The current public findings are study-level expression results; cross-study pooling and scoring are demonstrated separately with synthetic data. See the [biological overview](docs/why-this-matters.md) and [guide to reading results](docs/methods.md#reading-the-results).
 
@@ -49,7 +49,7 @@ If you prefer to use an existing Python environment:
 python3 -m pip install -e ".[dev,app]"
 ```
 
-AREE supports Python 3.8 and newer; CI tests Python 3.8 with the lowest dependency versions `pyproject.toml` allows and Python 3.13 with the highest compatible dependency versions.
+AREC supports Python 3.8 and newer; CI tests Python 3.8 with the lowest dependency versions `pyproject.toml` allows and Python 3.13 with the highest compatible dependency versions.
 
 Commands read and write project files (`registry/`, `data/`, `reports/`). With an editable install from this checkout they use the checkout. With a regular install (`pip install .`), run `aree` from inside the project directory (any subdirectory works) or set `AREE_ROOT=/path/to/project`.
 
@@ -135,7 +135,7 @@ AREE/
 
 ## Objective 1 Component Map
 
-| AREE component | Objective 1 function |
+| AREC component | Objective 1 function |
 |---|---|
 | Study registry | Standardizes public dataset intake and study characterization. |
 | Controlled vocabularies | Normalizes phenotype, stressor, assay, tissue, and quality labels. |

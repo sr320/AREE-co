@@ -141,8 +141,8 @@ def _format_real_card(feature, rows, studies):
     return "\n".join(parts)
 
 
-st.set_page_config(page_title="AREE", layout="wide")
-st.title("Aquaculture Resilience Evidence Engine")
+st.set_page_config(page_title="AREC", layout="wide")
+st.title("Aquaculture Resilience Evidence Companion")
 mode = st.radio(
     "Dataset mode",
     ["Real public studies", "Synthetic demo"],

@@ -272,7 +272,7 @@ def test_demo_report_build(tmp_path):
     scores = score_candidates(evidence_path=evidence, output_path=tmp_path / "scores.tsv")
     report = build_demo_report(output_path=tmp_path / "report.md", evidence_path=evidence, scores_path=scores)
     assert report.exists()
-    assert "AREE Demo Report" in report.read_text()
+    assert "AREC Demo Report" in report.read_text()
 
 
 def test_harmonize_rerun_is_byte_identical_and_portable(tmp_path):

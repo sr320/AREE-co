@@ -2,7 +2,7 @@
 
 ## From an experiment to a gene result
 
-AREE first records what was compared: organism, tissue, life stage, treatment, control, sampling time, replication and any measured performance outcome. Public-study RNA-sequencing data are reanalysed with study-specific designs. Salmon estimates RNA abundance against a documented reference; tximport summarizes transcript estimates at gene level, and DESeq2 estimates expression differences while accounting for the factors specified in each study's model. The scripts and study pages record exclusions, quality checks and exceptions such as processing for 3′ tag sequencing.
+AREC first records what was compared: organism, tissue, life stage, treatment, control, sampling time, replication and any measured performance outcome. Public-study RNA-sequencing data are reanalysed with study-specific designs. Salmon estimates RNA abundance against a documented reference; tximport summarizes transcript estimates at gene level, and DESeq2 estimates expression differences while accounting for the factors specified in each study's model. The scripts and study pages record exclusions, quality checks and exceptions such as processing for 3′ tag sequencing.
 
 Results are put into a common table, a step called **harmonization**. Each row preserves the original gene identifier, reference identifier, comparison, effect estimate, uncertainty, statistical evidence and study limitations. Genome and annotation versions, software methods, source files and file checksums document where the result came from. A shared gene identifier makes records easier to find together; it does not make their experimental comparisons biologically equivalent.
 

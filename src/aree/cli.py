@@ -16,7 +16,7 @@ from aree.reporting.evidence_cards import build_evidence_cards as build_cards
 from aree.validation.schemas import validate_study_file
 
 
-app = typer.Typer(help="Aquaculture Resilience Evidence Engine CLI")
+app = typer.Typer(help="Aquaculture Resilience Evidence Companion (AREC) CLI")
 
 
 @app.command("validate-study")

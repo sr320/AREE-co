@@ -1,6 +1,6 @@
 # Interpreting Evidence
 
-AREE separates resilience-associated, stress-response, disease-associated, environmental exposure, and suggestive evidence. This distinction prevents overclaiming.
+AREC separates resilience-associated, stress-response, disease-associated, environmental exposure, and suggestive evidence. This distinction prevents overclaiming.
 
 ## How expression findings relate to resilience
 
@@ -14,7 +14,7 @@ In aquaculture, resilience needs an observable outcome, such as survival during 
 | A thermotolerance-selected population versus controls, with better survival demonstrated | A **candidate resilience-associated marker**. Other differences between the populations could also explain expression. |
 | Expression measured before challenge that consistently forecasts subsequent survival in independent animals | Stronger evidence for a **marker useful for forecasting resilience** in that tested context. This is a validation target, not a claim about the current cards. |
 
-The current studies illustrate these distinctions. PRJNA516762 compares heat exposure with an untreated control; its released contrast measures a molecular heat response without an organism-level thermal-tolerance outcome. PRJNA694496 compares larvae from a thermotolerance-selected population with controls at ambient conditions. The selected population had better heat-challenge and summer survival in the [original study](https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.663023/full). AREE interprets its expression differences as candidates associated with a more tolerant population; they have not been shown to predict each individual oyster's survival.
+The current studies illustrate these distinctions. PRJNA516762 compares heat exposure with an untreated control; its released contrast measures a molecular heat response without an organism-level thermal-tolerance outcome. PRJNA694496 compares larvae from a thermotolerance-selected population with controls at ambient conditions. The selected population had better heat-challenge and summer survival in the [original study](https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2021.663023/full). AREC interprets its expression differences as candidates associated with a more tolerant population; they have not been shown to predict each individual oyster's survival.
 
 ## Expression direction and statistical significance
 
