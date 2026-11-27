@@ -87,11 +87,14 @@ process SALMON_QUANT {
     def fastq_list = reads instanceof Collection ? reads : [reads]
     def read_args = single_end
         ? "--unmatedReads ${fastq_list[0]}"
-        : "--mates1 ${fastq_list[0]} --mates2 ${fastq_list[1]} --gcBias"
-    def length_arg = params.tag_seq ? '--noLengthCorrection' : ''
+        : "--mates1 ${fastq_list[0]} --mates2 ${fastq_list[1]}"
+    // Salmon 1.10 forbids bias correction alongside --noLengthCorrection; single-end also omits --gcBias.
+    def bias_and_length_args = params.tag_seq
+        ? '--noLengthCorrection'
+        : (single_end ? '--seqBias' : '--seqBias --gcBias')
     """
-    salmon quant --index ${index} --libType A ${read_args} ${length_arg} \\
-        --threads ${task.cpus} --validateMappings --seqBias --output ${sample}
+    salmon quant --index ${index} --libType A ${read_args} ${bias_and_length_args} \\
+        --threads ${task.cpus} --validateMappings --output ${sample}
     """
 
     stub:
