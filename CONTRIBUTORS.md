@@ -32,7 +32,7 @@ Machine-readable citation metadata is also provided in `CITATION.cff` (used auto
 
 ## Acknowledgments
 
-- AI-assisted software development: Claude (Anthropic), Antigravity / Gemini (Google), and GitHub Copilot were used to assist with code generation, refactoring, testing, documentation, and workflow/website scaffolding. All code, statistical analyses, and scientific interpretations were directed, reviewed, and verified by human contributors, who take full responsibility for the repository and its outputs.
+- AI-assisted software development: Claude (Anthropic), Antigravity / Gemini (Google), and GitHub Copilot were used to assist with code generation, refactoring, testing, documentation, and workflow/website scaffolding. All scientific interpretations were directed, reviewed, and verified by human contributors, who take full responsibility for the repository and its outputs.
 
 ## Adding a Contributor
 

@@ -14,9 +14,9 @@ project:
     - >-
       AI-assisted software development: Claude (Anthropic), Antigravity / Gemini (Google),
       and GitHub Copilot were used to assist with code generation, refactoring, testing,
-      documentation, and workflow/website scaffolding. All code, statistical analyses, and
-      scientific interpretations were directed, reviewed, and verified by human contributors,
-      who take full responsibility for the repository and its outputs.
+      documentation, and workflow/website scaffolding. All scientific interpretations were
+      directed, reviewed, and verified by human contributors, who take full responsibility
+      for the repository and its outputs.
 contributors:
   - given_name: Steven
     family_name: Roberts
