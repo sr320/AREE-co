@@ -51,18 +51,19 @@ def study(tmp_path_factory):
     return data
 
 
-def run_pipeline(study, workdir, *extra):
+def run_pipeline(study, workdir, *extra, study_id="SIM_HEAT", samplesheet=None, design=None):
     command = [
         NEXTFLOW, "-q", "run", str(PIPELINE), "-profile", "test",
-        "--study_id", "SIM_HEAT", "--test_level", "heat",
-        "--samplesheet", str(study / "samplesheet.csv"), "--design", str(study / "design.csv"),
+        "--study_id", study_id, "--test_level", "heat",
+        "--samplesheet", str(samplesheet or (study / "samplesheet.csv")),
+        "--design", str(design or (study / "design.csv")),
         "--tx2gene", str(study / "tx2gene.tsv"), "--gff", str(study / "genomic.gff.gz"),
         "--transcripts", str(study / "transcripts.fa"), "--quality_flags", "raw_reanalysis,synthetic_test_data",
         *extra,
     ]
     result = subprocess.run(command, cwd=workdir, capture_output=True, text=True, timeout=1800)
     assert result.returncode == 0, result.stdout + result.stderr
-    return workdir / "results" / "rnaseq" / "SIM_HEAT"
+    return workdir / "results" / "rnaseq" / study_id
 
 
 @needs_nextflow
@@ -108,3 +109,60 @@ def test_pipeline_recovers_simulated_expression_changes(study, tmp_path):
     salmon_version = subprocess.run(["salmon", "--version"], capture_output=True, text=True).stdout.split()[-1]
     assert method.startswith("Salmon_{}_tximport_".format(salmon_version)) and "_DESeq2_" in method
     assert set(harmonized["analysis_method"]) == {method}
+
+
+def _single_end_samplesheet(study, path):
+    sheet = pd.read_csv(study / "samplesheet.csv")
+    sheet["fastq_2"] = ""
+    sheet.to_csv(path, index=False)
+    return path
+
+
+@needs_nextflow
+def test_pipeline_stub_run_single_end_and_collapse_by(study, tmp_path):
+    samplesheet = _single_end_samplesheet(study, tmp_path / "samplesheet_se.csv")
+    results = run_pipeline(
+        study, tmp_path,
+        "-stub-run", "--tag_seq", "true", "--covariate", "batch", "--collapse_by", "condition+replicate",
+        study_id="SIM_SE_STUB", samplesheet=samplesheet,
+    )
+    for name in ("SIM_SE_STUB_rnaseq.tsv", "SIM_SE_STUB_mapping.tsv", "SIM_SE_STUB_annotations.tsv"):
+        assert (results / "evidence" / name).exists()
+    assert len(list((results / "fastqc").glob("*_1_fastqc.zip"))) == 6
+    assert not list((results / "fastqc").glob("*_2_fastqc.zip"))
+    assert len(list((results / "salmon").glob("*/quant.sf"))) == 6
+
+
+@needs_nextflow
+@needs_bio_tools
+def test_pipeline_supports_single_end_tag_seq_with_covariate(study, tmp_path):
+    samplesheet = _single_end_samplesheet(study, tmp_path / "samplesheet_se.csv")
+    design = pd.read_csv(study / "design.csv")
+    design["batch"] = design["replicate"].map({"A": "b1", "B": "b2", "C": "b1"})
+    design_path = tmp_path / "design_cov.csv"
+    design.to_csv(design_path, index=False)
+
+    results = run_pipeline(
+        study, tmp_path,
+        "--covariate", "batch", "--tag_seq", "true",
+        study_id="SIM_SE", samplesheet=samplesheet, design=design_path,
+    )
+    assert (results / "deseq2" / "design_formula.txt").read_text().strip() == "~batch + condition"
+    method = (results / "deseq2" / "analysis_method.txt").read_text().strip()
+    assert "_noLengthCorrection_" in method and method.endswith("_tagseq_counts_unshrunk_effect")
+
+    qc = pd.read_csv(results / "salmon" / "salmon_qc_summary.tsv", sep="\t")
+    assert len(qc) == 6
+    assert (qc["mapping_rate_percent"] > 80).all()
+
+    table = pd.read_csv(results / "deseq2" / "heat_vs_control_deseq2_all_genes.tsv", sep="\t")
+    index = table["feature_id_standardized"].str.rsplit(":", n=1).str[-1].astype(int) - 105500000
+    significant = table["padj"] < 0.05
+    up = set(index[significant & (table["log2FoldChange"] > 0)])
+    down = set(index[significant & (table["log2FoldChange"] < 0)])
+    assert len(up & set(range(0, 30))) >= 25
+    assert len(down & set(range(30, 60))) >= 25
+    assert not (up | down) - set(range(0, 60))
+
+    processed = pd.read_csv(results / "evidence" / "SIM_SE_rnaseq.tsv", sep="\t")
+    assert set(processed["analysis_method"]) == {method}

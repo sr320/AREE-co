@@ -3,6 +3,8 @@ nextflow.enable.dsl = 2
 /*
  * AREE RNA-seq reanalysis: FastQC -> Salmon (decoy-aware selective alignment) -> tximport/DESeq2
  * -> AREE processed evidence, exact-ID mappings and RefSeq annotations, ready for `aree harmonize`.
+ * Supports paired-end, single-end (empty fastq_2), blocking covariates, technical-replicate
+ * collapsing, and 3' tag-seq (QuantSeq via --tag_seq true).
  *
  * Reads are not trimmed: Salmon's selective alignment soft-clips adapters and low-quality ends,
  * matching the published AREE reanalyses of PRJNA694496 and PRJNA516762.
@@ -15,25 +17,33 @@ def required(name) {
     return params[name]
 }
 
+def shQuote(value) {
+    return "'" + value.toString().replace("'", "'\"'\"'") + "'"
+}
+
 process FASTQC {
     tag "${sample}"
     label 'bio'
     publishDir "${params.outdir}/fastqc", mode: 'copy'
 
     input:
-    tuple val(sample), path(fastq_1), path(fastq_2)
+    tuple val(sample), val(single_end), path(reads)
 
     output:
     path "*_fastqc.{zip,html}"
 
     script:
+    def fastq_args = reads instanceof Collection ? reads.join(' ') : "${reads}"
     """
-    fastqc --threads ${task.cpus} --quiet ${fastq_1} ${fastq_2}
+    fastqc --threads ${task.cpus} --quiet ${fastq_args}
     """
 
     stub:
+    def touch_args = single_end
+        ? "${sample}_1_fastqc.zip ${sample}_1_fastqc.html"
+        : "${sample}_1_fastqc.zip ${sample}_1_fastqc.html ${sample}_2_fastqc.zip ${sample}_2_fastqc.html"
     """
-    touch ${sample}_1_fastqc.zip ${sample}_1_fastqc.html ${sample}_2_fastqc.zip ${sample}_2_fastqc.html
+    touch ${touch_args}
     """
 }
 
@@ -67,16 +77,21 @@ process SALMON_QUANT {
     publishDir "${params.outdir}/salmon", mode: 'copy'
 
     input:
-    tuple val(sample), path(fastq_1), path(fastq_2)
+    tuple val(sample), val(single_end), path(reads)
     path index
 
     output:
     path "${sample}"
 
     script:
+    def fastq_list = reads instanceof Collection ? reads : [reads]
+    def read_args = single_end
+        ? "--unmatedReads ${fastq_list[0]}"
+        : "--mates1 ${fastq_list[0]} --mates2 ${fastq_list[1]} --gcBias"
+    def length_arg = params.tag_seq ? '--noLengthCorrection' : ''
     """
-    salmon quant --index ${index} --libType A --mates1 ${fastq_1} --mates2 ${fastq_2} \\
-        --threads ${task.cpus} --validateMappings --seqBias --gcBias --output ${sample}
+    salmon quant --index ${index} --libType A ${read_args} ${length_arg} \\
+        --threads ${task.cpus} --validateMappings --seqBias --output ${sample}
     """
 
     stub:
@@ -125,11 +140,19 @@ process DESEQ2 {
     path "deseq2/*", emit: all
 
     script:
-    def ma_title = params.ma_title ? "'--ma-title=${params.ma_title}'" : ''
+    def extra_args = []
+    if (params.ma_title)    extra_args << "--ma-title=${shQuote(params.ma_title)}"
+    if (params.covariate)   extra_args << "--covariate=${shQuote(params.covariate)}"
+    if (params.collapse_by) extra_args << "--collapse-by=${shQuote(params.collapse_by)}"
+    if (params.tag_seq)     extra_args << "--tag-seq=yes"
+    def extra = extra_args.join(' ')
+    def method_template = params.tag_seq
+        ? 'Salmon_${salmon_versions}_noLengthCorrection_${r_versions}_tagseq_counts_unshrunk_effect'
+        : 'Salmon_${salmon_versions}_${r_versions}_unshrunk_effect'
     """
     Rscript ${params.scripts_dir}/run_salmon_tximport_deseq2.R quant ${design} ${tx2gene} deseq2 \\
-        --reference=${params.reference_level} --test=${params.test_level} \\
-        --replicates=${params.replicates} --min-samples=${params.min_samples} ${ma_title}
+        --reference=${shQuote(params.reference_level)} --test=${shQuote(params.test_level)} \\
+        --replicates=${params.replicates} --min-samples=${params.min_samples} ${extra}
 
     # Record the versions that actually ran, for the evidence rows' analysis_method.
     salmon_versions=\$(sed -n 's/.*"salmon_version": *"\\([^"]*\\)".*/\\1/p' quant/*/aux_info/meta_info.json | sort -u)
@@ -138,7 +161,7 @@ process DESEQ2 {
         exit 1
     fi
     r_versions=\$(Rscript -e 'cat(sprintf("tximport_%s_DESeq2_%s", packageVersion("tximport"), packageVersion("DESeq2")))')
-    echo "Salmon_\${salmon_versions}_\${r_versions}_unshrunk_effect" > deseq2/analysis_method.txt
+    echo "${method_template}" > deseq2/analysis_method.txt
     """
 
     stub:
@@ -163,13 +186,13 @@ process EXPORT_EVIDENCE {
     path "${params.study_id}_annotations.tsv", emit: annotations
 
     script:
-    def flags = params.quality_flags.tokenize(',').collect { "--quality-flag ${it.trim()}" }.join(' ')
+    def flags = params.quality_flags.tokenize(',').collect { "--quality-flag ${shQuote(it.trim())}" }.join(' ')
     def comparison = params.sample_comparison ?: "${params.test_level}_vs_${params.reference_level}"
     """
     aree export-deseq2-evidence --results ${results} --gff ${gff} \\
         --processed ${params.study_id}_rnaseq.tsv --mapping ${params.study_id}_mapping.tsv \\
-        --annotations ${params.study_id}_annotations.tsv --sample-comparison ${comparison} \\
-        --reference-release '${params.reference_release}' --analysis-method "\$(cat ${analysis_method})" ${flags}
+        --annotations ${params.study_id}_annotations.tsv --sample-comparison ${shQuote(comparison)} \\
+        --reference-release ${shQuote(params.reference_release)} --analysis-method "\$(cat ${analysis_method})" ${flags}
     """
 
     stub:
@@ -189,10 +212,16 @@ workflow {
         .fromPath(required('samplesheet'), checkIfExists: true)
         .splitCsv(header: true)
         .map { row ->
-            if (!row.sample || !row.fastq_1 || !row.fastq_2) {
-                error "Sample sheet rows need sample, fastq_1 and fastq_2: ${row}"
+            if (!row.sample || !row.fastq_1) {
+                error "Sample sheet rows need sample and fastq_1: ${row}"
             }
-            tuple(row.sample, file(row.fastq_1, checkIfExists: true), file(row.fastq_2, checkIfExists: true))
+            def fastq1 = file(row.fastq_1, checkIfExists: true)
+            def fastq2Path = row.fastq_2 != null ? row.fastq_2.toString().trim() : ''
+            if (fastq2Path) {
+                tuple(row.sample, false, [fastq1, file(fastq2Path, checkIfExists: true)])
+            } else {
+                tuple(row.sample, true, [fastq1])
+            }
         }
     design = file(required('design'), checkIfExists: true)
     tx2gene = file(required('tx2gene'), checkIfExists: true)

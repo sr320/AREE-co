@@ -1,6 +1,6 @@
 # AREE RNA-seq reanalysis pipeline
 
-Paired-end FASTQs → FastQC → Salmon (decoy-aware selective alignment) → tximport/DESeq2 → AREE processed
+Paired-end or single-end FASTQs → FastQC → Salmon (decoy-aware selective alignment) → tximport/DESeq2 → AREE processed
 evidence, exact identifier mappings and RefSeq annotations, ready for `aree harmonize`.
 
 Reads are not trimmed; Salmon's selective alignment soft-clips adapters and low-quality ends, matching the
@@ -19,14 +19,16 @@ AREE reanalyses of PRJNA694496 and PRJNA516762. Tested with Nextflow 26.04 using
 | Parameter | Content |
 |---|---|
 | `--study_id` | Registry study ID; names the evidence files. |
-| `--samplesheet` | CSV `sample,fastq_1,fastq_2[,strandedness]` (written by `scripts/prepare_*_fastqs.py`). |
-| `--design` | CSV `sample,condition,replicate,run_accession`; `sample` must match the sample sheet. |
+| `--samplesheet` | CSV `sample,fastq_1,fastq_2[,strandedness]` (written by `scripts/prepare_*_fastqs.py`; leave `fastq_2` empty for single-end). |
+| `--design` | CSV `sample,condition,replicate,run_accession[,covariate...]`; `sample` must match the sample sheet. |
 | `--tx2gene` | TSV `transcript_id,gene_id`, gene IDs as `NCBI:GeneID:<id>`. |
 | `--gff` | Gzipped RefSeq GFF of the same release, for gene annotations. |
 | `--transcripts` [+ `--decoys`] or `--salmon_index` | Gentrome and decoy list to index, or a prebuilt index. |
 | `--test_level` | Design condition compared against `--reference_level` (default `control`). |
 
 Optional: `--replicates` (exact count per condition; default 0 = any ≥ 2), `--min_samples` (default 3),
+`--covariate` (blocking factor(s) joined with `+`), `--collapse_by` (design column(s) joined with `+` to sum technical replicates per pool),
+`--tag_seq` (`true` for 3' tag-seq/QuantSeq: Salmon `--noLengthCorrection` and DESeq2 `--tag-seq=yes`),
 `--quality_flags` (comma-separated study flags), `--sample_comparison`, `--reference_release`,
 `--skip_fastqc`, `--outdir` (default `results/rnaseq/<study_id>`).
 
