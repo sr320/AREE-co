@@ -15,7 +15,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from aree.attribution import load_contributors, render_contributors_markdown
+from aree.attribution import load_contributors, render_contributors_markdown, render_plain_citation
 from aree.reporting.site_findings import load_findings, write_query_parquet, write_real_findings
 from aree.reporting.evidence_cards import card_filename
 from aree.intake.registry import flatten_for_registry, REGISTRY_COLUMNS
@@ -138,7 +138,12 @@ def quarto_config(analyses, cards, queryable):
             # point at files that do not exist in the repository. Keep the repository icon
             # and issue action; cards carry explicit links to their committed inputs.
             "repo-actions": ["issue"],
-            "page-footer": "Aquaculture Resilience Evidence Companion · association evidence only, not validated biomarkers",
+            "page-footer": {
+                "left": "Aquaculture Resilience Evidence Companion · association evidence only, not validated biomarkers",
+                "right": [{"text": "Cite & contributors", "href": "citation.qmd"}]
+                if (ROOT / "contributors.yaml").exists()
+                else [],
+            },
             "navbar": {
                 "left": [
                     {"text": "Progress", "href": "index.qmd"},
@@ -214,6 +219,18 @@ def progress_page(registry, extra, summaries, cards, highlights, evidence):
                          rec.sample_comparison, rec.description, rec.inference_status])
     top = md_table(pd.DataFrame(examples, columns=["BioProject", "Feature / real evidence card", "Contrast", "RefSeq description", "Interpretation"])) if examples else "_No real findings available yet._"
 
+    citation_section = ""
+    contributors_file = ROOT / "contributors.yaml"
+    if contributors_file.exists():
+        plain_cite = render_plain_citation(load_contributors(contributors_file))
+        citation_section = (
+            "\n## How to cite AREC\n\n"
+            "::: {{.callout-note appearance=\"simple\"}}\n"
+            "{cite}\n\n"
+            "See [Citation & contributors](citation.qmd) for BibTeX, contributor credits, and primary study citations.\n"
+            ":::\n"
+        ).format(cite=plain_cite)
+
     return """---
 title: "Aquaculture Resilience Evidence Companion"
 subtitle: "Results to date"
@@ -266,7 +283,7 @@ Each row is the first finding from its own study's selection; rows are ordered b
 ## Workflow demonstration
 
 The [synthetic demo](demo/index.qmd) contains simulated studies, scores, meta-analysis and cards for testing the workflow. It is separate from the real findings above.
-
+{citation_section}
 ## Recent activity
 
 {activity}
@@ -278,6 +295,7 @@ The [synthetic demo](demo/index.qmd) contains simulated studies, scores, meta-an
         tiles=tile_md,
         real_table=real_table,
         top=top,
+        citation_section=citation_section,
         activity="\n".join(activity) or "_No history available._",
     )
 
@@ -580,7 +598,25 @@ def build(out):
     write(out / "analyses.qmd", analyses_page(analyses))
     contributors_file = ROOT / "contributors.yaml"
     if contributors_file.exists():
-        write(out / "citation.qmd", render_contributors_markdown(load_contributors(contributors_file), include_front_matter=True))
+        real_reg = registry[~registry["data_status"].map(is_simulated)]
+        grouped_studies = {}
+        for rec in real_reg.itertuples(index=False):
+            bp = bioproject_for(rec.study_id, extra)
+            cite = (extra.get(rec.study_id, {}).get("citation") or "").strip()
+            doi = str(rec.doi).strip() if isinstance(rec.doi, str) and rec.doi.strip() else ""
+            key = (bp, cite, doi)
+            if key not in grouped_studies:
+                grouped_studies[key] = {"bioproject": bp, "study_ids": [], "citation": cite, "doi": doi}
+            grouped_studies[key]["study_ids"].append(rec.study_id)
+        primary_studies = list(grouped_studies.values())
+        write(
+            out / "citation.qmd",
+            render_contributors_markdown(
+                load_contributors(contributors_file),
+                include_front_matter=True,
+                primary_studies=primary_studies,
+            ),
+        )
     return out
 
 

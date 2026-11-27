@@ -191,5 +191,14 @@ def test_website_build_generates_citation_page(tmp_path):
     content = citation_qmd.read_text()
     assert 'title: "Citation & Contributors"' in content
     assert "Steven Roberts" in content
-    quarto_yml = (Path(out) / "_quarto.yml").read_text()
-    assert "citation.qmd" in quarto_yml
+    assert "[Studies](studies.qmd)" in content
+    assert "## Primary Study Citations" in content
+    assert "PRJNA" in content
+
+    index_qmd = (Path(out) / "index.qmd").read_text()
+    assert "## How to cite AREC" in index_qmd
+    assert "[Citation & contributors](citation.qmd)" in index_qmd
+
+    quarto_yml = yaml.safe_load((Path(out) / "_quarto.yml").read_text())
+    footer_right = quarto_yml["website"]["page-footer"]["right"]
+    assert any(item.get("href") == "citation.qmd" for item in footer_right)
