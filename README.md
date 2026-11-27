@@ -161,7 +161,7 @@ The meta-analysis engine retains correlated feature/context groups as `dependent
 | Meta-analysis | Complete MVP random-effects implementation; should be cross-checked with R `metafor` for production. |
 | Candidate scoring | Complete transparent MVP; weights should be reviewed by domain experts. |
 | Evidence cards | Complete Markdown output; plots are textual summaries in MVP. |
-| Streamlit app | Complete lightweight browser; production search and visualizations remain future work. |
+| Streamlit app | Complete lightweight browser with Real public studies (study-level guardrails) and Synthetic demo modes. |
 | Raw RNA-seq Nextflow pipeline | Runnable; tested end to end on synthetic reads in CI. Other assays enter as processed results. |
 | Containers | Scaffolded. |
 | CI | Python compatibility tests, lint, wheel installation, demo reproducibility and a synthetic Nextflow pipeline run. A separate Pages workflow builds and deploys the website. |

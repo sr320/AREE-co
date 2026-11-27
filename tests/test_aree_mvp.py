@@ -333,7 +333,7 @@ def test_cli_downstream_commands_accept_real_evidence_paths(tmp_path):
 
 
 def test_harmonize_to_directory_writes_one_file_per_study(tmp_path):
-    from aree.io import read_evidence
+    from aree.io import read_evidence, read_tsv
 
     evidence_dir = tmp_path / "harmonized"
     for path in sorted((ROOT / "data/demo/processed").glob("*_*.tsv")):
@@ -349,7 +349,7 @@ def test_harmonize_to_directory_writes_one_file_per_study(tmp_path):
     assert [file.read_bytes() for file in files] == before
 
     combined = read_evidence(evidence_dir)
-    single = pd.read_csv(harmonize_demo(tmp_path / "evidence.tsv"), sep="\t", float_precision="round_trip")
+    single = read_tsv(harmonize_demo(tmp_path / "evidence.tsv"))
     # Compare as written text: an all-empty column's dtype depends on which files were concatenated.
     def as_text(table):
         return table.sort_values("evidence_id").to_csv(sep="\t", index=False)
