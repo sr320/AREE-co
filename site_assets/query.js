@@ -8,7 +8,7 @@ const ROW_LIMIT = 200;
 
 const el = (id) => document.getElementById(id);
 const status = el("aree-status");
-const controls = ["aree-gene", "aree-stressor", "aree-tissue", "aree-study", "aree-direction", "aree-fdr"];
+const controls = ["aree-gene", "aree-stressor", "aree-tissue", "aree-study", "aree-direction", "aree-fdr", "aree-inference"];
 
 function fail(message, error) {
   status.textContent = message + (error && error.message ? " (" + error.message + ")" : "");
@@ -75,7 +75,7 @@ function buildFilters() {
   const params = [];
   const gene = el("aree-gene").value.trim();
   if (gene) {
-    where.push("(feature_id_standardized ILIKE '%' || ? || '%' OR description ILIKE '%' || ? || '%')");
+    where.push("(contains(lower(feature_id_standardized), lower(?)) OR contains(lower(coalesce(description, '')), lower(?)))");
     params.push(gene, gene);
   }
   for (const [id, column] of [["aree-stressor", "stressor"], ["aree-tissue", "tissue"], ["aree-study", "study_id"]]) {
@@ -87,7 +87,10 @@ function buildFilters() {
   if (direction === "down") where.push("effect_size < 0");
   const fdr = el("aree-fdr").value;
   if (fdr) { where.push("adjusted_p_value < ?"); params.push(Number(fdr)); }
-  return { clause: where.length ? " WHERE " + where.join(" AND ") : "", params };
+  const inference = el("aree-inference").value;
+  if (inference === "eligible") where.push("inference_status NOT LIKE 'Exploratory%'");
+  if (inference === "exploratory") where.push("inference_status LIKE 'Exploratory%'");
+  return { clause: where.length ? " WHERE " + where.join(" AND ") : "", params, inference };
 }
 
 function renderRows(rows) {
@@ -98,6 +101,7 @@ function renderRows(rows) {
       ? '<span class="aree-badge exploratory" title="' + escapeHtml(row.inference_status) +
         ': standard errors and adjusted p-values are nominal only; excluded from pooling and significance rewards.">exploratory</span>'
       : '<span class="aree-badge" title="' + escapeHtml(row.inference_status) + '">association</span>';
+    const scale = String(row.effect_size_type || "").replace(/_/g, " ");
     return "<tr>" +
       "<td>" + geneCell(row.feature_id_standardized) + "</td>" +
       '<td class="aree-desc" title="' + escapeHtml(row.description) + '">' + escapeHtml(row.description) + "</td>" +
@@ -107,6 +111,7 @@ function renderRows(rows) {
       "<td>" + escapeHtml(row.tissue) + "</td>" +
       "<td>" + escapeHtml(row.life_stage) + "</td>" +
       "<td>" + escapeHtml(row.stressor) + "</td>" +
+      "<td>" + escapeHtml(scale) + "</td>" +
       '<td class="aree-num">' + fmtNumber(row.effect_size) + "</td>" +
       '<td class="aree-num">' + fmtNumber(row.standard_error, 3) + "</td>" +
       '<td class="aree-num">' + fmtNumber(row.adjusted_p_value, 3) + (exploratory ? " (nominal)" : "") + "</td>" +
@@ -158,12 +163,19 @@ async function main() {
     }
   }
 
+  let requestId = 0;
+
   async function run() {
-    const { clause, params } = buildFilters();
+    const current = ++requestId;
+    const { clause, params, inference } = buildFilters();
+    const orderBy = inference === "exploratory"
+      ? "abs(effect_size) DESC NULLS LAST, feature_id_standardized"
+      : "CASE WHEN inference_status LIKE 'Exploratory%' THEN 1 ELSE 0 END ASC, " +
+        "adjusted_p_value ASC NULLS LAST, abs(effect_size) DESC, feature_id_standardized";
     const select = "SELECT study_id, bioproject, feature_id_standardized, description, sample_comparison, " +
-      "effect_size, standard_error, adjusted_p_value, tissue, life_stage, stressor, inference_status, quality_flags " +
-      "FROM evidence" + clause +
-      " ORDER BY adjusted_p_value ASC NULLS LAST, abs(effect_size) DESC, feature_id_standardized LIMIT " + ROW_LIMIT;
+      "effect_size, effect_size_type, standard_error, adjusted_p_value, tissue, life_stage, stressor, " +
+      "inference_status, quality_flags FROM evidence" + clause +
+      " ORDER BY " + orderBy + " LIMIT " + ROW_LIMIT;
     try {
       const statement = await connection.prepare(select);
       const result = await statement.query(...params);
@@ -171,12 +183,16 @@ async function main() {
       const counter = await connection.prepare("SELECT count(*) AS n FROM evidence" + clause);
       const total = Number(rowsOf(await counter.query(...params))[0].n);
       await counter.close();
+      if (current !== requestId) return;
       const rows = rowsOf(result);
       renderRows(rows);
+      const shownNote = inference === "exploratory"
+        ? "; showing the " + rows.length + " with the largest absolute effects"
+        : "; showing the " + rows.length + " with the smallest adjusted p-values (inference-eligible first)";
       el("aree-count").textContent = total.toLocaleString("en-US") + " matching records" +
-        (total > rows.length ? "; showing the " + rows.length + " with the smallest adjusted p-values" : "") + ".";
+        (total > rows.length ? shownNote : "") + ".";
     } catch (error) {
-      fail("Query failed.", error);
+      if (current === requestId) fail("Query failed.", error);
     }
   }
 

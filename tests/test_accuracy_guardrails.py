@@ -199,6 +199,14 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
         query = (out / 'query.qmd').read_text()
         assert 'not validated biomarkers' in query
         assert 'nominal' in query
+        assert 'id="aree-inference"' in query and 'Inference-eligible only' in query
+        assert '<th>Scale</th><th>Effect</th>' in query
+        assert 'Effect (log2FC)' not in query
+        query_js = (out / 'query.js').read_text()
+        assert 'effect_size_type' in query_js
+        assert 'contains(lower(' in query_js and 'ILIKE' not in query_js
+        assert "inference_status NOT LIKE 'Exploratory%'" in query_js
+        assert "CASE WHEN inference_status LIKE 'Exploratory%' THEN 1 ELSE 0 END" in query_js
 
 
 def test_exploratory_study_does_not_veto_qualified_candidate_or_inflate_replication():

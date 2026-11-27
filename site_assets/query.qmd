@@ -17,8 +17,8 @@ type leaves the page.
 ::: {.callout-warning appearance="simple"}
 These are study-level molecular associations, not validated biomarkers. Higher expression does not
 necessarily mean greater resilience, rows that share controls are not independent replication, and
-no cross-study pooled effect is computed. Rows marked **exploratory** come from the tank-dependent
-PRJNA735889 analysis: their p-values are nominal only. See
+no cross-study pooled effect is computed. Rows marked **exploratory** come from studies with unmodeled
+tank clustering (currently PRJNA735889): their p-values are nominal only. See
 [how expression findings relate to resilience](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience)
 and the [guide to reading results](docs/methods.md#reading-the-results).
 :::
@@ -72,6 +72,14 @@ and the [guide to reading results](docs/methods.md#reading-the-results).
       <option value="0.01">Adjusted p &lt; 0.01</option>
     </select>
   </div>
+  <div>
+    <label for="aree-inference">Inference</label>
+    <select id="aree-inference" disabled>
+      <option value="">All studies</option>
+      <option value="eligible">Inference-eligible only</option>
+      <option value="exploratory">Exploratory only</option>
+    </select>
+  </div>
 </div>
 
 <div id="aree-status">Loading the query engine…</div>
@@ -80,16 +88,16 @@ and the [guide to reading results](docs/methods.md#reading-the-results).
   <table id="aree-results" class="table table-sm table-striped" hidden>
     <thead><tr>
       <th>Gene</th><th>Description</th><th>Study</th><th>Contrast</th><th>Tissue</th>
-      <th>Stage</th><th>Stressor</th><th>Effect (log2FC)</th><th>SE</th><th>Adj. p</th>
+      <th>Stage</th><th>Stressor</th><th>Scale</th><th>Effect</th><th>SE</th><th>Adj. p</th>
       <th>Interpretation</th><th>Quality flags</th>
     </tr></thead>
     <tbody></tbody>
   </table>
 </div>
-<p style="font-size:.85rem; opacity:.75;">Positive effects indicate higher expression in the
-treatment relative to the control. Adjusted p-values from the exploratory PRJNA735889 contrast are
-nominal only. Hover a truncated cell for the full text; follow a study link for its design,
-replication and limitations.</p>
+<p style="font-size:.85rem; opacity:.75;">Positive effects indicate higher values in the
+treatment relative to the control. Adjusted p-values from exploratory contrasts (currently
+PRJNA735889) are nominal only. Hover a truncated cell for the full text; follow a study link for
+its design, replication and limitations.</p>
 
 <details>
   <summary>Advanced: run SQL against the <code>evidence</code> table</summary>
