@@ -3,8 +3,7 @@
 import argparse
 from pathlib import Path
 
-from aree.raw.deseq2_evidence import export_deseq2_evidence
-from scripts.prepare_prjna913164_evidence import merge_annotations
+from aree.raw.deseq2_evidence import export_deseq2_evidence, merge_annotations
 
 
 ANALYSIS_METHOD = "Salmon_2.3.4_tximport_1.30.0_DESeq2_1.42.1_unshrunk_effect"

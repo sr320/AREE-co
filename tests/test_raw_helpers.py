@@ -141,3 +141,86 @@ def test_paired_end_is_the_default_and_unknown_layouts_are_rejected():
     assert run_mates({"run_accession": "run", "layout": "paired"}) == ("1", "2")
     with pytest.raises(ValueError, match="Unknown library layout"):
         run_mates({"run_accession": "run", "layout": "SINGLE"})
+
+
+def test_sra_helpers_verify_and_discard(tmp_path):
+    from aree.raw.sra import discard, load_locations, sra_path, verify_sra
+
+    loc_path = tmp_path / "locations.tsv"
+    payload = b"sra-bytes"
+    md5 = hashlib.md5(payload).hexdigest()
+    loc_path.write_text(
+        "run_accession\tsra_size\tsra_md5\n"
+        f"SRR1\t{len(payload)}\t{md5}\n"
+        f"SRR2\t{len(payload)}\t{'0' * 32}\n"
+        f"SRR3\t{len(payload)}\t{md5}\n"
+    )
+    locations = load_locations(loc_path)
+    assert set(locations) == {"SRR1", "SRR2", "SRR3"}
+
+    sra_dir = tmp_path / "sra"
+    sra_dir.mkdir()
+    sra_path(sra_dir, "SRR1").write_bytes(payload)
+    sra_path(sra_dir, "SRR2").write_bytes(payload)
+
+    rows = [{"run_accession": r} for r in ("SRR1", "SRR2", "SRR3")]
+    assert sorted(verify_sra(rows, locations, sra_dir, workers=2)) == ["SRR2", "SRR3"]
+    assert verify_sra([{"run_accession": "SRR1"}], locations, sra_dir, workers=1) == []
+
+    discard([sra_path(sra_dir, "SRR1"), sra_path(sra_dir, "MISSING")])
+    assert not sra_path(sra_dir, "SRR1").exists()
+
+
+def test_merge_annotations_and_clean_r_na_strings(tmp_path):
+    from aree.raw.deseq2_evidence import export_deseq2_evidence, merge_annotations
+
+    a = tmp_path / "a.tsv"
+    b = tmp_path / "b.tsv"
+    header = "feature_id_standardized\tgene_symbol\tdescription\tgene_biotype\tannotation_release\n"
+    a.write_text(header + "NCBI:GeneID:2\tG2\tbeta\tprotein_coding\tREL\n")
+    b.write_text(header + "NCBI:GeneID:1\tG1\talpha\tprotein_coding\tREL\n"
+                 + "NCBI:GeneID:2\tG2\tbeta_dup\tprotein_coding\tREL\n")
+    merged = tmp_path / "nested" / "merged.tsv"
+    merge_annotations([a, b], merged)
+    lines = merged.read_text().splitlines()
+    assert lines == [
+        header.strip(),
+        "NCBI:GeneID:1\tG1\talpha\tprotein_coding\tREL",
+        "NCBI:GeneID:2\tG2\tbeta\tprotein_coding\tREL",
+    ]
+
+    bad = tmp_path / "bad.tsv"
+    bad.write_text("other_col\n1\n")
+    with pytest.raises(ValueError, match="different columns"):
+        merge_annotations([a, bad], merged)
+
+    results = tmp_path / "results.tsv"
+    results.write_text(
+        "feature_id_standardized\tlog2FoldChange\tlfcSE\tpvalue\tpadj\n"
+        "NCBI:GeneID:1\t0.5\tNA\tNA\tNA\n"
+    )
+    gff = tmp_path / "ref.gff.gz"
+    with gzip.open(gff, "wt") as handle:
+        handle.write("NC_1\tRefSeq\tgene\t1\t9\t.\t+\t.\tDbxref=GeneID:1;gene=G1;gene_biotype=protein_coding\n")
+    processed = tmp_path / "processed.tsv"
+    export_deseq2_evidence(
+        results, gff, processed, tmp_path / "map.tsv", tmp_path / "ann.tsv",
+        sample_comparison="test_vs_ctrl", quality_flags=["raw_reanalysis"],
+    )
+    with processed.open(newline="") as handle:
+        row = next(csv.DictReader(handle, delimiter="\t"))
+    assert row["standard_error"] == "" and row["p_value"] == "" and row["adjusted_p_value"] == ""
+    assert "deseq2_significance_unavailable" in row["quality_flags"]
+
+
+def test_scripts_do_not_import_sibling_scripts():
+    from pathlib import Path
+
+    scripts_dir = Path(__file__).resolve().parents[1] / "scripts"
+    offenders = []
+    for path in sorted(scripts_dir.glob("*.py")):
+        for line in path.read_text().splitlines():
+            stripped = line.lstrip()
+            if stripped.startswith("from scripts.") or stripped.startswith("import scripts."):
+                offenders.append(f"{path.name}: {stripped}")
+    assert not offenders

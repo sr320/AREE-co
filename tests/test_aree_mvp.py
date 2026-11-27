@@ -613,3 +613,72 @@ def test_markdown_tables_escape_pipes_and_newlines():
 
     df_rendered = dataframe_to_markdown(pd.DataFrame([{"col|1": "x|y", "col 2": "p\nq"}]))
     assert "x\\|y" in df_rendered and "p q" in df_rendered
+
+
+def test_study_validation_enforces_controlled_vocabularies_and_filename(tmp_path):
+    study = yaml.safe_load((ROOT / "registry/studies/CGIG_HEAT_RNASEQ_001.yaml").read_text())
+
+    wrong_name = tmp_path / "WRONG_ID.yaml"
+    wrong_name.write_text(yaml.safe_dump(study))
+    with pytest.raises(ValueError, match="does not match study_id"):
+        validate_study_file(wrong_name)
+
+    for field, bad_value in [("phenotype", "fake_phenotype"), ("stressor_class", "fake_stressor"), ("assay_type", "fake_assay")]:
+        bad_study = dict(study, **{field: bad_value})
+        path = tmp_path / "{}.yaml".format(study["study_id"])
+        path.write_text(yaml.safe_dump(bad_study))
+        with pytest.raises(ValueError, match="Invalid {}".format(field)):
+            validate_study_file(path)
+
+
+def test_cli_harmonize_missing_input_columns_does_not_blame_output(tmp_path):
+    from typer.testing import CliRunner
+
+    from aree.cli import app
+
+    bad_input = tmp_path / "bad.tsv"
+    bad_input.write_text("sample_comparison\tfeature_id_original\n")
+    result = CliRunner().invoke(
+        app, ["harmonize", "--study", "CGIG_HEAT_RNASEQ_001", "--input", str(bad_input)]
+    )
+    assert result.exit_code != 0
+    assert "missing columns" in result.output
+    assert "--output" not in result.output
+
+
+def test_downstream_writers_create_missing_parent_directories(tmp_path):
+    evidence = harmonize_demo(tmp_path / "evidence.tsv")
+    meta = run_meta_analysis(evidence_path=evidence, output_path=tmp_path / "a/b/meta.tsv")
+    scores = score_candidates(evidence_path=evidence, output_path=tmp_path / "c/d/scores.tsv")
+    report = build_demo_report(output_path=tmp_path / "e/f/report.md", evidence_path=evidence, scores_path=scores)
+    assert meta.is_file() and scores.is_file() and report.is_file()
+
+
+def test_harmonize_processed_defaults_nan_quality_flags_to_none(tmp_path):
+    source = ROOT / "data/demo/processed/CGIG_HEAT_RNASEQ_001_rnaseq.tsv"
+    table = pd.read_csv(source, sep="\t")
+    table.loc[0, "quality_flags"] = None
+    modified = tmp_path / "in.tsv"
+    table.to_csv(modified, sep="\t", index=False)
+    out = harmonize_processed("CGIG_HEAT_RNASEQ_001", modified, output_path=tmp_path / "out.tsv")
+    harmonized = pd.read_csv(out, sep="\t")
+    assert harmonized.loc[0, "quality_flags"] == "none"
+
+
+def test_summarize_salmon_qc_handles_zero_processed_reads(tmp_path):
+    import csv
+    import json
+
+    from scripts.summarize_salmon_qc import summarize_salmon_qc
+
+    design = tmp_path / "design.csv"
+    design.write_text("sample,condition,replicate,run_accession\ns1,control,A,SRR1\n")
+    meta_dir = tmp_path / "salmon" / "s1" / "aux_info"
+    meta_dir.mkdir(parents=True)
+    (meta_dir / "meta_info.json").write_text(
+        json.dumps({"salmon_version": "2.3.4", "num_processed": 0, "num_mapped": 0, "percent_mapped": 0.0})
+    )
+    out = summarize_salmon_qc(tmp_path / "salmon", design, tmp_path / "qc.tsv")
+    with out.open(newline="") as handle:
+        row = next(csv.DictReader(handle, delimiter="\t"))
+    assert row["decoy_rate_percent"] == "0.000000"

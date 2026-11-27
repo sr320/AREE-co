@@ -54,7 +54,8 @@ def harmonize(
     try:
         output = harmonize_processed(study, input, output_path=output, mapping_path=mapping)
     except ValueError as exc:
-        raise typer.BadParameter(str(exc), param_hint="--output") from exc
+        hint = "--output" if "explicit output path" in str(exc) else None
+        raise typer.BadParameter(str(exc), param_hint=hint) from exc
     typer.echo("harmonized evidence written to {}".format(output))
 
 

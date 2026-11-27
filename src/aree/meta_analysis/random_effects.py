@@ -147,5 +147,6 @@ def run_meta_analysis(phenotype=None, feature_type=None, evidence_path=None, out
     if feature_type:
         evidence = evidence[evidence["feature_type"] == feature_type]
     output_path = Path(output_path) if output_path else root_path("data", "demo", "meta_analysis.tsv")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     meta_analysis_table(evidence).to_csv(output_path, sep="\t", index=False)
     return output_path

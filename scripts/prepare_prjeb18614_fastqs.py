@@ -14,9 +14,6 @@ fetch the manifest URLs with a multi-connection client into ``<analysis-root>/fa
 ``<run>_<mate>.fastq.gz.part`` and then run ``--download``: a complete ``.part`` file is
 promoted only after it matches the manifest size and MD5. Use one connection per file:
 with four, about 60% of these files arrived corrupted.
-
-Because it imports the shared SRA steps from ``scripts``, run it from the repository root
-as ``python -m scripts.prepare_prjeb18614_fastqs``.
 """
 
 import argparse
@@ -24,7 +21,7 @@ import sys
 from pathlib import Path
 
 from aree.raw.fastq import download_runs, load_run_manifest, preflight, write_design_samplesheet, write_nfcore_samplesheet
-from scripts.prepare_prjna1329250_fastqs import check_free_space, convert_run, load_locations, verify_sra
+from aree.raw.sra import check_free_space, convert_run, load_locations, verify_sra
 
 
 DEFAULT_MANIFEST = Path("data/manifests/CGIG_HAB_RNASEQ_PRJEB18614_runs.tsv")

@@ -137,7 +137,7 @@ def write_real_findings(out, evidence, summaries, highlights, studies, md_table,
           'They are selected associations, not a complete gene catalog or validated biomarkers.\n\n' + md_table(cards) + '\n')
     parts = ['---\ntitle: "Real-study findings"\n---\n',
              'Findings are reported within each study. For inference-eligible studies, up to ten genes are selected from adjusted p < 0.05, ordered by adjusted p-value, then absolute effect and feature ID. '
-             'For exploratory PRJNA735889, ten descriptive effects are ordered by absolute effect; nominal FDR is not used for selection. '
+             'For exploratory studies with unmodeled tank clustering, up to ten descriptive effects are ordered by absolute effect; nominal FDR is not used for selection. '
              'These are browsing selections, not global biomarker rankings. Full harmonized tables are linked for every available study. '
              'No cross-study effect pooling is presented because matching effect scales and broad phenotype labels alone do not establish comparable contrasts.\n',
              '[How do expression findings relate to resilience?](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience) Differential expression identifies molecular differences; linking them to survival, performance or recovery requires outcome evidence and independent validation. Higher expression does not necessarily mean greater resilience.\n',

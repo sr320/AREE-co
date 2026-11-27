@@ -53,5 +53,6 @@ def build_demo_report(output_path=None, registry_path=None, evidence_path=None, 
         "Candidates are prioritized associations. A statistically significant single-study result is not treated as validation.",
         "",
     ]
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text("\n".join(body))
     return output_path

@@ -63,7 +63,7 @@ def summarize_salmon_qc(
                 "mapped_fragments": int(metadata["num_mapped"]),
                 "mapping_rate_percent": f'{float(metadata["percent_mapped"]):.6f}',
                 "decoy_fragments": decoy_fragments,
-                "decoy_rate_percent": f"{100 * decoy_fragments / processed:.6f}",
+                "decoy_rate_percent": f"{(100 * decoy_fragments / processed) if processed > 0 else 0.0:.6f}",
                 "fragment_length_mean": metadata.get("frag_length_mean", ""),
                 "fragment_length_sd": metadata.get("frag_length_sd", ""),
                 "sequence_bias_corrected": metadata.get("seq_bias_correct", ""),

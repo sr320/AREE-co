@@ -99,6 +99,8 @@ def harmonize_processed(study_id, input_path, output_path=None, mapping_path=Non
     records = []
     mapped_ids = map_identifiers(table["feature_id_original"], mapping)
     for (idx, row), mapped in zip(table.iterrows(), mapped_ids):
+        raw_flags = row.get("quality_flags", "none")
+        quality_flags = "none" if pd.isna(raw_flags) or str(raw_flags).strip() == "" else str(raw_flags)
         record = {
             "evidence_id": "{}:{}".format(study_id, idx + 1),
             "study_id": study_id,
@@ -128,7 +130,7 @@ def harmonize_processed(study_id, input_path, output_path=None, mapping_path=Non
             "phenotype": study["phenotype"],
             "phenotype_direction": study["phenotype_direction"],
             "analysis_method": row["analysis_method"],
-            "quality_flags": row.get("quality_flags", "none"),
+            "quality_flags": quality_flags,
             "source_file": _portable_path(input_path),
             "input_checksum": input_checksum,
             "workflow_version": __version__,

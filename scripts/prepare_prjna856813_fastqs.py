@@ -8,9 +8,6 @@ The ENA portal was unavailable when this study was staged (October 2026), so its
 not be read. The runs come instead from the NCBI Open Data S3 mirror as ``.sra`` archives listed in
 ``*_sra_locations.tsv``: verified against NCBI's published size and MD5 (``--verify``), then streamed
 to gzipped single-end FASTQ whose read count must match the SRA spot count (``--convert``).
-
-Because it imports the shared SRA steps from ``scripts``, run it from the repository root as
-``python -m scripts.prepare_prjna856813_fastqs``.
 """
 
 import argparse
@@ -20,7 +17,7 @@ import sys
 from pathlib import Path
 
 from aree.raw.fastq import fastq_path, load_run_manifest, write_design_samplesheet, write_nfcore_samplesheet
-from scripts.prepare_prjna1329250_fastqs import discard, load_locations, sra_path, verify_sra
+from aree.raw.sra import discard, load_locations, sra_path, verify_sra
 
 
 DEFAULT_MANIFEST = Path("data/manifests/CGIG_TIRE_RNASEQ_PRJNA856813_runs.tsv")

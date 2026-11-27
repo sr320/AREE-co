@@ -179,7 +179,7 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
     assert 'CGIG_HEAT_RNASEQ_001' not in (out / 'studies.qmd').read_text()
     ph = (out / 'studies/CGIG_OA_RNASEQ_PRJNA735889.qmd').read_text()
     assert 'tank clustering is not modeled' in ph
-    assert 'ten tanks' in ph and 'no significance reward' in ph
+    assert '10 tanks' in ph and 'no significance reward' in ph
     heat = (out / 'studies/CGIG_HEAT_RNASEQ_PRJEB86646.qmd').read_text()
     assert 'share a reference group' in heat
     hab = (out / 'studies/CGIG_HAB_RNASEQ_PRJEB18614.qmd').read_text()
@@ -250,3 +250,25 @@ def test_provenance_quality_flags_do_not_penalize_data_quality():
     for caveat in ('raw_reanalysis;pooled_libraries', 'raw_reanalysis;no_linked_publication'):
         caveated = score_table(evidence([dict(study_id='A', quality_flags=caveat)])).iloc[0]
         assert caveated.score < clean_none.score
+
+
+def test_study_detail_page_tank_callout_does_not_hardcode_prjna735889_numbers():
+    from scripts.build_site import study_detail_page
+
+    study = {
+        'study_id': 'CGIG_SYNTHETIC_TANK_TEST',
+        'data_availability': {'status': 'public_raw_aree_reanalysis_complete'},
+        'sample_size': 24,
+        'analysis_status': 'raw_reanalysis_harmonized_exploratory_tank_clustering_unmodeled',
+        'experimental_treatment': 'High temp',
+        'control_condition': 'Control temp',
+        'biological_replication': '24 oysters across 4 tanks (6 per tank)',
+        'phenotype_direction': 'Response only',
+        'quality_control_status': 'Passed QC',
+        'limitations': ['Tank clustering unmodeled'],
+        'provenance': {'source_links': ['https://example.org/study']},
+    }
+    page = study_detail_page(study)
+    assert 'tank clustering is not modeled' in page
+    assert '24 oysters across 4 tanks' in page
+    assert '50 oysters' not in page and 'ten tanks' not in page

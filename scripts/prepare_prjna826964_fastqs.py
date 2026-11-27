@@ -4,12 +4,7 @@
 The ENA FASTQ mirror served this BioProject at well under 100 KB/s, so, as for
 PRJNA1329250, reads are taken from the NCBI Open Data S3 mirror as ``.sra`` archives,
 verified against the size and MD5 NCBI publishes (``*_sra_locations.tsv``), and streamed
-to gzipped FASTQ pairs with ``fastq-dump --stdout | fastp``. The verification and
-conversion steps are shared with ``prepare_prjna1329250_fastqs``; the run manifest keeps
 the ENA URLs and checksums for reference only.
-
-Because it imports those shared steps from ``scripts``, run it from the repository root
-as ``python -m scripts.prepare_prjna826964_fastqs``.
 """
 
 import argparse
@@ -17,7 +12,7 @@ import sys
 from pathlib import Path
 
 from aree.raw.fastq import load_run_manifest, write_design_samplesheet, write_nfcore_samplesheet
-from scripts.prepare_prjna1329250_fastqs import check_free_space, convert_run, load_locations, verify_sra
+from aree.raw.sra import check_free_space, convert_run, load_locations, verify_sra
 
 
 DEFAULT_MANIFEST = Path("data/manifests/CGIG_OA_RNASEQ_PRJNA826964_runs.tsv")

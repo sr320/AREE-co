@@ -316,10 +316,10 @@ def study_detail_page(study):
                  .format(study["sample_size"]))
     if "tank_clustering_unmodeled" in study["analysis_status"]:
         parts.append("::: {.callout-warning}\n**Exploratory analysis: tank clustering is not modeled.** "
-                     "The 50 oysters are subsamples from ten tanks (five per pH band). "
-                     "Reported p-values, FDR values and standard errors assume independent oysters "
-                     "and may overstate precision. A tank-aware reanalysis is required before "
-                     "inferential use. These p-values receive no significance reward in candidate scoring.\n:::\n")
+                     "Reported p-values, FDR values and standard errors assume independent samples "
+                     "and may overstate precision (see Biological replication below). "
+                     "A tank-aware reanalysis is required before inferential use. "
+                     "These p-values receive no significance reward in candidate scoring.\n:::\n")
     for label, field in [("Treatment", "experimental_treatment"), ("Control", "control_condition"),
                          ("Biological replication", "biological_replication"),
                          ("Phenotype interpretation", "phenotype_direction"),

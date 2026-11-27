@@ -8,11 +8,7 @@ time. AREE tests 6 h and 24 h each against 0 h, blocking on population.
 All runs come from the NCBI Open Data S3 mirror as ``.sra`` archives listed in
 ``*_sra_locations.tsv``: verified against NCBI's published size and MD5 (``--verify``), then
 streamed to gzipped FASTQ pairs whose read counts must match the manifest (``--convert``),
-using the steps shared with ``prepare_prjna1329250_fastqs``. ENA served other studies at
 0.05-0.35 MB/s in October 2026 (1-3 days for these 94 GB), so it was not used.
-
-Because it imports the shared SRA steps from ``scripts``, run it from the repository root
-as ``python -m scripts.prepare_prjna407831_fastqs``.
 """
 
 import argparse
@@ -21,7 +17,7 @@ import sys
 from pathlib import Path
 
 from aree.raw.fastq import load_run_manifest, sample_name, write_design_samplesheet, write_nfcore_samplesheet
-from scripts.prepare_prjna1329250_fastqs import check_free_space, convert_run, load_locations, verify_sra
+from aree.raw.sra import check_free_space, convert_run, load_locations, verify_sra
 
 
 DEFAULT_MANIFEST = Path("data/manifests/CGIG_HEAT_RNASEQ_PRJNA407831_runs.tsv")

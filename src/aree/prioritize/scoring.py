@@ -295,5 +295,6 @@ def score_candidates(evidence_path=None, output_path=None, phenotype=None, stres
         evidence = evidence[evidence["stressor"] == stressor]
     out = score_table(evidence)
     output_path = Path(output_path) if output_path else root_path("data", "demo", "candidate_scores.tsv")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(output_path, sep="\t", index=False)
     return output_path

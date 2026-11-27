@@ -2,6 +2,7 @@
 
 import csv
 import re
+from pathlib import Path
 
 from aree.raw.gff import gene_annotations
 
@@ -22,6 +23,13 @@ ANNOTATION_FIELDS = [
 REQUIRED_RESULT_COLUMNS = {"feature_id_standardized", "log2FoldChange", "lfcSE", "pvalue", "padj"}
 REFSEQ_RELEASE = "GCF_963853765.1-RS_2024_06"
 ANALYSIS_METHOD = "Salmon_1.10.3_tximport_1.30.0_DESeq2_1.42.0_unshrunk_effect"
+
+
+def _clean_numeric(value):
+    if value is None:
+        return ""
+    text = str(value).strip()
+    return "" if text == "" or text.lower() in {"na", "nan"} else text
 
 
 def export_deseq2_evidence(
@@ -66,10 +74,13 @@ def export_deseq2_evidence(
             if not re.fullmatch(r"NCBI:GeneID:\d+", identifier):
                 raise ValueError("Unexpected current-reference identifier: {}".format(identifier))
             effect = float(row["log2FoldChange"])
+            se = _clean_numeric(row["lfcSE"])
+            pvalue = _clean_numeric(row["pvalue"])
+            padj = _clean_numeric(row["padj"])
             flags = list(quality_flags)
-            if row["padj"] and float(row["padj"]) < 0.05:
+            if padj and float(padj) < 0.05:
                 flags.append("fdr_lt_0.05")
-            if not row["pvalue"] or not row["padj"]:
+            if not pvalue or not padj:
                 flags.append("deseq2_significance_unavailable")
             processed_writer.writerow({
                 "sample_comparison": sample_comparison,
@@ -78,9 +89,9 @@ def export_deseq2_evidence(
                 "molecular_direction": "up" if effect > 0 else "down" if effect < 0 else "unknown",
                 "effect_size": row["log2FoldChange"],
                 "effect_size_type": "log2_fold_change",
-                "standard_error": row["lfcSE"],
-                "p_value": row["pvalue"],
-                "adjusted_p_value": row["padj"],
+                "standard_error": se,
+                "p_value": pvalue,
+                "adjusted_p_value": padj,
                 "analysis_method": analysis_method,
                 "quality_flags": ";".join(flags),
             })
@@ -103,3 +114,25 @@ def export_deseq2_evidence(
         )
     print("wrote {} processed effects, exact mappings, and RefSeq annotations".format(len(results)))
     return len(results)
+
+
+def merge_annotations(paths, output):
+    """Union the per-contrast RefSeq annotation tables into the one table keyed by bioproject."""
+    header, rows = None, {}
+    for path in paths:
+        with Path(path).open(newline="") as handle:
+            reader = csv.reader(handle, delimiter="\t")
+            current = next(reader)
+            if header is None:
+                header = current
+            elif current != header:
+                raise ValueError("annotation tables have different columns: {}".format(path))
+            key = header.index("feature_id_standardized")
+            for row in reader:
+                rows.setdefault(row[key], row)
+    output_path = Path(output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="") as handle:
+        writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
+        writer.writerow(header)
+        writer.writerows(rows[feature] for feature in sorted(rows))

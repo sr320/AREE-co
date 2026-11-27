@@ -1,10 +1,9 @@
 """Build current-reference processed evidence and mappings for the two PRJNA913164 heatwave records."""
 
 import argparse
-import csv
 from pathlib import Path
 
-from aree.raw.deseq2_evidence import export_deseq2_evidence
+from aree.raw.deseq2_evidence import export_deseq2_evidence, merge_annotations
 
 
 ANALYSIS_METHOD = "Salmon_2.3.4_noLengthCorrection_tximport_1.30.0_DESeq2_1.42.1_tagseq_counts_unshrunk_effect"
@@ -35,26 +34,6 @@ def prepare(contrast, results_path, gff_path, processed_path, mapping_path, anno
         sample_comparison=spec["sample_comparison"], quality_flags=spec["quality_flags"],
         analysis_method=ANALYSIS_METHOD,
     )
-
-
-def merge_annotations(paths, output):
-    """Union the per-contrast RefSeq annotation tables into the one table keyed by bioproject."""
-    header, rows = None, {}
-    for path in paths:
-        with Path(path).open(newline="") as handle:
-            reader = csv.reader(handle, delimiter="\t")
-            current = next(reader)
-            if header is None:
-                header = current
-            elif current != header:
-                raise ValueError("annotation tables have different columns: {}".format(path))
-            key = header.index("feature_id_standardized")
-            for row in reader:
-                rows.setdefault(row[key], row)
-    with Path(output).open("w", newline="") as handle:
-        writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
-        writer.writerow(header)
-        writer.writerows(rows[feature] for feature in sorted(rows))
 
 
 if __name__ == "__main__":
