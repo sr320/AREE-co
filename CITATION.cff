@@ -1,11 +1,14 @@
 cff-version: 1.2.0
-title: "Aquaculture Resilience Evidence Companion"
-message: "If you use AREC, please cite this repository and the underlying public datasets."
+title: Aquaculture Resilience Evidence Companion
+message: If you use AREC, please cite this repository and the underlying public datasets.
 type: software
 authors:
-  - name: "AREC contributors"
+- family-names: Roberts
+  given-names: Steven
+  affiliation: University of Washington
+  email: sr320@uw.edu
 version: 0.1.0
-date-released: 2026-11-26
-repository-code: "https://github.com/sr320/AREE-co"
+date-released: '2026-11-26'
+repository-code: https://github.com/sr320/AREE-co
+url: https://sr320.github.io/AREE-co/
 license: MIT
-

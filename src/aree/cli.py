@@ -3,6 +3,14 @@ from typing import List, Optional
 
 import typer
 
+from aree.attribution import (
+    add_contributor as add_contributor_entry,
+    load_contributors,
+    render_bibtex,
+    render_citation_cff,
+    render_plain_citation,
+    sync_attribution as sync_attribution_files,
+)
 from aree.harmonize.processed import harmonize_demo as harmonize_demo_data
 from aree.harmonize.processed import harmonize_processed
 from aree.io import read_tsv
@@ -189,6 +197,106 @@ def build_demo_report(
 ):
     output = build_report(output_path=output, registry_path=registry, evidence_path=evidence, scores_path=scores)
     typer.echo("demo report written to {}".format(output))
+
+
+@app.command("add-contributor")
+def add_contributor_cmd(
+    given_name: str = typer.Option(..., "--given-name", help="Contributor's given (first) name."),
+    family_name: str = typer.Option(..., "--family-name", help="Contributor's family (last) name."),
+    affiliation: Optional[str] = typer.Option(None, "--affiliation", help="Institution or organization."),
+    orcid: Optional[str] = typer.Option(None, "--orcid", help="ORCID iD (e.g. 0000-0000-0000-0000)."),
+    github: Optional[str] = typer.Option(None, "--github", help="GitHub username (with or without @)."),
+    email: Optional[str] = typer.Option(None, "--email", help="Contact email address."),
+    role: Optional[List[str]] = typer.Option(
+        None,
+        "--role",
+        help="Contributor role (CRediT role recommended; repeat --role for multiple).",
+    ),
+    notes: Optional[str] = typer.Option(None, "--notes", help="Optional note on specific contributions."),
+    acknowledge_only: bool = typer.Option(
+        False,
+        "--acknowledge-only",
+        help="List in CONTRIBUTORS.md without adding to CITATION.cff / BibTeX author list.",
+    ),
+    update: bool = typer.Option(
+        False,
+        "--update",
+        help="Update an existing contributor entry matched by ORCID, GitHub, email, or name.",
+    ),
+    contributors_file: Optional[Path] = typer.Option(
+        None, "--contributors-file", help="Path to contributors.yaml (defaults to project root)."
+    ),
+    sync: bool = typer.Option(
+        True, "--sync/--no-sync", help="Regenerate CITATION.cff and CONTRIBUTORS.md after updating contributors.yaml."
+    ),
+):
+    """Add (or update) a contributor in contributors.yaml and sync citation files."""
+    try:
+        saved_path, action = add_contributor_entry(
+            given_name=given_name,
+            family_name=family_name,
+            affiliation=affiliation,
+            orcid=orcid,
+            github=github,
+            email=email,
+            roles=role or [],
+            include_in_citation=not acknowledge_only,
+            notes=notes,
+            update=update,
+            path=contributors_file,
+        )
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    typer.echo("{} {} {} in {}".format(action, given_name.strip(), family_name.strip(), saved_path))
+    if sync:
+        info = sync_attribution_files(contributors_path=saved_path)
+        typer.echo(
+            "synced {} contributor(s) ({} cited) -> {}, {}".format(
+                info["n_contributors"], info["n_cited_authors"], info["citation_path"], info["markdown_path"]
+            )
+        )
+
+
+@app.command("sync-attribution")
+def sync_attribution_cmd(
+    contributors_file: Optional[Path] = typer.Option(
+        None, "--contributors-file", help="Path to contributors.yaml (defaults to project root)."
+    ),
+    citation_out: Optional[Path] = typer.Option(None, "--citation-out", help="Output path for CITATION.cff."),
+    markdown_out: Optional[Path] = typer.Option(None, "--markdown-out", help="Output path for CONTRIBUTORS.md."),
+):
+    """Validate contributors.yaml and regenerate CITATION.cff and CONTRIBUTORS.md."""
+    info = sync_attribution_files(
+        contributors_path=contributors_file,
+        citation_path=citation_out,
+        markdown_path=markdown_out,
+    )
+    typer.echo(
+        "synced {} contributor(s) ({} cited) -> {}, {}".format(
+            info["n_contributors"], info["n_cited_authors"], info["citation_path"], info["markdown_path"]
+        )
+    )
+
+
+@app.command("cite")
+def cite_cmd(
+    format: str = typer.Option("text", "--format", help="Citation output format: text, bibtex, or cff."),
+    contributors_file: Optional[Path] = typer.Option(
+        None, "--contributors-file", help="Path to contributors.yaml (defaults to project root)."
+    ),
+):
+    """Print the current AREC citation in plain text, BibTeX, or CFF format."""
+    data = load_contributors(contributors_file)
+    fmt = format.strip().lower()
+    if fmt == "text":
+        typer.echo(render_plain_citation(data))
+    elif fmt == "bibtex":
+        typer.echo(render_bibtex(data).rstrip())
+    elif fmt == "cff":
+        typer.echo(render_citation_cff(data).rstrip())
+    else:
+        raise typer.BadParameter("Unsupported --format {!r}; expected text, bibtex, or cff".format(format))
 
 
 if __name__ == "__main__":

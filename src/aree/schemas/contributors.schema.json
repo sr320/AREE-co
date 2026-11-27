@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AREC project attribution and contributors",
+  "type": "object",
+  "required": ["project", "contributors"],
+  "additionalProperties": false,
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["title", "version", "date_released", "repository_code", "license", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "abbreviation": {"type": ["string", "null"]},
+        "version": {"type": "string", "minLength": 1},
+        "date_released": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "repository_code": {"type": "string", "minLength": 1},
+        "url": {"type": ["string", "null"]},
+        "doi": {"type": ["string", "null"]},
+        "license": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1},
+        "acknowledgments": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "contributors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["given_name", "family_name"],
+        "additionalProperties": false,
+        "properties": {
+          "given_name": {"type": "string", "minLength": 1},
+          "family_name": {"type": "string", "minLength": 1},
+          "affiliation": {"type": ["string", "null"]},
+          "orcid": {
+            "type": ["string", "null"],
+            "pattern": "^(https://orcid\\.org/)?\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
+          },
+          "github": {
+            "type": ["string", "null"],
+            "pattern": "^@?[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$"
+          },
+          "email": {"type": ["string", "null"]},
+          "roles": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          },
+          "include_in_citation": {"type": "boolean"},
+          "notes": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

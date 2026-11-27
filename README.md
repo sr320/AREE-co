@@ -106,6 +106,8 @@ AREE/
 ├── README.md
 ├── LICENSE
 ├── CITATION.cff
+├── CONTRIBUTORS.md
+├── contributors.yaml
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
 ├── docs/
@@ -182,3 +184,13 @@ Suggested first public *C. gigas* dataset classes to curate:
 10. Multi-stressor exposure study combining temperature with pH, hypoxia, or pathogen challenge.
 
 Do not invent accession numbers during curation. Add only accessions verified from primary repositories or publications.
+
+## Citation and Contributors
+
+Contributor attribution and citation metadata are maintained in [`contributors.yaml`](contributors.yaml) and synced to [`CITATION.cff`](CITATION.cff) and [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
+
+- Add a contributor: `aree add-contributor --given-name "Jane" --family-name "Doe" --affiliation "..." --role "Data curation"`
+- Regenerate citation files after manual edits: `aree sync-attribution`
+- Print a ready-to-paste citation: `aree cite --format text` (or `bibtex` / `cff`)
+
+See [`CONTRIBUTORS.md`](CONTRIBUTORS.md) for the full contributor table, BibTeX entry, and primary dataset citation guidance.

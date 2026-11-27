@@ -15,6 +15,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from aree.attribution import load_contributors, render_contributors_markdown
 from aree.reporting.site_findings import load_findings, write_query_parquet, write_real_findings
 from aree.reporting.evidence_cards import card_filename
 from aree.intake.registry import flatten_for_registry, REGISTRY_COLUMNS
@@ -150,7 +151,8 @@ def quarto_config(analyses, cards, queryable):
                     {"text": "Synthetic demo", "href": "demo/index.qmd"},
                     {
                         "text": "Docs",
-                        "menu": [{"text": title, "href": "docs/" + name} for name, title in DOC_PAGES],
+                        "menu": [{"text": title, "href": "docs/" + name} for name, title in DOC_PAGES]
+                        + ([{"text": "Citation & contributors", "href": "citation.qmd"}] if (ROOT / "contributors.yaml").exists() else []),
                     },
                 ],
                 "right": [{"icon": "github", "href": REPO_URL}],
@@ -547,6 +549,9 @@ def build(out):
           '- [Demo report](demo_report.md)\n\n[Return to real-study findings](../candidates.qmd)\n')
     write(out / "meta-analysis.qmd", synthesis_page(out, real_cards))
     write(out / "analyses.qmd", analyses_page(analyses))
+    contributors_file = ROOT / "contributors.yaml"
+    if contributors_file.exists():
+        write(out / "citation.qmd", render_contributors_markdown(load_contributors(contributors_file), include_front_matter=True))
     return out
 
 
