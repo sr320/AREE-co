@@ -69,10 +69,50 @@ def run_pipeline(study, workdir, *extra, study_id="SIM_HEAT", samplesheet=None, 
 @needs_nextflow
 def test_pipeline_wiring_with_stub_run(study, tmp_path):
     results = run_pipeline(study, tmp_path, "-stub-run")
-    for name in ("SIM_HEAT_rnaseq.tsv", "SIM_HEAT_mapping.tsv", "SIM_HEAT_annotations.tsv"):
+    for name in ("SIM_HEAT_rnaseq.tsv", "SIM_HEAT_mapping.tsv", "SIM_HEAT_annotations.tsv", "validation_report.json"):
         assert (results / "evidence" / name).exists()
     assert (results / "deseq2" / "heat_vs_control_deseq2_all_genes.tsv").exists()
     assert len(list((results / "salmon").glob("*/quant.sf"))) == 6
+
+
+@needs_nextflow
+def test_pipeline_reference_accession_stub_run(study, tmp_path):
+    import hashlib
+    import yaml
+
+    cat = tmp_path / "catalog.yaml"
+    rna = tmp_path / "rna.fna.gz"
+    rna.write_bytes(b"placeholder")
+    gff = study / "genomic.gff.gz"
+    cat.write_text(yaml.safe_dump({
+        "version": 1,
+        "default_reference": "GCF_STUB.1",
+        "references": {
+            "GCF_STUB.1": {
+                "accession": "GCF_STUB.1",
+                "species": "Magallana gigas",
+                "species_code": "mgigas",
+                "ncbi_taxid": 29159,
+                "assembly_id": "STUB1",
+                "annotation_release": "GCF_STUB.1-RS",
+                "files": {
+                    "rna_fna": {"filename": rna.name, "url": rna.as_uri(), "md5": hashlib.md5(rna.read_bytes()).hexdigest()},
+                    "genomic_gff": {"filename": gff.name, "url": gff.resolve().as_uri(), "md5": hashlib.md5(gff.read_bytes()).hexdigest()},
+                },
+            }
+        },
+    }))
+    command = [
+        NEXTFLOW, "-q", "run", str(PIPELINE), "-profile", "test", "-stub-run",
+        "--study_id", "SIM_REF_STUB", "--test_level", "heat",
+        "--samplesheet", str(study / "samplesheet.csv"),
+        "--design", str(study / "design.csv"),
+        "--reference_accession", "GCF_STUB.1",
+        "--reference_catalog", str(cat),
+    ]
+    res = subprocess.run(command, cwd=tmp_path, capture_output=True, text=True, timeout=600)
+    assert res.returncode == 0, res.stdout + res.stderr
+    assert (tmp_path / "results/rnaseq/SIM_REF_STUB/evidence/validation_report.json").exists()
 
 
 @needs_nextflow

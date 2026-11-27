@@ -1,4 +1,17 @@
-FROM ubuntu:22.04
-LABEL org.opencontainers.image.title="AREE RNA-seq scaffold"
-RUN apt-get update && apt-get install -y --no-install-recommends fastqc multiqc salmon r-base && rm -rf /var/lib/apt/lists/*
+FROM mambaorg/micromamba:1.5.10
 
+LABEL org.opencontainers.image.title="aree-rnaseq" \
+      org.opencontainers.image.description="AREE RNA-seq environment: FastQC 0.12.1, Salmon 1.10.3, tximport 1.30.0, DESeq2 1.42.0"
+
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends procps && \
+    rm -rf /var/lib/apt/lists/*
+
+USER $MAMBA_USER
+COPY --chown=$MAMBA_USER:$MAMBA_USER workflows/rnaseq/environment.yml /tmp/environment.yml
+RUN micromamba install -y -n base -f /tmp/environment.yml && \
+    micromamba clean --all --yes
+
+ENV PATH="/opt/conda/bin:$PATH"
+CMD ["salmon", "--version"]

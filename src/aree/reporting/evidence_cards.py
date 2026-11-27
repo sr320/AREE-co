@@ -6,6 +6,7 @@ from aree.io import read_evidence, read_tsv
 from aree.meta_analysis.random_effects import poolable
 from aree.paths import root_path
 from aree.prioritize.scoring import score_table
+from aree.reporting.forest_plot import write_forest_plot_svg
 from aree.reporting.tables import rows_to_markdown
 
 
@@ -61,7 +62,13 @@ def _remove_stale_cards(output_dir, keep):
             path.unlink()
 
 
-def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, output_dir=None):
+def build_evidence_cards(
+    phenotype=None,
+    evidence_path=None,
+    scores_path=None,
+    output_dir=None,
+    include_plots=False,
+):
     """Write one card per feature.
 
     Without ``scores_path`` the cards are scored in memory from exactly the (filtered) evidence
@@ -134,6 +141,26 @@ def build_evidence_cards(phenotype=None, evidence_path=None, scores_path=None, o
             "",
         ]
         path = output_dir / card_filename(candidate_id)
+        if include_plots:
+            plot_name = "{}.svg".format(path.stem)
+            plot_rows = [
+                {
+                    "label": "{} ({})".format(sid, ftype),
+                    "effect": eff,
+                    "se": se,
+                    "subtext": "" if is_missing(padj) else "FDR={:.2g}".format(float(padj)),
+                }
+                for sid, ftype, eff, se, padj in effect_rows
+            ]
+            write_forest_plot_svg(
+                output_dir / "plots" / plot_name,
+                rows=plot_rows,
+                title="Study-level effects: {}".format(candidate_id),
+            )
+            body.insert(-4, "## Forest Plot")
+            body.insert(-4, "")
+            body.insert(-4, "![Forest plot for {}](plots/{})".format(candidate_id, plot_name))
+            body.insert(-4, "")
         path.write_text("\n".join(body))
         written.append(path)
     _remove_stale_cards(output_dir, set(written))

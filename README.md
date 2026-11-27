@@ -31,7 +31,8 @@ Website counts distinguish public BioProjects from registered study contrasts: o
 - An in-browser website query page over all harmonized evidence (DuckDB-WASM reading a build-generated Parquet; requires the `site` extra at build time).
 - Demo report generation.
 - A Streamlit browser for studies, evidence, and candidate cards.
-- A Nextflow RNA-seq reanalysis pipeline (`workflows/rnaseq`): FastQC, Salmon, tximport/DESeq2, and export to harmonizable evidence. Methylation, proteomics and metabolomics studies currently enter as processed results.
+- Nextflow reanalysis pipelines for RNA-seq (`workflows/rnaseq`, supporting in-pipeline `--reference_accession` fetching), DNA methylation (`workflows/methylation`), proteomics (`workflows/proteomics`), and metabolomics (`workflows/metabolomics`), backed by container definitions in `containers/` and 8-bivalve OrthoFinder ortholog releases in `data/mappings/orthologs/`.
+- Database export CLI (`aree export-db --format sqlite|parquet|jsonld`) and standalone SVG forest plots (`--plots` on `aree build-evidence-cards` plus primary website plots).
 
 Synthetic demo data are clearly labeled as simulated and exercise the analysis and reporting workflow alongside the separately curated real public datasets.
 
@@ -194,3 +195,4 @@ Contributor attribution and citation metadata are maintained in [`contributors.y
 - Print a ready-to-paste citation: `aree cite --format text` (or `bibtex` / `cff`)
 
 See [`CONTRIBUTORS.md`](CONTRIBUTORS.md) for the full contributor table, BibTeX entry, and primary dataset citation guidance.
+

@@ -1,0 +1,313 @@
+version: 1
+default_reference: GCF_963853765.1
+references:
+  GCF_021730395.1:
+    accession: GCF_021730395.1
+    species: Mercenaria mercenaria
+    species_code: mmerc
+    synonyms: []
+    ncbi_taxid: 6596
+    assembly_id: MADL_Memer_1
+    annotation_release: GCF_021730395.1-RS_2023_01
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/
+    tx2gene_genes: 44880
+    tx2gene_transcripts: 72829
+    files:
+      rna_fna:
+        filename: GCF_021730395.1_MADL_Memer_1_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/GCF_021730395.1_MADL_Memer_1_rna.fna.gz
+        md5: d21ee89b0c75b852a2033cd1e0a88805
+        sha256: d01207484481921e11c29a8111c80d21c5421a1ccc441229e32b9169fcc38fdc
+      genomic_gtf:
+        filename: GCF_021730395.1_MADL_Memer_1_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/GCF_021730395.1_MADL_Memer_1_genomic.gtf.gz
+        md5: e9e27f51893ba1d4dd4054c891fbe743
+        sha256: a3753bfa9b5537fbc121995a18b6fb096d8308a3f723daa9452601193314f259
+      protein_faa:
+        filename: GCF_021730395.1_MADL_Memer_1_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/GCF_021730395.1_MADL_Memer_1_protein.faa.gz
+        md5: 94daad57b48527fd9f141efdbb1078f5
+        sha256: c9e507ce75af8a3554d4757be6060096c8ece6a8fef9ada8cdd4b577d8c32c9a
+      feature_table_txt:
+        filename: GCF_021730395.1_MADL_Memer_1_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/GCF_021730395.1_MADL_Memer_1_feature_table.txt.gz
+        md5: 05bdc63160266be9e4280cc8cbf857ad
+        sha256: f5436c65fede06ab23631421682809db183e02ecf1119b7527a9f6d061b6497a
+      genomic_gff:
+        filename: GCF_021730395.1_MADL_Memer_1_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/GCF_021730395.1_MADL_Memer_1_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_021730395.1_MADL_Memer_1_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/730/395/GCF_021730395.1_MADL_Memer_1/GCF_021730395.1_MADL_Memer_1_genomic.fna.gz
+  GCF_021869535.1:
+    accession: GCF_021869535.1
+    species: Mytilus californianus
+    species_code: mcali
+    synonyms: []
+    ncbi_taxid: 6549
+    assembly_id: xbMytCali1.0.p
+    annotation_release: NCBI Mytilus californianus Annotation Release 100
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/
+    tx2gene_genes: 40654
+    tx2gene_transcripts: 73312
+    files:
+      rna_fna:
+        filename: GCF_021869535.1_xbMytCali1.0.p_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/GCF_021869535.1_xbMytCali1.0.p_rna.fna.gz
+        md5: 250c6e5eaab728046385448d99d04e48
+        sha256: f437f8d1ba5f1a27f2a2958379a113e66fd904ee41ad1df8887ea7837f790cc5
+      genomic_gtf:
+        filename: GCF_021869535.1_xbMytCali1.0.p_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/GCF_021869535.1_xbMytCali1.0.p_genomic.gtf.gz
+        md5: db1404ff1d660cc1b71fb1dcf43d2583
+        sha256: 887b1fd7968f5ec4cd7d9253f42f9baf9eb7dbf2530bc06ca76c88f66b4b5671
+      protein_faa:
+        filename: GCF_021869535.1_xbMytCali1.0.p_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/GCF_021869535.1_xbMytCali1.0.p_protein.faa.gz
+        md5: 42a7e083d192886cd2e256797785cd19
+        sha256: 6a113b468f22c9119b3dc5c7b7df609fe57a2665267329d96425125cedaa5732
+      feature_table_txt:
+        filename: GCF_021869535.1_xbMytCali1.0.p_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/GCF_021869535.1_xbMytCali1.0.p_feature_table.txt.gz
+        md5: 2c63e763b5a30c17990a498c436515fd
+        sha256: 39b24558899514415167883d473982b7a83e661ae53f5b28c899d92489cad073
+      genomic_gff:
+        filename: GCF_021869535.1_xbMytCali1.0.p_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/GCF_021869535.1_xbMytCali1.0.p_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_021869535.1_xbMytCali1.0.p_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/869/535/GCF_021869535.1_xbMytCali1.0.p/GCF_021869535.1_xbMytCali1.0.p_genomic.fna.gz
+  GCF_026571515.1:
+    accession: GCF_026571515.1
+    species: Ruditapes philippinarum
+    species_code: rphil
+    synonyms: []
+    ncbi_taxid: 129788
+    assembly_id: ASM2657151v2
+    annotation_release: GCF_026571515.1-RS_2023_10
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/
+    tx2gene_genes: 47388
+    tx2gene_transcripts: 65336
+    files:
+      rna_fna:
+        filename: GCF_026571515.1_ASM2657151v2_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/GCF_026571515.1_ASM2657151v2_rna.fna.gz
+        md5: bf56a4ef412ee2798422b351beb9afd9
+        sha256: d08a218fa5b881c03dcb54fad43eb3439244b06821ba0fe6b806ac88789c9e58
+      genomic_gtf:
+        filename: GCF_026571515.1_ASM2657151v2_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/GCF_026571515.1_ASM2657151v2_genomic.gtf.gz
+        md5: 1c871fa4e17ae696aec9f7b68566d437
+        sha256: 68dfe0c9bf8d6c2b317d74c40c9aa806521e5f415b6405844ba28ce1730c7896
+      protein_faa:
+        filename: GCF_026571515.1_ASM2657151v2_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/GCF_026571515.1_ASM2657151v2_protein.faa.gz
+        md5: 90a3cdc8dfd0b7dd193a2bb0ae411744
+        sha256: bb50c2cc28312b42b89bd19671c4377cafa503ce6c53d8872b5fba8657b20e09
+      feature_table_txt:
+        filename: GCF_026571515.1_ASM2657151v2_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/GCF_026571515.1_ASM2657151v2_feature_table.txt.gz
+        md5: 8fd57580057d7c5499f7048d5caa2893
+        sha256: 70a577184e4ecc8a17b5efd7c44e7cbdd75f1988cb9b1c6465dd7923d4c89a46
+      genomic_gff:
+        filename: GCF_026571515.1_ASM2657151v2_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/GCF_026571515.1_ASM2657151v2_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_026571515.1_ASM2657151v2_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/026/571/515/GCF_026571515.1_ASM2657151v2/GCF_026571515.1_ASM2657151v2_genomic.fna.gz
+  GCF_036588685.1:
+    accession: GCF_036588685.1
+    species: Mytilus trossulus
+    species_code: mtros
+    synonyms: []
+    ncbi_taxid: 6551
+    assembly_id: PNRI_Mtr1.1.1.hap1
+    annotation_release: GCF_036588685.1-RS_2024_02
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/
+    tx2gene_genes: 47029
+    tx2gene_transcripts: 67326
+    files:
+      rna_fna:
+        filename: GCF_036588685.1_PNRI_Mtr1.1.1.hap1_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/GCF_036588685.1_PNRI_Mtr1.1.1.hap1_rna.fna.gz
+        md5: 7a53d83d14f310a72e8ef2fdeaaea447
+        sha256: af81ccc8b60503932f9e9964ff8284d762be02b2f9105d56b84cc694d3d66612
+      genomic_gtf:
+        filename: GCF_036588685.1_PNRI_Mtr1.1.1.hap1_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/GCF_036588685.1_PNRI_Mtr1.1.1.hap1_genomic.gtf.gz
+        md5: f20aa19e53d5d4ce6e222a7bd47b69e3
+        sha256: 46b7d8f471c0fc342dc94e23980c4a3c04dbdb4d53f19dc1e6bb99db8b546824
+      protein_faa:
+        filename: GCF_036588685.1_PNRI_Mtr1.1.1.hap1_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/GCF_036588685.1_PNRI_Mtr1.1.1.hap1_protein.faa.gz
+        md5: d0234c502b0cc643e6e5536d6839f876
+        sha256: 105baa60e6a473e33218316d073d6044356baca788b7db4e9c5fd0d49b4109d3
+      feature_table_txt:
+        filename: GCF_036588685.1_PNRI_Mtr1.1.1.hap1_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/GCF_036588685.1_PNRI_Mtr1.1.1.hap1_feature_table.txt.gz
+        md5: 400822dc9db982168bd368aadabf04fd
+        sha256: de506d130eec5fc78c53803ede4d59f62c0cb1fbb3bb300eaab4c32eb1c97214
+      genomic_gff:
+        filename: GCF_036588685.1_PNRI_Mtr1.1.1.hap1_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/GCF_036588685.1_PNRI_Mtr1.1.1.hap1_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_036588685.1_PNRI_Mtr1.1.1.hap1_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/036/588/685/GCF_036588685.1_PNRI_Mtr1.1.1.hap1/GCF_036588685.1_PNRI_Mtr1.1.1.hap1_genomic.fna.gz
+  GCF_053477285.1:
+    accession: GCF_053477285.1
+    species: Crassostrea virginica
+    species_code: cvirg
+    synonyms: []
+    ncbi_taxid: 6565
+    assembly_id: ASM5347728v1
+    annotation_release: GCF_053477285.1-RS_2025_12
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/
+    tx2gene_genes: 34727
+    tx2gene_transcripts: 63002
+    files:
+      rna_fna:
+        filename: GCF_053477285.1_ASM5347728v1_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/GCF_053477285.1_ASM5347728v1_rna.fna.gz
+        md5: 05b0e5a23e73539b3638bbde5a87c311
+        sha256: d184f1a97fcf4e884b13fafcd8d85b7e41121d83309b24cb2bc92cf836fad79f
+      genomic_gtf:
+        filename: GCF_053477285.1_ASM5347728v1_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/GCF_053477285.1_ASM5347728v1_genomic.gtf.gz
+        md5: 6267fcdae0f34a77d682fa452c1a001b
+        sha256: 2ffaecec52330d67cbde1c6527a2a895fb6751aac482ca9507a4b1d72e16c11f
+      protein_faa:
+        filename: GCF_053477285.1_ASM5347728v1_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/GCF_053477285.1_ASM5347728v1_protein.faa.gz
+        md5: c0aa3159921c65a22b414db8d9f115e4
+        sha256: 0b551bcbbaa1580535701b1b7c27b383fb8eb7e5464e07d227c766b401c961d3
+      feature_table_txt:
+        filename: GCF_053477285.1_ASM5347728v1_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/GCF_053477285.1_ASM5347728v1_feature_table.txt.gz
+        md5: 91bb1e78b4819b5baebe02ee956fb0dc
+        sha256: 5cdf2bc8c5b4a778950d0319b75cdb193fb30343995253b510d6ccb1847c8cf1
+      genomic_gff:
+        filename: GCF_053477285.1_ASM5347728v1_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/GCF_053477285.1_ASM5347728v1_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_053477285.1_ASM5347728v1_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/053/477/285/GCF_053477285.1_ASM5347728v1/GCF_053477285.1_ASM5347728v1_genomic.fna.gz
+  GCF_963676685.1:
+    accession: GCF_963676685.1
+    species: Mytilus edulis
+    species_code: medul
+    synonyms: []
+    ncbi_taxid: 6550
+    assembly_id: xbMytEdul2.2
+    annotation_release: GCF_963676685.1-RS_2025_02
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/
+    tx2gene_genes: 48455
+    tx2gene_transcripts: 77736
+    files:
+      rna_fna:
+        filename: GCF_963676685.1_xbMytEdul2.2_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/GCF_963676685.1_xbMytEdul2.2_rna.fna.gz
+        md5: 89b0f8e137e0d9e3b5b1d02295e95c89
+        sha256: 5775330c6cec4b0193300ac6d351be50f1e2f99da323b707c1b0493d30c91a19
+      genomic_gtf:
+        filename: GCF_963676685.1_xbMytEdul2.2_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/GCF_963676685.1_xbMytEdul2.2_genomic.gtf.gz
+        md5: bb41c68863a0af0b407f91924aefa63c
+        sha256: 991f9defdb228ee0c997f804fc9fdbbb4dd4a1a93158156f73abea540d0b39d0
+      protein_faa:
+        filename: GCF_963676685.1_xbMytEdul2.2_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/GCF_963676685.1_xbMytEdul2.2_protein.faa.gz
+        md5: 9264253c308fa6118379b32d927efb75
+        sha256: 5476a564af11361858706f0322cc57132e04616d8d7afd5b245bf2da1c6ba8ae
+      feature_table_txt:
+        filename: GCF_963676685.1_xbMytEdul2.2_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/GCF_963676685.1_xbMytEdul2.2_feature_table.txt.gz
+        md5: d9f408a3db11154937af0f14173543e4
+        sha256: 8faffdf154da30354dd45b97f6743b1615ad2e17f8e50acf5dcbcf3496c07d87
+      genomic_gff:
+        filename: GCF_963676685.1_xbMytEdul2.2_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/GCF_963676685.1_xbMytEdul2.2_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_963676685.1_xbMytEdul2.2_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/676/685/GCF_963676685.1_xbMytEdul2.2/GCF_963676685.1_xbMytEdul2.2_genomic.fna.gz
+  GCF_963853765.1:
+    accession: GCF_963853765.1
+    species: Magallana gigas
+    species_code: mgigas
+    synonyms:
+    - Crassostrea gigas
+    ncbi_taxid: 29159
+    assembly_id: xbMagGiga1.1
+    annotation_release: GCF_963853765.1-RS_2024_06
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/
+    tx2gene_genes: 33068
+    tx2gene_transcripts: 60992
+    files:
+      rna_fna:
+        filename: GCF_963853765.1_xbMagGiga1.1_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/GCF_963853765.1_xbMagGiga1.1_rna.fna.gz
+        md5: 0321e363d5f15f9ac7d13e69ff20963a
+        sha256: f90533e902385bfaee912594619105246d6e4c193b017436a4de7ba7799b6e6e
+        bytes: 36305575
+      genomic_gtf:
+        filename: GCF_963853765.1_xbMagGiga1.1_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/GCF_963853765.1_xbMagGiga1.1_genomic.gtf.gz
+        md5: 0f33e07b2df7a7ec7240493d906ada1e
+        sha256: d27c6b6a439dc08bb8ac9d264587fae73d3f9878fb83e364f89a41b3de34a69d
+      protein_faa:
+        filename: GCF_963853765.1_xbMagGiga1.1_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/GCF_963853765.1_xbMagGiga1.1_protein.faa.gz
+        md5: 7a66587e2de760d1b6143da9f4a2d713
+        sha256: fae754270a71fd23ecfe36e6fd2b49dfe555fb55f6135dae95fa9167cea7ce2f
+      feature_table_txt:
+        filename: GCF_963853765.1_xbMagGiga1.1_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/GCF_963853765.1_xbMagGiga1.1_feature_table.txt.gz
+        md5: 46401fd3c58366763ca7b31b4f0bef67
+        sha256: 16a885f24b734d584c11a2d2a3f7f67efc718c20ab44634c7bb198fc9f58a934
+      genomic_gff:
+        filename: GCF_963853765.1_xbMagGiga1.1_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/GCF_963853765.1_xbMagGiga1.1_genomic.gff.gz
+        bytes: 15657002
+        md5: f358436291fd77299046268947f8d6bb
+      genomic_fna:
+        filename: GCF_963853765.1_xbMagGiga1.1_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/963/853/765/GCF_963853765.1_xbMagGiga1.1/GCF_963853765.1_xbMagGiga1.1_genomic.fna.gz
+        bytes: 174082374
+        md5: e1d6d4f1a8f9c5cd87bb006dd5fd9f98
+  GCF_965363235.1:
+    accession: GCF_965363235.1
+    species: Mytilus galloprovincialis
+    species_code: mgall
+    synonyms: []
+    ncbi_taxid: 29158
+    assembly_id: xbMytGall1.hap1.1
+    annotation_release: GCF_965363235.1-RS_2025_08
+    source_base_url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/
+    tx2gene_genes: 43185
+    tx2gene_transcripts: 66599
+    files:
+      rna_fna:
+        filename: GCF_965363235.1_xbMytGall1.hap1.1_rna.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/GCF_965363235.1_xbMytGall1.hap1.1_rna.fna.gz
+        md5: 52623f6bcac9397d8a0e44f3a4b10682
+        sha256: e88552f7d72bbb6a0ba8886c5eb6e340577ac5aebb1df8c17508e77d9882f71b
+      genomic_gtf:
+        filename: GCF_965363235.1_xbMytGall1.hap1.1_genomic.gtf.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/GCF_965363235.1_xbMytGall1.hap1.1_genomic.gtf.gz
+        md5: f9d93d634e0c0eda17fd9953e95eb8ad
+        sha256: 09b112af31ec853c84da2e0ae80546fb32a9327cd96e797070968c0391475519
+      protein_faa:
+        filename: GCF_965363235.1_xbMytGall1.hap1.1_protein.faa.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/GCF_965363235.1_xbMytGall1.hap1.1_protein.faa.gz
+        md5: 42a908115d23b728f7f3fe513b645ad5
+        sha256: 7274e9ec2dc7a6ae248165c0fd6a3c4e850792663647638f8779a16eed733cd5
+      feature_table_txt:
+        filename: GCF_965363235.1_xbMytGall1.hap1.1_feature_table.txt.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/GCF_965363235.1_xbMytGall1.hap1.1_feature_table.txt.gz
+        md5: 3b5fea158b8eb6a817a4a76406b15b96
+        sha256: 74c488c088457efcdcb2def409c30d67f0955f762afb73fa4fb07ee014309201
+      genomic_gff:
+        filename: GCF_965363235.1_xbMytGall1.hap1.1_genomic.gff.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/GCF_965363235.1_xbMytGall1.hap1.1_genomic.gff.gz
+      genomic_fna:
+        filename: GCF_965363235.1_xbMytGall1.hap1.1_genomic.fna.gz
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/965/363/235/GCF_965363235.1_xbMytGall1.hap1.1/GCF_965363235.1_xbMytGall1.hap1.1_genomic.fna.gz

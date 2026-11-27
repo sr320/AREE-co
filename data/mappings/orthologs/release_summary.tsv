@@ -1,0 +1,8 @@
+species_code	species	source_assembly	total_mapped_genes	one_to_one	many_to_one	one_to_many	many_to_many_inferred	single_copy_8sp_orthogroups	mgigas_indexed_genes
+cvirg	Crassostrea virginica	GCF_053477285.1	22213	12302	4406	1148	4357	5292	25290
+medul	Mytilus edulis	GCF_963676685.1	19504	10029	4384	754	4337	5292	25290
+mgall	Mytilus galloprovincialis	GCF_965363235.1	17339	10084	3121	785	3349	5292	25290
+mcali	Mytilus californianus	GCF_021869535.1	16488	9937	2715	775	3061	5292	25290
+mtros	Mytilus trossulus	GCF_036588685.1	19154	9667	4730	760	3997	5292	25290
+mmerc	Mercenaria mercenaria	GCF_021730395.1	18872	8810	4635	768	4659	5292	25290
+rphil	Ruditapes philippinarum	GCF_026571515.1	20680	7956	7146	712	4866	5292	25290

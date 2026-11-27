@@ -1,0 +1,24 @@
+FROM mambaorg/micromamba:1.5.10
+
+LABEL org.opencontainers.image.title="aree-omics-stats" \
+      org.opencontainers.image.description="AREE proteomics/metabolomics/synthesis container: R (limma, metafor, lme4) + aree Python CLI"
+
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends procps && \
+    rm -rf /var/lib/apt/lists/*
+
+USER $MAMBA_USER
+COPY --chown=$MAMBA_USER:$MAMBA_USER workflows/proteomics/environment.yml /tmp/environment.yml
+RUN micromamba install -y -n base -f /tmp/environment.yml && \
+    micromamba clean --all --yes
+
+WORKDIR /opt/aree
+COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml README.md ./
+COPY --chown=$MAMBA_USER:$MAMBA_USER src ./src
+COPY --chown=$MAMBA_USER:$MAMBA_USER config ./config
+
+RUN /opt/conda/bin/pip install --no-cache-dir ".[site]"
+
+ENV PATH="/opt/conda/bin:$PATH"
+CMD ["aree", "--help"]

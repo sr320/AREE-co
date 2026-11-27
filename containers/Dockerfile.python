@@ -1,6 +1,17 @@
 FROM python:3.11-slim
-WORKDIR /aree
-COPY pyproject.toml README.md LICENSE ./
-COPY src ./src
-RUN pip install --no-cache-dir -e .
 
+LABEL org.opencontainers.image.title="aree-python" \
+      org.opencontainers.image.description="AREE Python CLI, schema validation, harmonization, meta-analysis, SVG forest plots, and database export"
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends procps curl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/aree
+COPY pyproject.toml README.md ./
+COPY src ./src
+COPY config ./config
+
+RUN pip install --no-cache-dir ".[site]"
+
+CMD ["aree", "--help"]

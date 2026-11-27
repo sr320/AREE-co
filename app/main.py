@@ -277,6 +277,18 @@ with tabs[2]:
         if featured_genes:
             selected = st.selectbox("Real evidence card", featured_genes)
             card_rows = evidence[evidence["feature_id_standardized"] == selected]
+            from aree.reporting.forest_plot import render_forest_svg
+
+            plot_rows = []
+            for r in card_rows.itertuples(index=False):
+                exploratory = str(getattr(r, "inference_status", "")).startswith("Exploratory")
+                plot_rows.append({
+                    "label": "{} ({})".format(r.study_id, getattr(r, "sample_comparison", "")),
+                    "effect": r.effect_size,
+                    "se": None if exploratory else getattr(r, "standard_error", None),
+                })
+            svg = render_forest_svg(plot_rows, title="Study-level effects: {}".format(selected))
+            st.markdown('<div style="overflow-x:auto">{}</div>'.format(svg), unsafe_allow_html=True)
             st.markdown(_format_real_card(selected, card_rows, studies))
     else:
         st.subheader("Simulated Demo Candidate Scores & Evidence Cards")
@@ -315,6 +327,24 @@ with tabs[3]:
                 if only_concordant and "direction_concordant" in display_pooled.columns:
                     display_pooled = display_pooled[display_pooled["direction_concordant"].astype(str).str.lower() == "true"]
                 st.caption("{:,} multi-group pooled genes (showing top {:,}).".format(len(display_pooled), min(len(display_pooled), MAX_DISPLAY_ROWS)))
+                if not display_pooled.empty:
+                    from aree.reporting.forest_plot import render_forest_svg
+
+                    synth_rows = [
+                        {
+                            "label": str(r.feature_id_standardized),
+                            "effect": float(r.pooled_effect),
+                            "se": float(r.pooled_standard_error),
+                            "subtext": "I2={:.0f}% FDR={:.2g}".format(float(r.i2_percent), float(r.adjusted_p_value)),
+                        }
+                        for r in display_pooled.head(10).itertuples(index=False)
+                    ]
+                    st.markdown(
+                        '<div style="overflow-x:auto">{}</div>'.format(
+                            render_forest_svg(synth_rows, title="{} — Top pooled effects".format(chosen))
+                        ),
+                        unsafe_allow_html=True,
+                    )
                 st.dataframe(display_pooled.head(MAX_DISPLAY_ROWS), **FULL_WIDTH)
                 st.download_button(
                     "Download stratum pooled TSV",
@@ -337,7 +367,18 @@ with tabs[4]:
                 "layer": "Raw RNA-seq Nextflow pipeline",
                 "status": "complete (paired-end, single-end, covariates, collapse-by, 3' tag-seq)",
             },
-            {"layer": "Raw methylation/proteomics/metabolomics pipelines", "status": "planned; processed results only"},
+            {
+                "layer": "Raw methylation/proteomics/metabolomics pipelines",
+                "status": "complete (WGBS limma, proteomics limma, metabolomics PQN)",
+            },
+            {
+                "layer": "Multi-species RefSeq catalog & OrthoFinder maps",
+                "status": "complete (8 bivalve assemblies + 7-species OrthoFinder v1 maps)",
+            },
+            {
+                "layer": "Database export targets (SQLite, Parquet, JSON-LD)",
+                "status": "complete (`aree export-db --format sqlite|parquet|jsonld`)",
+            },
             {
                 "layer": "Covariance-aware meta-analysis & real-study synthesis",
                 "status": "complete (REML/DL, shared-control GLS, metafor cross-checked)",

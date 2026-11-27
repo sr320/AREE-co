@@ -156,3 +156,17 @@ def test_site_rejects_stale_registry_csv(tmp_path, monkeypatch):
     monkeypatch.setattr(site, 'ROOT', tmp_path)
     with pytest.raises(ValueError, match='Registry CSV is stale'):
         load_registry()
+
+
+def test_site_build_writes_forest_plots_and_export_artifacts(tmp_path):
+    from scripts.build_site import build
+
+    out = build(tmp_path / '_site_src')
+    plots = list((out / 'evidence_cards' / 'plots').glob('*.svg'))
+    synth_plots = list((out / 'synthesis_plots').glob('*.svg'))
+    assert plots
+    assert synth_plots
+    assert (out / 'downloads' / 'exports' / 'schema.sql').exists()
+    assert (out / 'downloads' / 'exports' / 'aree_catalog.jsonld').exists()
+    sample_card = next((out / 'evidence_cards').glob('NCBI_*.md'))
+    assert '(plots/' in sample_card.read_text()

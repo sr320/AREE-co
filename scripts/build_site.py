@@ -128,7 +128,7 @@ def quarto_config(analyses, cards, queryable):
         "project": {
             "type": "website",
             "output-dir": "../_site",
-            "resources": ["analysis/**", "downloads/**"],
+            "resources": ["analysis/**", "downloads/**", "evidence_cards/plots/**", "synthesis_plots/**"],
         },
         "website": {
             "title": "AREC",
@@ -372,6 +372,14 @@ def synthesis_page(out, real_cards):
         if src.exists():
             shutil.copy(src, dl_dir / name)
 
+    exports_src = ROOT / "reports" / "exports"
+    exports_dl = out / "downloads" / "exports"
+    exports_dl.mkdir(parents=True, exist_ok=True)
+    for ename in ("schema.sql", "aree_catalog.jsonld"):
+        esrc = exports_src / ename
+        if esrc.exists():
+            shutil.copy(esrc, exports_dl / ename)
+
     card_set = set(real_cards)
     parts = [
         '---\ntitle: "Cross-study synthesis"\n---\n',
@@ -381,7 +389,9 @@ def synthesis_page(out, real_cards):
         'using REML estimation and shared-control block-covariance GLS (`rho = 0.5`). No global cross-context biomarker score is presented.\n:::\n',
         '[Download stratum summary](downloads/synthesis/stratum_summary.tsv) · '
         '[Download sensitivity summary](downloads/synthesis/sensitivity_summary.tsv) · '
-        '[Download top pooled associations](downloads/synthesis/top_pooled_associations.tsv)\n',
+        '[Download top pooled associations](downloads/synthesis/top_pooled_associations.tsv) · '
+        '[SQL schema](downloads/exports/schema.sql) · '
+        '[Catalog JSON-LD](downloads/exports/aree_catalog.jsonld)\n',
         '## Comparability-reviewed synthesis strata\n',
     ]
     summary_display = summary[[
@@ -421,8 +431,11 @@ def synthesis_page(out, real_cards):
             "",
         ])
         if not top_all.empty:
+            from aree.reporting.forest_plot import write_forest_plot_svg
+
             sub = top_all[top_all["stratum_id"] == sid].head(15).copy()
             if not sub.empty:
+                plot_rows = []
                 rows = []
                 for r in sub.itertuples(index=False):
                     feat = "[{}](evidence_cards/{})".format(r.feature_id_standardized, card_filename(r.feature_id_standardized)) if r.feature_id_standardized in card_set else r.feature_id_standardized
@@ -432,6 +445,22 @@ def synthesis_page(out, real_cards):
                         "{:.3g}".format(r.adjusted_p_value), "{:.1f}".format(r.i2_percent),
                         "yes" if str(r.direction_concordant).lower() == "true" else "no",
                     ])
+                    if len(plot_rows) < 10:
+                        plot_rows.append({
+                            "label": "{} ({})".format(r.feature_id_standardized, str(r.description)[:18]),
+                            "effect": float(r.pooled_effect),
+                            "se": float(r.pooled_standard_error),
+                            "subtext": "I2={:.0f}% FDR={:.2g}".format(float(r.i2_percent), float(r.adjusted_p_value)),
+                        })
+                if plot_rows:
+                    svg_rel = "synthesis_plots/{}_top_pooled.svg".format(sid)
+                    write_forest_plot_svg(
+                        out / svg_rel,
+                        rows=plot_rows,
+                        title="{} — Top pooled RE effects".format(sid),
+                        xlabel="Pooled log2 fold change (REML / block-GLS)",
+                    )
+                    parts.append("![Top pooled RE effects for {}]({})\n".format(sid, svg_rel))
                 parts.append(md_table(pd.DataFrame(rows, columns=[
                     "Feature", "RefSeq description", "Contrasts", "Indep. groups",
                     "Pooled log2FC", "SE", "Adjusted p", "I2 (%)", "Concordant",

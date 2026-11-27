@@ -1,0 +1,491 @@
+{
+  "@context": "https://schema.org",
+  "@type": "DataCatalog",
+  "@id": "https://github.com/sr320/AREE-co",
+  "name": "Aquaculture Resilience Evidence Companion (AREC)",
+  "description": "Curated, provenance-tracked molecular aquaculture resilience evidence catalog covering 31 real study entries, 5 synthesis strata, and 8 RefSeq bivalve assemblies.",
+  "url": "https://sr320.github.io/AREE-co/",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "hasPart": [
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJNA516762.tsv",
+      "identifier": "CGIG_HEAT_RNASEQ_PRJNA516762",
+      "name": "CGIG_HEAT_RNASEQ_PRJNA516762 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA516762 (; thermal_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJNA516762.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "thermal_tolerance",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_THERMOTOL_RNASEQ_PRJNA694496.tsv",
+      "identifier": "CGIG_THERMOTOL_RNASEQ_PRJNA694496",
+      "name": "CGIG_THERMOTOL_RNASEQ_PRJNA694496 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA694496 (; thermal_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_THERMOTOL_RNASEQ_PRJNA694496.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "thermal_tolerance",
+        "whole_larva"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_OSHV1_RNASEQ_PRJNA1329250.tsv",
+      "identifier": "CGIG_OSHV1_RNASEQ_PRJNA1329250",
+      "name": "CGIG_OSHV1_RNASEQ_PRJNA1329250 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA1329250 (; immune_responsiveness).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_OSHV1_RNASEQ_PRJNA1329250.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "immune_responsiveness",
+        "whole_soft_tissue"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_OA_RNASEQ_PRJNA826964.tsv",
+      "identifier": "CGIG_OA_RNASEQ_PRJNA826964",
+      "name": "CGIG_OA_RNASEQ_PRJNA826964 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA826964 (; metabolic_resilience).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_OA_RNASEQ_PRJNA826964.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "metabolic_resilience",
+        "hepatopancreas"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_SALINITY_RNASEQ_PRJNA756710.tsv",
+      "identifier": "CGIG_SALINITY_RNASEQ_PRJNA756710",
+      "name": "CGIG_SALINITY_RNASEQ_PRJNA756710 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA756710 (; disease_susceptibility).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_SALINITY_RNASEQ_PRJNA756710.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "disease_susceptibility",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_STARVATION_RNASEQ_PRJEB86618.tsv",
+      "identifier": "CGIG_STARVATION_RNASEQ_PRJEB86618",
+      "name": "CGIG_STARVATION_RNASEQ_PRJEB86618 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJEB86618 (; disease_resistance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_STARVATION_RNASEQ_PRJEB86618.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "disease_resistance",
+        "whole_soft_tissue"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HAB_RNASEQ_PRJEB18614.tsv",
+      "identifier": "CGIG_HAB_RNASEQ_PRJEB18614",
+      "name": "CGIG_HAB_RNASEQ_PRJEB18614 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJEB18614 (; metabolic_resilience).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HAB_RNASEQ_PRJEB18614.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "metabolic_resilience",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_OA_RNASEQ_PRJNA735889.tsv",
+      "identifier": "CGIG_OA_RNASEQ_PRJNA735889",
+      "name": "CGIG_OA_RNASEQ_PRJNA735889 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA735889 (; acidification_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_OA_RNASEQ_PRJNA735889.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "acidification_tolerance",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJEB86646.tsv",
+      "identifier": "CGIG_HEAT_RNASEQ_PRJEB86646",
+      "name": "CGIG_HEAT_RNASEQ_PRJEB86646 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJEB86646 (; disease_resistance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJEB86646.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "disease_resistance",
+        "whole_soft_tissue"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJNA913164.tsv",
+      "identifier": "CGIG_HEAT_RNASEQ_PRJNA913164",
+      "name": "CGIG_HEAT_RNASEQ_PRJNA913164 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA913164 (; thermal_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJNA913164.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "thermal_tolerance",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_MULTISTRESS_RNASEQ_PRJNA913164.tsv",
+      "identifier": "CGIG_MULTISTRESS_RNASEQ_PRJNA913164",
+      "name": "CGIG_MULTISTRESS_RNASEQ_PRJNA913164 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA913164 (; thermal_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_MULTISTRESS_RNASEQ_PRJNA913164.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "thermal_tolerance",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_OSHV1_RNASEQ_PRJNA593309.tsv",
+      "identifier": "CGIG_OSHV1_RNASEQ_PRJNA593309",
+      "name": "CGIG_OSHV1_RNASEQ_PRJNA593309 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA593309 (; immune_responsiveness).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_OSHV1_RNASEQ_PRJNA593309.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "immune_responsiveness",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJNA593309.tsv",
+      "identifier": "CGIG_HEAT_RNASEQ_PRJNA593309",
+      "name": "CGIG_HEAT_RNASEQ_PRJNA593309 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA593309 (; disease_resistance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HEAT_RNASEQ_PRJNA593309.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "disease_resistance",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_TIRELEACHATE_RNASEQ_PRJNA856813.tsv",
+      "identifier": "CGIG_TIRELEACHATE_RNASEQ_PRJNA856813",
+      "name": "CGIG_TIRELEACHATE_RNASEQ_PRJNA856813 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA856813 (; metabolic_resilience).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_TIRELEACHATE_RNASEQ_PRJNA856813.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "metabolic_resilience",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_TIREPARTICLE_RNASEQ_PRJNA856813.tsv",
+      "identifier": "CGIG_TIREPARTICLE_RNASEQ_PRJNA856813",
+      "name": "CGIG_TIREPARTICLE_RNASEQ_PRJNA856813 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA856813 (; metabolic_resilience).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_TIREPARTICLE_RNASEQ_PRJNA856813.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "metabolic_resilience",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_VCRASSOSTREAE_RNASEQ_PRJNA515169.tsv",
+      "identifier": "CGIG_VCRASSOSTREAE_RNASEQ_PRJNA515169",
+      "name": "CGIG_VCRASSOSTREAE_RNASEQ_PRJNA515169 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA515169 (; immune_responsiveness).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_VCRASSOSTREAE_RNASEQ_PRJNA515169.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "immune_responsiveness",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_VTASMANIENSIS_RNASEQ_PRJNA515169.tsv",
+      "identifier": "CGIG_VTASMANIENSIS_RNASEQ_PRJNA515169",
+      "name": "CGIG_VTASMANIENSIS_RNASEQ_PRJNA515169 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA515169 (; immune_responsiveness).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_VTASMANIENSIS_RNASEQ_PRJNA515169.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "immune_responsiveness",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HEAT6H_RNASEQ_PRJNA407831.tsv",
+      "identifier": "CGIG_HEAT6H_RNASEQ_PRJNA407831",
+      "name": "CGIG_HEAT6H_RNASEQ_PRJNA407831 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA407831 (; thermal_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HEAT6H_RNASEQ_PRJNA407831.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "thermal_tolerance",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_HEAT24H_RNASEQ_PRJNA407831.tsv",
+      "identifier": "CGIG_HEAT24H_RNASEQ_PRJNA407831",
+      "name": "CGIG_HEAT24H_RNASEQ_PRJNA407831 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA407831 (; thermal_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_HEAT24H_RNASEQ_PRJNA407831.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "thermal_tolerance",
+        "gill"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_LARVAL_OA_RNASEQ_PRJNA298285.tsv",
+      "identifier": "CGIG_LARVAL_OA_RNASEQ_PRJNA298285",
+      "name": "CGIG_LARVAL_OA_RNASEQ_PRJNA298285 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA298285 (; acidification_tolerance).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_LARVAL_OA_RNASEQ_PRJNA298285.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "acidification_tolerance",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_PESTO_F0_RNASEQ_PRJEB58194.tsv",
+      "identifier": "CGIG_PESTO_F0_RNASEQ_PRJEB58194",
+      "name": "CGIG_PESTO_F0_RNASEQ_PRJEB58194 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJEB58194 (; larval_viability).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_PESTO_F0_RNASEQ_PRJEB58194.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "larval_viability",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194.tsv",
+      "identifier": "CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194",
+      "name": "CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJEB58194 (; larval_viability).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "larval_viability",
+        "whole_organism"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_VIBRIO12H_RNASEQ_PRJNA852380.tsv",
+      "identifier": "CGIG_VIBRIO12H_RNASEQ_PRJNA852380",
+      "name": "CGIG_VIBRIO12H_RNASEQ_PRJNA852380 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA852380 (; immune_responsiveness).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_VIBRIO12H_RNASEQ_PRJNA852380.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "immune_responsiveness",
+        "digestive_gland"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/harmonized/CGIG_VIBRIO24H_RNASEQ_PRJNA852380.tsv",
+      "identifier": "CGIG_VIBRIO24H_RNASEQ_PRJNA852380",
+      "name": "CGIG_VIBRIO24H_RNASEQ_PRJNA852380 \u2014 Crassostrea gigas ()",
+      "description": "Harmonized differential molecular association table for BioProject PRJNA852380 (; immune_responsiveness).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/harmonized/CGIG_VIBRIO24H_RNASEQ_PRJNA852380.tsv"
+      },
+      "variableMeasured": [
+        "",
+        "immune_responsiveness",
+        "digestive_gland"
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/synthesis/acute_heat_response_gill_meta.tsv",
+      "identifier": "acute_heat_response_gill",
+      "name": "Synthesis stratum: Acute heat response in gill",
+      "description": "REML + shared-control block-GLS cross-study synthesis across 4 contrasts and 3 BioProjects (371 concordant FDR < 0.05).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/synthesis/acute_heat_response_gill_meta.tsv"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/synthesis/thermal_protection_poms_disease_resistance_meta.tsv",
+      "identifier": "thermal_protection_poms_disease_resistance",
+      "name": "Synthesis stratum: Warm acclimation protecting against POMS / OsHV-1",
+      "description": "REML + shared-control block-GLS cross-study synthesis across 2 contrasts and 2 BioProjects (3325 concordant FDR < 0.05).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/synthesis/thermal_protection_poms_disease_resistance_meta.tsv"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/synthesis/vibrio_challenge_immune_response_meta.tsv",
+      "identifier": "vibrio_challenge_immune_response",
+      "name": "Synthesis stratum: Acute Vibrio challenge immune response",
+      "description": "REML + shared-control block-GLS cross-study synthesis across 4 contrasts and 2 BioProjects (816 concordant FDR < 0.05).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/synthesis/vibrio_challenge_immune_response_meta.tsv"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/synthesis/oshv1_challenge_immune_response_meta.tsv",
+      "identifier": "oshv1_challenge_immune_response",
+      "name": "Synthesis stratum: Acute OsHV-1 infection immune response",
+      "description": "REML + shared-control block-GLS cross-study synthesis across 2 contrasts and 2 BioProjects (2394 concordant FDR < 0.05).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/synthesis/oshv1_challenge_immune_response_meta.tsv"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/blob/main/data/synthesis/ocean_acidification_whole_organism_meta.tsv",
+      "identifier": "ocean_acidification_whole_organism",
+      "name": "Synthesis stratum: Whole-organism ocean acidification exposure",
+      "description": "REML + shared-control block-GLS cross-study synthesis across 2 contrasts and 2 BioProjects (16 concordant FDR < 0.05).",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/synthesis/ocean_acidification_whole_organism_meta.tsv"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://github.com/sr320/AREE-co/tree/main/data/mappings/orthologs",
+      "identifier": "orthofinder3.1.5_8bivalves_2026-11-26_v1",
+      "name": "8-Bivalve OrthoFinder 3.1.5 Ortholog Mapping Release",
+      "description": "Pairwise bivalve-to-Magallana gigas gene ortholog maps across 7 species.",
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "text/tab-separated-values",
+        "contentUrl": "https://github.com/sr320/AREE-co/raw/main/data/mappings/orthologs/release_summary.tsv"
+      }
+    }
+  ]
+}

@@ -57,13 +57,18 @@ aree harmonize --study CGIG_HEAT_RNASEQ_PRJNA516762 \
 The per-study shell wrappers in `scripts/run_prjna*_salmon.sh` record how the committed reanalyses were run;
 new studies should use this pipeline.
 
+## Reference Catalog & Containers
+
+Instead of manually supplying `--transcripts`, `--tx2gene`, and `--gff`, you can pass `--reference_accession` (any of the 8 bivalve RefSeq assemblies in `config/references.yaml`, e.g. `GCF_963853765.1`) to invoke `modules/fetch_reference.nf` inside the workflow (optionally with `--include_genome_decoys true` or `--reference_mirror_dir`). Pass `-profile docker` or `-profile singularity` to execute processes inside the images built from `containers/`.
+
 ## Outputs (`--outdir`)
 
+- `reference/`: fetched/built reference artifacts when `--reference_accession` or `--publish_index` is used.
 - `fastqc/`: per-FASTQ reports.
 - `salmon/<sample>/`: Salmon quantifications; `salmon/salmon_qc_summary.tsv`: mapping rates in design order.
 - `deseq2/`: `<test>_vs_<reference>_deseq2_all_genes.tsv` (unshrunk effects used as evidence), normalized
   counts, PCA, VST correlations, Cook's-distance diagnostics, MA and PCA plots, `sessionInfo.txt`.
-- `evidence/`: `<study_id>_rnaseq.tsv`, `<study_id>_mapping.tsv`, `<study_id>_annotations.tsv`.
+- `evidence/`: `<study_id>_rnaseq.tsv`, `<study_id>_mapping.tsv`, `<study_id>_annotations.tsv`, plus `validation_report.json` (`modules/validate_evidence.nf`).
 
 ## Testing
 

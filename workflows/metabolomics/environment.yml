@@ -1,0 +1,10 @@
+name: aree-omics-stats
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - r-base=4.3
+  - bioconductor-limma=3.58.1
+  - r-metafor=4.6
+  - r-lme4=1.1

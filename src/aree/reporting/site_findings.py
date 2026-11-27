@@ -87,7 +87,7 @@ def findings_table(highlights, md_table, prefix=''):
     return md_table(pd.DataFrame(rows, columns=['Feature / card', 'RefSeq description', 'Effect scale', 'Effect', 'Standard error', 'Adjusted p-value', 'Interpretation']))
 
 
-def real_card(feature, rows, studies, md_table):
+def real_card(feature, rows, studies, md_table, plot_relpath=None):
     parts = ['---\ntitle: "Evidence card: {}"\n---\n'.format(feature),
              '**Real public-study evidence. Association evidence only; not a validated biomarker.**\n',
              '[How to interpret expression as evidence for resilience](../docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience). Differential expression alone does not establish a resilience marker; higher expression does not necessarily mean greater resilience.\n',
@@ -106,6 +106,8 @@ def real_card(feature, rows, studies, md_table):
                             number(row.adjusted_p_value) + (' (nominal only)' if row.inference_status.startswith('Exploratory') else ''),
                             row.inference_status])
     parts.append(md_table(pd.DataFrame(effect_rows, columns=['Study / design', 'RefSeq description', 'Contrast', 'Effect scale', 'Effect', 'Standard error', 'Adjusted p-value', 'Interpretation'])))
+    if plot_relpath:
+        parts.append('\n![Study-level effect forest plot for {}]({})\n'.format(feature, plot_relpath))
     for row in rows.itertuples(index=False):
         study = studies[row.study_id]
         parts.extend(['\n## {}\n'.format(row.study_id),
@@ -126,9 +128,35 @@ def real_card(feature, rows, studies, md_table):
 
 def write_real_findings(out, evidence, summaries, highlights, studies, md_table, write):
     """Publish a bounded browsing set plus full study-level downloads."""
+    from pathlib import Path
+    from aree.reporting.forest_plot import write_forest_plot_svg
+
     features = sorted(set(highlights.feature_id_standardized))
+    plots_dir = out / 'evidence_cards' / 'plots'
     for feature, rows in evidence[evidence.feature_id_standardized.isin(features)].groupby('feature_id_standardized'):
-        write(out / 'evidence_cards' / card_filename(feature), real_card(feature, rows, studies, md_table))
+        stem = Path(card_filename(feature)).stem
+        plot_rel = 'plots/{}.svg'.format(stem)
+        projects = [studies[study]['accessions']['bioproject'] for study in rows.study_id]
+        plot_rows = []
+        for row in rows.itertuples(index=False):
+            project = studies[row.study_id]['accessions']['bioproject']
+            label = row.study_id if projects.count(project) > 1 else '{} ({})'.format(project, row.sample_comparison)
+            exploratory = str(row.inference_status).startswith('Exploratory')
+            sub = '(nominal; unmodeled tank)' if exploratory else (
+                'FDR={:.2g}'.format(float(row.adjusted_p_value)) if pd.notna(row.adjusted_p_value) else ''
+            )
+            plot_rows.append({
+                'label': label,
+                'effect': row.effect_size,
+                'se': None if exploratory else row.standard_error,
+                'subtext': sub,
+            })
+        write_forest_plot_svg(
+            plots_dir / '{}.svg'.format(stem),
+            rows=plot_rows,
+            title='Study-level effects: {}'.format(feature),
+        )
+        write(out / 'evidence_cards' / card_filename(feature), real_card(feature, rows, studies, md_table, plot_relpath=plot_rel))
     cards = pd.DataFrame([['[{}]({})'.format(feature, card_filename(feature)),
                            ', '.join(sorted(set(highlights.loc[highlights.feature_id_standardized == feature, 'study_id'])))]
                           for feature in features], columns=['Real evidence card', 'Selected in studies'])

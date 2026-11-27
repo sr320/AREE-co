@@ -1,5 +1,8 @@
 nextflow.enable.dsl = 2
 
+include { FETCH_REFERENCE } from '../../modules/fetch_reference'
+include { VALIDATE_EVIDENCE } from '../../modules/validate_evidence'
+
 /*
  * AREE RNA-seq reanalysis: FastQC -> Salmon (decoy-aware selective alignment) -> tximport/DESeq2
  * -> AREE processed evidence, exact-ID mappings and RefSeq annotations, ready for `aree harmonize`.
@@ -207,8 +210,13 @@ process EXPORT_EVIDENCE {
 workflow {
     required('study_id')
     required('test_level')
-    if (!params.salmon_index && !params.transcripts) {
-        error "Provide --salmon_index (prebuilt) or --transcripts (optionally with --decoys) to build one"
+    def needs_ref_fetch = params.reference_accession && (!params.tx2gene || !params.gff || (!params.salmon_index && !params.transcripts))
+    if (!params.reference_accession) {
+        if (!params.salmon_index && !params.transcripts) {
+            error "Provide --salmon_index (prebuilt), --transcripts, or --reference_accession"
+        }
+        required('tx2gene')
+        required('gff')
     }
 
     reads = Channel
@@ -227,20 +235,38 @@ workflow {
             }
         }
     design = file(required('design'), checkIfExists: true)
-    tx2gene = file(required('tx2gene'), checkIfExists: true)
-    gff = file(required('gff'), checkIfExists: true)
+
+    if (needs_ref_fetch) {
+        def catalog = params.reference_catalog ? file(params.reference_catalog, checkIfExists: true) : file('NO_CATALOG')
+        fetched = FETCH_REFERENCE(params.reference_accession, catalog)
+        tx2gene = params.tx2gene ? Channel.value(file(params.tx2gene, checkIfExists: true)) : fetched.tx2gene
+        gff = params.gff ? Channel.value(file(params.gff, checkIfExists: true)) : fetched.gff
+        transcripts_ch = params.transcripts ? Channel.value(file(params.transcripts, checkIfExists: true)) : fetched.transcripts
+        decoys_ch = params.decoys
+            ? Channel.value(file(params.decoys, checkIfExists: true))
+            : (params.include_genome_decoys && !params.transcripts ? fetched.decoys : Channel.value(file("${projectDir}/assets/NO_DECOYS")))
+    } else {
+        tx2gene = file(required('tx2gene'), checkIfExists: true)
+        gff = file(required('gff'), checkIfExists: true)
+        transcripts_ch = params.transcripts ? file(params.transcripts, checkIfExists: true) : Channel.empty()
+        decoys_ch = params.decoys ? file(params.decoys, checkIfExists: true) : file("${projectDir}/assets/NO_DECOYS")
+    }
 
     if (!params.skip_fastqc) {
         FASTQC(reads)
     }
     index = params.salmon_index
         ? Channel.value(file(params.salmon_index, checkIfExists: true))
-        : SALMON_INDEX(
-            file(params.transcripts, checkIfExists: true),
-            params.decoys ? file(params.decoys, checkIfExists: true) : file("${projectDir}/assets/NO_DECOYS")
-        )
+        : SALMON_INDEX(transcripts_ch, decoys_ch)
     quant = SALMON_QUANT(reads, index).collect()
     SALMON_QC(quant, design)
     DESEQ2(quant, design, tx2gene)
     EXPORT_EVIDENCE(DESEQ2.out.results, DESEQ2.out.analysis_method, gff)
+    if (params.validate_evidence) {
+        VALIDATE_EVIDENCE(
+            EXPORT_EVIDENCE.out.processed,
+            EXPORT_EVIDENCE.out.mapping,
+            EXPORT_EVIDENCE.out.annotations,
+        )
+    }
 }

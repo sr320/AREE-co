@@ -1,0 +1,17 @@
+FROM mambaorg/micromamba:1.5.10
+
+LABEL org.opencontainers.image.title="aree-methylation" \
+      org.opencontainers.image.description="AREE WGBS/methylation environment: Bismark, Bowtie2, Samtools, R/limma"
+
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends procps && \
+    rm -rf /var/lib/apt/lists/*
+
+USER $MAMBA_USER
+COPY --chown=$MAMBA_USER:$MAMBA_USER workflows/methylation/environment.yml /tmp/environment.yml
+RUN micromamba install -y -n base -f /tmp/environment.yml && \
+    micromamba clean --all --yes
+
+ENV PATH="/opt/conda/bin:$PATH"
+CMD ["Rscript", "--version"]
