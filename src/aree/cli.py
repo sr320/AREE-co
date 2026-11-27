@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import typer
 
@@ -8,6 +8,7 @@ from aree.harmonize.processed import harmonize_processed
 from aree.io import read_tsv
 from aree.intake.registry import register_study as register_study_file
 from aree.meta_analysis.random_effects import run_meta_analysis
+from aree.meta_analysis.synthesis import run_real_synthesis
 from aree.prioritize.scoring import score_candidates
 from aree.raw.deseq2_evidence import ANALYSIS_METHOD, REFSEQ_RELEASE
 from aree.raw.deseq2_evidence import export_deseq2_evidence as export_evidence
@@ -91,21 +92,56 @@ def meta_analyze(
     feature_type: str = typer.Option(None, "--feature-type"),
     evidence: str = typer.Option(None, "--evidence", help=EVIDENCE_HELP),
     output: str = typer.Option(None, "--output"),
+    method: str = typer.Option("dl", "--method", help="Random-effects estimator: dl or reml."),
+    shared_control_rho: Optional[float] = typer.Option(
+        None, "--shared-control-rho",
+        help="Sampling correlation in [0, 1) for contrasts sharing a dependence_group (default: fail closed).",
+    ),
 ):
     output = run_meta_analysis(
-        phenotype=phenotype, feature_type=feature_type, evidence_path=evidence, output_path=output
+        phenotype=phenotype, feature_type=feature_type, evidence_path=evidence, output_path=output,
+        method=method, shared_control_rho=shared_control_rho,
     )
     typer.echo("meta-analysis written to {}".format(output))
     meta = read_tsv(output)
     excluded = int(meta["n_effects_excluded"].sum())
     if excluded:
         studies = sorted({s for ids in meta["excluded_study_ids"].dropna() for s in ids.split(";") if s})
-        typer.echo(
-            "note: {} effects lack standard errors and were not pooled (studies: {}); "
-            "{} feature groups have nothing poolable".format(
-                excluded, ", ".join(studies), int((meta["pooling_status"] == "no_standard_errors").sum())
+        no_se_groups = int((meta["pooling_status"] == "no_standard_errors").sum())
+        dependent_groups = int((meta["pooling_status"] == "dependent_effects_require_covariance").sum())
+        if dependent_groups and no_se_groups == 0:
+            typer.echo(
+                "note: {} effects were excluded from pooling (studies: {}); "
+                "{} feature groups require covariance modeling (--shared-control-rho)".format(
+                    excluded, ", ".join(studies), dependent_groups
+                )
             )
-        )
+        else:
+            typer.echo(
+                "note: {} effects lack standard errors and were not pooled (studies: {}); "
+                "{} feature groups have nothing poolable".format(
+                    excluded, ", ".join(studies), no_se_groups
+                )
+            )
+
+
+@app.command("synthesize-real")
+def synthesize_real(
+    evidence: str = typer.Option(None, "--evidence", help=EVIDENCE_HELP),
+    config: str = typer.Option(None, "--config", help="Path to synthesis_strata.yaml."),
+    data_dir: str = typer.Option(None, "--data-dir", help="Output directory for per-stratum pooled TSVs."),
+    reports_dir: str = typer.Option(None, "--reports-dir", help="Output directory for synthesis reports and summaries."),
+    method: str = typer.Option(None, "--method", help="Random-effects estimator override (dl or reml)."),
+    shared_control_rho: Optional[float] = typer.Option(
+        None, "--shared-control-rho", help="Override shared-control correlation in [0, 1).",
+    ),
+):
+    """Run comparability-reviewed real-study synthesis across curated strata."""
+    report = run_real_synthesis(
+        evidence_path=evidence, config_path=config, data_dir=data_dir,
+        reports_dir=reports_dir, method=method, shared_control_rho=shared_control_rho,
+    )
+    typer.echo("real synthesis report written to {}".format(report))
 
 
 @app.command("score-candidates")
@@ -114,8 +150,16 @@ def score(
     phenotype: str = typer.Option(None, help="Score only evidence for this phenotype."),
     stressor: str = typer.Option(None, help="Score only evidence for this stressor."),
     output: str = typer.Option(None, "--output"),
+    method: str = typer.Option("dl", "--method", help="Heterogeneity estimator: dl or reml."),
+    shared_control_rho: Optional[float] = typer.Option(
+        None, "--shared-control-rho",
+        help="Sampling correlation in [0, 1) for contrasts sharing a dependence_group.",
+    ),
 ):
-    output = score_candidates(evidence_path=evidence, output_path=output, phenotype=phenotype, stressor=stressor)
+    output = score_candidates(
+        evidence_path=evidence, output_path=output, phenotype=phenotype, stressor=stressor,
+        method=method, shared_control_rho=shared_control_rho,
+    )
     typer.echo("candidate scores written to {}".format(output))
 
 

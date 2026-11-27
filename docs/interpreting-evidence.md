@@ -35,11 +35,11 @@ The current real evidence cards are **study-specific molecular findings with var
 
 ## Meta-analysis
 
-The primary website presents real study-level findings without cross-study pooling. The following describes the analysis engine; synthetic pooled results are available in the secondary demo section.
+The primary website presents real study-level findings alongside [comparability-reviewed cross-study synthesis](../meta-analysis.qmd) for five curated biological strata (`config/synthesis_strata.yaml`). Synthetic pooled results remain available in the secondary demo section.
 
-If multiple usable effects in a feature/context group share a replication group, the engine retains the group with `pooling_status=dependent_effects_require_covariance` and no pooled effect, standard error or heterogeneity estimate. All effects in that group are listed as excluded from pooling; shared controls require a covariance-aware model rather than independent-effect weighting. Repeated effects from one study are guarded in the same way. This does not replace a biological review of contrast comparability.
+By default, if multiple usable effects in a feature/context group share a replication group, the engine retains the group with `pooling_status=dependent_effects_require_covariance` and no pooled effect, standard error or heterogeneity estimate. When a shared-control sampling correlation (`--shared-control-rho`, defaulting to `0.5` in `synthesize-real` with sensitivity checks across `0.0`, `0.5`, and `0.8`) is explicitly modeled, contrasts within a dependence group are combined via exact block-covariance GLS before random-effects pooling across independent groups; single-group-only cases are labeled `single_independent_group` without between-study heterogeneity or directional replication claims.
 
-Comparable effects are pooled by feature, feature type, effect-size type, phenotype, and stressor; effects on different scales are never pooled. Effects without usable uncertainty or marked as exploratory because tank clustering is unmodeled cannot be pooled. They remain in the meta-analysis table with a `pooling_status` (`pooled`, `single_effect`, `no_standard_errors`, or `no_inference_eligible_effects`) and are counted in `n_effects_excluded`/`excluded_study_ids`; the report lists per-study coverage. Random-effects summaries report heterogeneity so contradictory findings remain visible.
+Comparable effects are pooled only within the same `effect_size_type`; effects on different scales are never pooled. Effects without usable uncertainty or marked as exploratory because tank clustering is unmodeled cannot be pooled. They remain in the meta-analysis table with a `pooling_status` (`pooled`, `pooled_covariance_adjusted`, `single_independent_group`, `single_effect`, `no_standard_errors`, or `no_inference_eligible_effects`) and are counted in `n_effects_excluded`/`excluded_study_ids`; the report lists per-study coverage. Random-effects summaries report heterogeneity so contradictory findings remain visible.
 
 ## Candidate Scores
 
@@ -65,7 +65,7 @@ The PRJEB58194 F1 records (offspring exposed to the pesticide mixture, TE, and c
 
 The two PRJNA852380 Vibrio records (12 h and 24 h after exposure) test against the same three control digestive glands and carry `PRJNA852380_controls`.
 
-PRJNA735889 currently uses an oyster-level model on 50 oysters from ten tanks without accounting for tank clustering. Its p-values, FDR values and standard errors are exploratory until a tank-aware reanalysis is available. Evidence marked `exploratory_tank_clustering_unmodeled` receives no significance reward, cannot promote a candidate to the high-priority cross-study category, and remains visible with its limitations. `best_adjusted_p_value` in scores excludes these exploratory values; original nominal values remain in the evidence for provenance.
+PRJNA735889 is now reanalysed with a tank-aware mixed model (`variancePartition::dream`, `~ gametogenesis + condition + (1 | tank)` with Satterthwaite degrees of freedom), removing the unmodeled-tank exploratory flag while keeping its design caveats (pH band contrast without an ambient pH 8.0 reference, one tank per pH level, and a transcriptional gametogenesis proxy). Any future evidence marked `exploratory_tank_clustering_unmodeled` receives no significance reward, cannot promote a candidate to the high-priority cross-study category, and remains visible with its limitations. `best_adjusted_p_value` in scores excludes any exploratory values; original nominal values remain in the evidence for provenance.
 
 ## Contradictory Findings
 

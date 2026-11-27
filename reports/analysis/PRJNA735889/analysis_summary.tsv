@@ -1,0 +1,10 @@
+metric	value
+genes_tested	28811
+significant_padj_lt_0.05	264
+acidified_higher	15
+acidified_lower	249
+median_lfc_se	0.280099680142619
+median_satterthwaite_df	49.0310486722072
+min_satterthwaite_df	5.19280983937264
+max_satterthwaite_df	49.4352216080469
+dupcor_consensus_rho	0.010787986915676

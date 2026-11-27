@@ -85,3 +85,13 @@ def test_ph_band_reanalysis_exports_gametogenesis_blocked_evidence(tmp_path):
     assert rows[0]["sample_comparison"] == "ph_6.5_6.8_vs_ph_7.4_7.8_23d_juveniles"
     assert rows[0]["molecular_direction"] == "down"
     assert "gametogenesis_blocked_contrast" in rows[0]["quality_flags"]
+    assert "tank_random_effect_mixed_model" in rows[0]["quality_flags"]
+    assert "exploratory_tank_clustering_unmodeled" not in rows[0]["quality_flags"]
+
+    # Also verify exporting via an existing RefSeq annotation table without needing the GFF file.
+    processed2 = tmp_path / "processed2.tsv"
+    prepare(
+        results, None, processed2, tmp_path / "mapping2.tsv", tmp_path / "annotations2.tsv",
+        existing_annotations=tmp_path / "annotations.tsv",
+    )
+    assert processed2.read_text() == processed.read_text()

@@ -49,16 +49,58 @@ def test_significance_counts_and_selection_match_underlying_evidence(findings):
         assert set(top.feature_id_standardized).issubset(set(significant.feature_id_standardized))
 
 
-def test_exploratory_selection_ignores_nominal_significance(findings):
-    _, (evidence, summaries, selected) = findings
-    study = 'CGIG_OA_RNASEQ_PRJNA735889'
-    row = summaries.set_index('study_id').loc[study]
+def test_exploratory_selection_ignores_nominal_significance(tmp_path):
+    study_id = 'CGIG_SYNTHETIC_TANK_TEST'
+    study = {
+        'study_id': study_id,
+        'accessions': {'bioproject': 'PRJNA000001'},
+        'stressor_class': 'ocean_acidification_pH',
+        'phenotype_direction': 'Response only',
+        'biological_replication': '20 oysters across 4 tanks',
+        'experimental_treatment': 'Acidified',
+        'control_condition': 'Control',
+        'sample_size': 20,
+        'data_availability': {'status': 'public_raw_aree_reanalysis_complete'},
+        'limitations': ['Tank clustering unmodeled'],
+    }
+    (tmp_path / 'data/harmonized').mkdir(parents=True)
+    pd.DataFrame([
+        {
+            'study_id': study_id,
+            'feature_id_standardized': f'NCBI:GeneID:{i}',
+            'effect_size': 0.5 if i == 1 else (3.0 - 0.1 * i),
+            'effect_size_type': 'log2_fold_change',
+            'standard_error': 0.2,
+            'p_value': 1e-12 if i == 1 else 0.5,
+            'adjusted_p_value': 1e-10 if i == 1 else 0.8,
+            'sample_size': 20,
+            'sample_comparison': 'acidified_vs_control',
+            'phenotype': 'acidification_tolerance',
+            'stressor': 'ocean_acidification_pH',
+            'tissue': 'whole_organism',
+            'life_stage': 'juvenile',
+            'resilience_classification': 'environmental_exposure',
+            'mapping_confidence': 'exact',
+            'quality_flags': 'raw_reanalysis;exploratory_tank_clustering_unmodeled',
+            'source_file': 'data/processed/test.tsv',
+            'input_checksum': 'abc',
+            'genome_assembly': 'GCF_963853765.1',
+            'annotation_version': 'RS_2024_06',
+            'workflow_version': '0.1.0',
+        }
+        for i in range(1, 13)
+    ]).to_csv(tmp_path / 'data/harmonized' / f'{study_id}.tsv', sep='\t', index=False)
+
+    evidence, summaries, selected = load_findings(tmp_path, {study_id: study})
+    row = summaries.set_index('study_id').loc[study_id]
     assert pd.isna(row.significant)
-    top = selected[selected.study_id == study]
-    original = evidence[evidence.study_id == study].assign(magnitude=lambda x: x.effect_size.abs())
-    expected = original.sort_values(['magnitude', 'feature_id_standardized'], ascending=[False, True]).head(10)
-    assert list(top.feature_id_standardized) == list(expected.feature_id_standardized)
+    top = selected[selected.study_id == study_id]
+    assert len(top) == 10
+    # Gene 1 has tiny nominal padj (1e-10) but small effect (0.5), so it must not beat larger effects.
+    assert 'NCBI:GeneID:1' not in set(top.feature_id_standardized)
     assert top.selection_basis.str.contains('nominal FDR not used').all()
+    card = real_card(top.iloc[0].feature_id_standardized, evidence[evidence.feature_id_standardized == top.iloc[0].feature_id_standardized], {study_id: study}, md_table)
+    assert 'nominal only' in card
 
 
 def test_real_card_preserves_all_observations_and_shared_control_caveats(findings):
@@ -73,7 +115,7 @@ def test_real_card_preserves_all_observations_and_shared_control_caveats(finding
     assert 'share a reference group' in card
     assert 'No cross-study score or pooled effect' in card
     assert 'SHA-256' in card
-    assert 'nominal only' in card
+    assert 'nominal only' not in card
     assert len(rows) == len(evidence[evidence.feature_id_standardized == feature])
 
 
@@ -88,8 +130,7 @@ def test_query_parquet_preserves_every_record_and_caveat(findings, tmp_path):
     assert (table.effect_size == evidence.effect_size.astype(float)).all()
     assert (table.bioproject == evidence.study_id.map(lambda s: studies[s]['accessions']['bioproject'])).all()
     exploratory = table[table.inference_status.str.startswith('Exploratory')]
-    assert set(exploratory.study_id) == {'CGIG_OA_RNASEQ_PRJNA735889'}
-    assert len(exploratory) == (evidence.study_id == 'CGIG_OA_RNASEQ_PRJNA735889').sum()
+    assert exploratory.empty
     assert table.quality_flags.notna().all()
     assert 'score' not in table.columns
 

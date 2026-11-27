@@ -44,6 +44,7 @@ def load_findings(root, studies):
             table['description'] = table.feature_id_standardized.map(descriptions).fillna('Annotation unavailable')
         eligible = inference_eligible(table)
         table['inference_status'] = eligible.map({True: 'Study-level association; see design caveats', False: 'Exploratory; tank clustering unmodeled'})
+        table['selection_basis'] = 'FDR < 0.05; ordered by adjusted p-value, then absolute effect'
         significant = table[eligible & table.adjusted_p_value.lt(0.05)]
         exploratory = not eligible.any()
         summaries.append(dict(study_id=study_id, records=len(table), tested=int(table.p_value.notna().sum()),
@@ -51,7 +52,6 @@ def load_findings(root, studies):
                               higher=None if exploratory else int(significant.effect_size.gt(0).sum()),
                               lower=None if exploratory else int(significant.effect_size.lt(0).sum()),
                               status='Exploratory; nominal FDR not used' if exploratory else 'Study-level associations'))
-        table['selection_basis'] = 'FDR < 0.05; ordered by adjusted p-value, then absolute effect'
         if exploratory:
             selected = table.assign(_magnitude=table.effect_size.abs()).sort_values(
                 ['_magnitude', 'feature_id_standardized'], ascending=[False, True]).head(FINDINGS_PER_STUDY).copy()

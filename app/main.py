@@ -151,9 +151,9 @@ mode = st.radio(
 real_mode = mode == "Real public studies"
 if real_mode:
     st.info(
-        "Real public-study evidence below presents study-level molecular associations only — "
-        "not validated biomarkers. No cross-study pooled effect or global candidate score is computed; "
-        "exploratory unmodeled-tank p-values are labeled nominal only."
+        "Real public-study evidence below presents study-level molecular associations and "
+        "comparability-reviewed per-stratum cross-study synthesis — not validated biomarkers. "
+        "No global cross-context candidate score is presented."
     )
 else:
     st.warning(
@@ -165,7 +165,7 @@ registry_path = ROOT / "registry" / "study_registry.csv"
 demo_evidence_path = ROOT / "data" / "demo" / "harmonized_evidence.tsv"
 demo_scores_path = ROOT / "data" / "demo" / "candidate_scores.tsv"
 
-tabs = st.tabs(["Studies", "Evidence", "Findings & Cards", "Pipeline Status"])
+tabs = st.tabs(["Studies", "Evidence", "Findings & Cards", "Cross-Study Synthesis", "Pipeline Status"])
 
 with tabs[0]:
     st.subheader("Registered Studies")
@@ -291,6 +291,43 @@ with tabs[2]:
             st.info("Run `aree build-evidence-cards` to generate candidates.")
 
 with tabs[3]:
+    st.subheader("Comparability-Reviewed Cross-Study Synthesis")
+    stratum_summary_path = ROOT / "reports" / "synthesis" / "stratum_summary.tsv"
+    sensitivity_path = ROOT / "reports" / "synthesis" / "sensitivity_summary.tsv"
+    top_pooled_path = ROOT / "reports" / "synthesis" / "top_pooled_associations.tsv"
+    if not real_mode:
+        st.info("Switch to 'Real public studies' mode above to browse curated real-study synthesis strata.")
+    elif stratum_summary_path.exists():
+        st.caption(
+            "Pooled random-effects estimates (REML with shared-control block covariance rho=0.5) "
+            "across comparability-reviewed biological strata only. Association evidence only; not validated biomarkers."
+        )
+        stratum_summary = _load_tsv(str(stratum_summary_path))
+        st.dataframe(stratum_summary, **FULL_WIDTH)
+        if top_pooled_path.exists():
+            top_pooled = _load_tsv(str(top_pooled_path))
+            strata_ids = sorted(top_pooled["stratum_id"].dropna().unique())
+            chosen = st.selectbox("Synthesis stratum", strata_ids) if strata_ids else None
+            if chosen:
+                stratum_file = ROOT / "data" / "synthesis" / "{}_meta.tsv".format(chosen)
+                display_pooled = _load_tsv(str(stratum_file)) if stratum_file.exists() else top_pooled[top_pooled["stratum_id"] == chosen]
+                only_concordant = st.checkbox("Direction-concordant across independent groups only", value=False)
+                if only_concordant and "direction_concordant" in display_pooled.columns:
+                    display_pooled = display_pooled[display_pooled["direction_concordant"].astype(str).str.lower() == "true"]
+                st.caption("{:,} multi-group pooled genes (showing top {:,}).".format(len(display_pooled), min(len(display_pooled), MAX_DISPLAY_ROWS)))
+                st.dataframe(display_pooled.head(MAX_DISPLAY_ROWS), **FULL_WIDTH)
+                st.download_button(
+                    "Download stratum pooled TSV",
+                    display_pooled.to_csv(sep="\t", index=False),
+                    "{}_meta.tsv".format(chosen),
+                )
+        if sensitivity_path.exists():
+            with st.expander("Estimator (REML vs DL) and shared-control rho sensitivity"):
+                st.dataframe(_load_tsv(str(sensitivity_path)), **FULL_WIDTH)
+    else:
+        st.info("Run `aree synthesize-real` to generate real cross-study synthesis tables.")
+
+with tabs[4]:
     st.subheader("Pipeline Status")
     status = pd.DataFrame(
         [
@@ -301,7 +338,10 @@ with tabs[3]:
                 "status": "complete (paired-end, single-end, covariates, collapse-by, 3' tag-seq)",
             },
             {"layer": "Raw methylation/proteomics/metabolomics pipelines", "status": "planned; processed results only"},
-            {"layer": "Meta-analysis and scoring (demo / configurable)", "status": "complete and runnable"},
+            {
+                "layer": "Covariance-aware meta-analysis & real-study synthesis",
+                "status": "complete (REML/DL, shared-control GLS, metafor cross-checked)",
+            },
             {"layer": "Static Quarto site & DuckDB-WASM Query page", "status": "complete and deployed via Pages"},
         ]
     )

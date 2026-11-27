@@ -129,6 +129,7 @@ NON_PENALTY_QUALITY_FLAGS = frozenset({
     "population_selection_association",
     "pre_infection_baseline",
     "quantseq_3prime_tag_seq",
+    "tank_random_effect_mixed_model",
     "time_averaged_over_diurnal_cycle",
     "tire_leachate",
     "tire_microparticles",
@@ -164,7 +165,7 @@ def _collapse_by_group(dep_groups, effects, types):
     return [_mean(values) for values in independent_effects.values()], [key[1] for key in independent_effects]
 
 
-def score_table(evidence):
+def score_table(evidence, method="dl", shared_control_rho=None):
     evidence = evidence.copy()
     evidence["_dependence_group"] = [
         dependence_group(study, flags)
@@ -178,7 +179,7 @@ def score_table(evidence):
     # Heterogeneity comes from the same evidence being scored, never from a previously written
     # (possibly filtered or stale) meta-analysis file. Groups with nothing poolable have no I2
     # and carry no heterogeneity information.
-    meta = meta_analysis_table(evidence).dropna(subset=["i2_percent"])
+    meta = meta_analysis_table(evidence, method=method, shared_control_rho=shared_control_rho).dropna(subset=["i2_percent"])
     max_i2 = meta.groupby("feature_id_standardized")["i2_percent"].max().to_dict()
     rows = []
     for feature, group in column_groups(evidence, "feature_id_standardized", SCORED_COLUMNS):
@@ -286,14 +287,14 @@ def score_table(evidence):
     return out.sort_values(["score", "n_studies", "candidate_id"], ascending=[False, False, True])
 
 
-def score_candidates(evidence_path=None, output_path=None, phenotype=None, stressor=None):
+def score_candidates(evidence_path=None, output_path=None, phenotype=None, stressor=None, method="dl", shared_control_rho=None):
     evidence_path = evidence_path or root_path("data", "demo", "harmonized_evidence.tsv")
     evidence = read_evidence(evidence_path)
     if phenotype:
         evidence = evidence[evidence["phenotype"] == phenotype]
     if stressor:
         evidence = evidence[evidence["stressor"] == stressor]
-    out = score_table(evidence)
+    out = score_table(evidence, method=method, shared_control_rho=shared_control_rho)
     output_path = Path(output_path) if output_path else root_path("data", "demo", "candidate_scores.tsv")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(output_path, sep="\t", index=False)

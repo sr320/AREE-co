@@ -142,8 +142,9 @@ def test_committed_shared_controls_and_tank_flags_are_enforced():
     assert score.category != 'High-priority cross-study candidate'
     ph = read_tsv(ROOT / 'data/harmonized/CGIG_OA_RNASEQ_PRJNA735889.tsv')
     assert ph.sample_size.eq(50).all()
-    assert ph.quality_flags.str.contains(EXPLORATORY_FLAG).all()
-    assert pd.isna(score_table(ph.head(1)).iloc[0].best_adjusted_p_value)
+    assert ph.quality_flags.str.contains('tank_random_effect_mixed_model').all()
+    assert not ph.quality_flags.str.contains(EXPLORATORY_FLAG).any()
+    assert pd.notna(score_table(ph.head(1)).iloc[0].best_adjusted_p_value)
 
 
 def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_path):
@@ -179,8 +180,11 @@ def test_website_distinguishes_synthetic_results_and_exposes_limitations(tmp_pat
         assert 'Simulated demo evidence' not in path.read_text()
     assert 'CGIG_HEAT_RNASEQ_001' not in (out / 'studies.qmd').read_text()
     ph = (out / 'studies/CGIG_OA_RNASEQ_PRJNA735889.qmd').read_text()
-    assert 'tank clustering is not modeled' in ph
-    assert '10 tanks' in ph and 'no significance reward' in ph
+    assert 'tank clustering is not modeled' not in ph
+    assert 'variancePartition::dream' in ph
+    synth = (out / 'meta-analysis.qmd').read_text()
+    assert 'acute_heat_response_gill' in synth
+    assert 'not validated biomarkers' in synth
     heat = (out / 'studies/CGIG_HEAT_RNASEQ_PRJEB86646.qmd').read_text()
     assert 'share a reference group' in heat
     hab = (out / 'studies/CGIG_HAB_RNASEQ_PRJEB18614.qmd').read_text()

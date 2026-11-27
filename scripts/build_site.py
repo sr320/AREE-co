@@ -144,6 +144,7 @@ def quarto_config(analyses, cards, queryable):
                     {"text": "Studies", "href": "studies.qmd"},
                     {"text": "Real-study findings", "href": "candidates.qmd"},
                 ] + ([{"text": "Query", "href": "query.qmd"}] if queryable else []) + [
+                    {"text": "Cross-study synthesis", "href": "meta-analysis.qmd"},
                     {"text": "Reanalyses", "menu": [{"text": "All reanalyses", "href": "analyses.qmd"}] + analysis_menu},
                     {"text": "Real evidence cards ({})".format(len(cards)), "href": "evidence_cards/index.qmd"},
                     {"text": "Synthetic demo", "href": "demo/index.qmd"},
@@ -230,9 +231,9 @@ Last updated from commit [`{sha}`]({repo}/commit/{sha}) ({commit_date}); site bu
 </div>
 ```
 
-[Browse real-study findings](candidates.qmd) · [Browse real evidence cards](evidence_cards/index.qmd)
+[Browse real-study findings](candidates.qmd) · [Browse cross-study synthesis](meta-analysis.qmd) · [Browse real evidence cards](evidence_cards/index.qmd)
 
-Findings retain study-specific contrasts, gene descriptions, uncertainty and design limitations. They describe molecular associations, not validated predictors of resilience. The shared DECICOMP controls are not independent replication, and PRJNA735889's tank-dependent analysis remains exploratory.
+Findings retain study-specific contrasts, gene descriptions, uncertainty and design limitations. They describe molecular associations, not validated predictors of resilience. Shared controls are not independent replication; [cross-study synthesis](meta-analysis.qmd) pools only comparability-reviewed strata with shared-control covariance modeling and tank-aware inference.
 
 Counts distinguish public BioProjects from registered contrasts. PRJNA913164 contributes two contrasts with shared controls; neither the contrast count nor the BioProject count establishes independent replication.
 
@@ -343,6 +344,123 @@ def meta_page(meta):
     )
 
 
+def synthesis_page(out, real_cards):
+    """Build the comparability-reviewed real cross-study synthesis page."""
+    config_path = ROOT / "config" / "synthesis_strata.yaml"
+    synth_dir = ROOT / "reports" / "synthesis"
+    summary_path = synth_dir / "stratum_summary.tsv"
+    if not config_path.exists() or not summary_path.exists():
+        return (
+            '---\ntitle: "Cross-study synthesis"\n---\n\n'
+            'The primary site reports [real study-level findings](candidates.qmd) and [real evidence cards](evidence_cards/index.qmd). '
+            'Run `aree synthesize-real` to generate comparability-reviewed synthesis tables. '
+            'The earlier synthetic results are available in [demo meta-analysis](demo/meta-analysis.qmd).\n'
+        )
+    config = yaml.safe_load(config_path.read_text())
+    summary = pd.read_csv(summary_path, sep="\t")
+    sensitivity = pd.read_csv(synth_dir / "sensitivity_summary.tsv", sep="\t") if (synth_dir / "sensitivity_summary.tsv").exists() else pd.DataFrame()
+    top_all = pd.read_csv(synth_dir / "top_pooled_associations.tsv", sep="\t") if (synth_dir / "top_pooled_associations.tsv").exists() else pd.DataFrame()
+    heat_cmp_path = synth_dir / "acute_heat_vs_prjna694496_concordant.tsv"
+    crosscheck_path = synth_dir / "metafor_crosscheck.md"
+
+    dl_dir = out / "downloads" / "synthesis"
+    dl_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("stratum_summary.tsv", "sensitivity_summary.tsv", "top_pooled_associations.tsv", "metafor_crosscheck.tsv", "scoring_weight_audit.tsv"):
+        src = synth_dir / name
+        if src.exists():
+            shutil.copy(src, dl_dir / name)
+
+    card_set = set(real_cards)
+    parts = [
+        '---\ntitle: "Cross-study synthesis"\n---\n',
+        '::: {.callout-warning appearance="simple"}\n'
+        '**Real-study synthesis — association evidence only; not validated biomarkers.** '
+        'Cross-study random-effects pooling is restricted to comparability-reviewed strata with at least two independent BioProjects and two independent replication groups, '
+        'using REML estimation and shared-control block-covariance GLS (`rho = 0.5`). No global cross-context biomarker score is presented.\n:::\n',
+        '[Download stratum summary](downloads/synthesis/stratum_summary.tsv) · '
+        '[Download sensitivity summary](downloads/synthesis/sensitivity_summary.tsv) · '
+        '[Download top pooled associations](downloads/synthesis/top_pooled_associations.tsv)\n',
+        '## Comparability-reviewed synthesis strata\n',
+    ]
+    summary_display = summary[[
+        "stratum_id", "title", "phenotype", "stressor", "n_contrasts", "n_bioprojects",
+        "n_independent_groups", "multi_group_pooled_features", "pooled_fdr_lt_0_05",
+        "concordant_fdr_lt_0_05", "median_i2_percent",
+    ]].copy()
+    summary_display["stratum_id"] = ["[{}](#{})".format(s, s.lower()) for s in summary_display["stratum_id"]]
+    parts.append(md_table(summary_display) + "\n")
+
+    if not sensitivity.empty:
+        parts.append("## Estimator and shared-control covariance sensitivity\n")
+        parts.append(
+            "Each stratum is evaluated under REML and DerSimonian-Laird (DL), and across shared-control correlations `rho` in `{0.0, 0.5, 0.8}`.\n"
+        )
+        parts.append(md_table(sensitivity[[
+            "stratum_id", "method", "shared_control_rho", "n_fdr_lt_0_05",
+            "n_concordant_fdr_lt_0_05", "median_i2_percent", "pearson_r_vs_primary", "jaccard_fdr_0_05_vs_primary",
+        ]]) + "\n")
+
+    if crosscheck_path.exists():
+        parts.append("## Validation against R `metafor`\n")
+        parts.append(
+            "Python DL, REML, and block-covariance pooling match R `metafor::rma.uni` and `metafor::rma.mv`. "
+            "See [metafor cross-check table](downloads/synthesis/metafor_crosscheck.tsv).\n"
+        )
+
+    for stratum in config.get("strata", []):
+        sid = stratum["id"]
+        parts.extend([
+            "## {} {{#{}}}\n".format(stratum["title"], sid.lower()),
+            stratum["comparability_rationale"] + "\n",
+            "**Included contrasts:** " + ", ".join("[{}](studies/{}.qmd)".format(s, s) for s in stratum["study_ids"]) + "\n",
+            "**Full pooled table:** [Download `{}_meta.tsv`]({}/raw/main/data/synthesis/{}_meta.tsv)\n".format(sid, REPO_URL, sid),
+            "**Limitations:**\n",
+            *("- " + lim for lim in stratum["limitations"]),
+            "",
+        ])
+        if not top_all.empty:
+            sub = top_all[top_all["stratum_id"] == sid].head(15).copy()
+            if not sub.empty:
+                rows = []
+                for r in sub.itertuples(index=False):
+                    feat = "[{}](evidence_cards/{})".format(r.feature_id_standardized, card_filename(r.feature_id_standardized)) if r.feature_id_standardized in card_set else r.feature_id_standardized
+                    rows.append([
+                        feat, r.description, int(r.n_studies), int(r.n_independent_groups),
+                        "{:.4g}".format(r.pooled_effect), "{:.3g}".format(r.pooled_standard_error),
+                        "{:.3g}".format(r.adjusted_p_value), "{:.1f}".format(r.i2_percent),
+                        "yes" if str(r.direction_concordant).lower() == "true" else "no",
+                    ])
+                parts.append(md_table(pd.DataFrame(rows, columns=[
+                    "Feature", "RefSeq description", "Contrasts", "Indep. groups",
+                    "Pooled log2FC", "SE", "Adjusted p", "I2 (%)", "Concordant",
+                ])) + "\n")
+
+    if heat_cmp_path.exists():
+        heat_cmp = pd.read_csv(heat_cmp_path, sep="\t")
+        parts.extend([
+            "## Cross-context comparison: acute gill heat vs constitutive selection (`PRJNA694496`)\n",
+            "Constitutive larval expression in thermotolerance-selected oysters ([CGIG_THERMOTOL_RNASEQ_PRJNA694496](studies/CGIG_THERMOTOL_RNASEQ_PRJNA694496.qmd)) "
+            "is **not** pooled with acute gill heat shock. Genes reaching FDR < 0.05 in both contexts with the same direction ({:,} highlighted below) represent cross-context convergence hypotheses, not a pooled heat effect.\n".format(len(heat_cmp)),
+        ])
+        if not heat_cmp.empty:
+            parts.append(md_table(heat_cmp[[
+                "feature_id_standardized", "description", "pooled_effect", "adjusted_p_value",
+                "selection_log2fc", "selection_padj",
+            ]].head(10)) + "\n")
+
+    unpooled = config.get("unpooled_contrasts", [])
+    if unpooled:
+        parts.append("## Harmonized contrasts withheld from cross-study pooling\n")
+        unpooled_rows = [
+            ["[{}](studies/{}.qmd)".format(item["study_id"], item["study_id"]), item["reason"]]
+            for item in unpooled
+        ]
+        parts.append(md_table(pd.DataFrame(unpooled_rows, columns=["Contrast", "Rationale for withholding from pooling"])) + "\n")
+
+    parts.append("The earlier synthetic demonstration remains available in [demo meta-analysis](demo/meta-analysis.qmd).\n")
+    return "\n".join(parts)
+
+
 def analyses_page(analyses):
     parts = ['---\ntitle: "Raw-data reanalyses"\n---\n']
     if not analyses:
@@ -427,11 +545,7 @@ def build(out):
           '- [Simulated studies](studies.qmd)\n- [Demo candidate scores](candidates.qmd)\n'
           '- [Demo meta-analysis](meta-analysis.qmd)\n- [Demo evidence cards](evidence_cards/index.qmd)\n'
           '- [Demo report](demo_report.md)\n\n[Return to real-study findings](../candidates.qmd)\n')
-    write(out / "meta-analysis.qmd", '---\ntitle: "Cross-study comparison boundaries"\n---\n\n'
-          'The primary site reports [real study-level findings](candidates.qmd) and [real evidence cards](evidence_cards/index.qmd). '
-          'No cross-study pooled effects are presented here: acute exposures, population-selection contrasts, tissues and life stages require comparability review. '
-          'Shared controls and exploratory tank-dependent inference also constrain pooling. '
-          'The earlier synthetic results are available in [demo meta-analysis](demo/meta-analysis.qmd).\n')
+    write(out / "meta-analysis.qmd", synthesis_page(out, real_cards))
     write(out / "analyses.qmd", analyses_page(analyses))
     return out
 

@@ -17,10 +17,10 @@ type leaves the page.
 ::: {.callout-warning appearance="simple"}
 These are study-level molecular associations, not validated biomarkers. Higher expression does not
 necessarily mean greater resilience, rows that share controls are not independent replication, and
-no cross-study pooled effect is computed. Rows marked **exploratory** come from studies with unmodeled
-tank clustering (currently PRJNA735889): their p-values are nominal only. See
-[how expression findings relate to resilience](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience)
-and the [guide to reading results](docs/methods.md#reading-the-results).
+no cross-study pooled effect is computed here. Rows marked **exploratory** come from studies with unmodeled
+tank clustering: their p-values are nominal only. See
+[how expression findings relate to resilience](docs/interpreting-evidence.md#how-expression-findings-relate-to-resilience),
+[cross-study synthesis](meta-analysis.qmd), and the [guide to reading results](docs/methods.md#reading-the-results).
 :::
 
 ```{=html}
@@ -95,8 +95,8 @@ and the [guide to reading results](docs/methods.md#reading-the-results).
   </table>
 </div>
 <p style="font-size:.85rem; opacity:.75;">Positive effects indicate higher values in the
-treatment relative to the control. Adjusted p-values from exploratory contrasts (currently
-PRJNA735889) are nominal only. Hover a truncated cell for the full text; follow a study link for
+treatment relative to the control. Adjusted p-values from any exploratory contrasts with
+unmodeled tank clustering are nominal only. Hover a truncated cell for the full text; follow a study link for
 its design, replication and limitations.</p>
 
 <details>

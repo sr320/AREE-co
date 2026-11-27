@@ -12,13 +12,16 @@ APP = Path(__file__).resolve().parents[1] / "app" / "main.py"
 def test_app_renders_real_mode_by_default():
     app = AppTest.from_file(str(APP), default_timeout=60).run()
     assert not app.exception
-    assert [tab.label for tab in app.tabs] == ["Studies", "Evidence", "Findings & Cards", "Pipeline Status"]
-    assert len(app.dataframe) >= 4
+    assert [tab.label for tab in app.tabs] == [
+        "Studies", "Evidence", "Findings & Cards", "Cross-Study Synthesis", "Pipeline Status"
+    ]
+    assert len(app.dataframe) >= 5
     studies = app.dataframe[0].value
     assert "CGIG_HEAT_RNASEQ_001" not in set(studies["study_id"])
     assert "CGIG_HEAT_RNASEQ_PRJNA516762" in set(studies["study_id"])
     assert "score" not in app.dataframe[1].value.columns
     assert "score" not in app.dataframe[3].value.columns
+    assert "acute_heat_response_gill" in set(app.dataframe[4].value["stratum_id"])
     assert any("not validated biomarkers" in msg.value for msg in app.info)
 
 
@@ -31,7 +34,7 @@ def test_real_mode_search_and_card_selection():
     app.selectbox[1].select("NCBI:GeneID:105327837").run()
     assert not app.exception
     assert any("Real Evidence Card: NCBI:GeneID:105327837" in block.value for block in app.markdown)
-    assert any("nominal only" in block.value for block in app.markdown)
+    assert any("CGIG_OA_RNASEQ_PRJNA735889" in block.value for block in app.markdown)
 
 
 def test_synthetic_demo_mode_search_and_card_selection():

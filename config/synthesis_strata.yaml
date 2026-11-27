@@ -1,0 +1,114 @@
+# Comparability-reviewed real-study synthesis configuration.
+# Every harmonized real contrast in data/harmonized/ must appear either in one
+# poolable stratum or in unpooled_contrasts with an explicit scientific rationale.
+
+default_method: reml
+default_shared_control_rho: 0.5
+sensitivity_rhos: [0.0, 0.5, 0.8]
+
+strata:
+  - id: acute_heat_response_gill
+    title: "Acute heat response in gill"
+    phenotype: thermal_tolerance
+    stressor: temperature
+    effect_size_type: log2_fold_change
+    study_ids:
+      - CGIG_HEAT6H_RNASEQ_PRJNA407831
+      - CGIG_HEAT24H_RNASEQ_PRJNA407831
+      - CGIG_HEAT_RNASEQ_PRJNA516762
+      - CGIG_HEAT_RNASEQ_PRJNA913164
+    comparability_rationale: >-
+      All four contrasts measure acute elevated-temperature exposure (30-35 C seawater vs ambient)
+      in Crassostrea gigas gill (ctenidium) tissue across adult and juvenile oysters. PRJNA407831 6h
+      and 24h contrasts share 0h gill pools (dependence group PRJNA407831_0h_pools) and are combined
+      via block-covariance GLS before random-effects pooling across the three independent BioProjects.
+    limitations:
+      - "Excludes CGIG_THERMOTOL_RNASEQ_PRJNA694496 (constitutive larval expression after two generations of artificial selection, not acute heat shock)."
+      - "Exposure durations span 2 h to 24 h and temperatures span 30 C to 35 C; residual heterogeneity (I2) reflects exposure-time and population differences."
+      - "Measures transcriptional heat response (stress_response), not individual survival outcomes."
+
+  - id: thermal_protection_poms_disease_resistance
+    title: "Warm acclimation protecting against POMS / OsHV-1"
+    phenotype: disease_resistance
+    stressor: temperature
+    effect_size_type: log2_fold_change
+    study_ids:
+      - CGIG_HEAT_RNASEQ_PRJEB86646
+      - CGIG_HEAT_RNASEQ_PRJNA593309
+    comparability_rationale: >-
+      Both contrasts compare warm-acclimated oysters (29-30 C) with permissive-temperature controls
+      (21-23 C) in whole-animal tissue from independent BioProjects where warm acclimation
+      demonstrably reduced subsequent OsHV-1/POMS mortality (resilience_associated).
+    limitations:
+      - "PRJEB86646 sampled spat pools at 0 h pre-cohabitation, whereas PRJNA593309 sampled individual juveniles (n = 5) at 12 h post-cohabitation."
+      - "With k = 2 independent studies, between-study tau2 and I2 have wide uncertainty; concordant direction is more informative than exact pooled magnitude."
+
+  - id: vibrio_challenge_immune_response
+    title: "Acute Vibrio challenge immune response"
+    phenotype: immune_responsiveness
+    stressor: pathogen_challenge
+    effect_size_type: log2_fold_change
+    study_ids:
+      - CGIG_VCRASSOSTREAE_RNASEQ_PRJNA515169
+      - CGIG_VTASMANIENSIS_RNASEQ_PRJNA515169
+      - CGIG_VIBRIO12H_RNASEQ_PRJNA852380
+      - CGIG_VIBRIO24H_RNASEQ_PRJNA852380
+    comparability_rationale: >-
+      Four acute Vibrio challenge contrasts across two independent BioProjects. Within each BioProject,
+      contrasts share a control arm (PRJNA515169_mock_pools and PRJNA852380_controls) and are
+      collapsed via shared-control block covariance before pooling across the two independent studies.
+    limitations:
+      - "PRJNA515169 assayed whole spat 8 h after intramuscular injection of characterized virulent strains, whereas PRJNA852380 assayed juvenile digestive gland at 12 h and 24 h with unrecorded Vibrio species/route."
+      - "Represents pathogen-challenge response (disease_associated), not survival resistance between families."
+
+  - id: oshv1_challenge_immune_response
+    title: "Acute OsHV-1 infection immune response"
+    phenotype: immune_responsiveness
+    stressor: pathogen_challenge
+    effect_size_type: log2_fold_change
+    study_ids:
+      - CGIG_OSHV1_RNASEQ_PRJNA1329250
+      - CGIG_OSHV1_RNASEQ_PRJNA593309
+    comparability_rationale: >-
+      Two independent BioProjects measuring acute whole-animal transcriptional response to OsHV-1
+      microvariant challenge relative to unchallenged controls in juvenile/spat Pacific oysters.
+    limitations:
+      - "PRJNA1329250 pools 42 spat libraries across three OsHV-1 strains and two lineages, whereas PRJNA593309 compares n = 6 juveniles (48 h vs 0 h cohabitation at 21 C)."
+      - "Reflects active viral infection response (disease_associated), not baseline genetic resistance."
+
+  - id: ocean_acidification_whole_organism
+    title: "Whole-organism ocean acidification exposure"
+    phenotype: acidification_tolerance
+    stressor: ocean_acidification_pH
+    effect_size_type: log2_fold_change
+    study_ids:
+      - CGIG_LARVAL_OA_RNASEQ_PRJNA298285
+      - CGIG_OA_RNASEQ_PRJNA735889
+    comparability_rationale: >-
+      Two independent whole-organism ocean acidification BioProjects unlocked by tank-aware
+      mixed-model reanalysis of PRJNA735889 (~ gametogenesis + condition + (1 | tank)).
+    limitations:
+      - "PRJNA298285 contrasts larval pools at pH 7.9 vs 8.1 (with unlinked publication), whereas PRJNA735889 contrasts 5-month-old juveniles at pHT 6.5-6.8 vs 7.4-7.8 without an ambient pH 8.0 reference."
+      - "Excludes CGIG_OA_RNASEQ_PRJNA826964 (adult hepatopancreas, metabolic_resilience, resequenced RNA pools)."
+
+unpooled_contrasts:
+  - study_id: CGIG_THERMOTOL_RNASEQ_PRJNA694496
+    reason: "Constitutive ambient-temperature comparison between F2 thermotolerance-selected and control larvae; evaluated as a cross-context comparator against acute_heat_response_gill rather than pooled with acute heat shock."
+  - study_id: CGIG_PESTO_F0_RNASEQ_PRJEB58194
+    reason: "Same single BioProject (PRJEB58194) and laboratory pesticide mixture as CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194; represents within-project intergenerational contrast rather than independent cross-study replication."
+  - study_id: CGIG_PESTO_F1DIRECT_RNASEQ_PRJEB58194
+    reason: "Same single BioProject (PRJEB58194) and laboratory pesticide mixture as CGIG_PESTO_F0_RNASEQ_PRJEB58194; lacks an independent second BioProject."
+  - study_id: CGIG_TIRELEACHATE_RNASEQ_PRJNA856813
+    reason: "Single BioProject and single shared-control dependence group (PRJNA856813_gill_controls) with CGIG_TIREPARTICLE_RNASEQ_PRJNA856813; cannot establish cross-study replication."
+  - study_id: CGIG_TIREPARTICLE_RNASEQ_PRJNA856813
+    reason: "Single BioProject and single shared-control dependence group (PRJNA856813_gill_controls) with CGIG_TIRELEACHATE_RNASEQ_PRJNA856813; cannot establish cross-study replication."
+  - study_id: CGIG_STARVATION_RNASEQ_PRJEB86618
+    reason: "Only one harmonized nutritional-limitation contrast."
+  - study_id: CGIG_SALINITY_RNASEQ_PRJNA756710
+    reason: "Only one harmonized salinity contrast."
+  - study_id: CGIG_HAB_RNASEQ_PRJEB18614
+    reason: "Only one harmonized harmful-algal-bloom contrast."
+  - study_id: CGIG_OA_RNASEQ_PRJNA826964
+    reason: "Adult hepatopancreas contrast (metabolic_resilience) with technical resequencing caveats; not biologically comparable to whole-organism OA strata."
+  - study_id: CGIG_MULTISTRESS_RNASEQ_PRJNA913164
+    reason: "Only one harmonized combined seawater-plus-emersion heatwave contrast."

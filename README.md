@@ -10,13 +10,13 @@ AREC is not a static list of papers. It provides a versioned path from public st
 python scripts/build_site.py && quarto render _site_src
 ```
 
-The site's Query page loads every harmonized evidence record into an in-browser DuckDB instance (from a Parquet file regenerated on each build), so visitors can search any gene, stressor or tissue across all studies without a server; the same Parquet download works in pandas, DuckDB or an AI assistant. The site leads with real-study findings and real evidence cards, derived from committed harmonized tables on every build. It displays up to ten findings per study: inference-eligible associations ordered by adjusted p-value, and exploratory PRJNA735889 effects ordered descriptively by absolute effect. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global biomarker ranking or cross-study pooled effect is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. PRJNA735889's current oyster-level analysis does not model tank clustering: its uncertainty and significance are exploratory, excluded from pooling and from significance rewards in scoring until a tank-aware reanalysis is available.
+The site's Query page loads every harmonized evidence record into an in-browser DuckDB instance (from a Parquet file regenerated on each build), so visitors can search any gene, stressor or tissue across all studies without a server; the same Parquet download works in pandas, DuckDB or an AI assistant. The site leads with real-study findings, comparability-reviewed cross-study synthesis (`meta-analysis.qmd`), and real evidence cards, derived from committed harmonized tables on every build. Real-study findings display up to ten associations per study ordered by adjusted p-value. Cross-study synthesis restricts random-effects pooling (REML with shared-control block covariance) to five comparability-reviewed strata with at least two independent BioProjects and two independent replication groups, leaving constitutive thermal selection (`PRJNA694496`) and single-project contrasts unpooled. Cards show all available study rows for each selected gene, including nonsignificant observations, design limitations and provenance. Full-study and per-stratum downloads remain available. Synthetic rankings, meta-analysis and cards are confined to the secondary `demo/` section. No global cross-context biomarker ranking is presented on the primary site. Study detail pages expose the treatment, replication, QC and limitations. `PRJNA735889` is reanalysed with a tank-aware mixed model (`variancePartition::dream`, `~ gametogenesis + condition + (1 | tank)` with Satterthwaite degrees of freedom).
 
 ## For biologists
 
 AREC asks which genes differ between oyster groups exposed to stress, or between populations with different performance. It checks the original experimental design, reprocesses public RNA-sequencing data, and puts the results into a consistent format with gene descriptions, uncertainty and limitations. This helps researchers choose genes and biological processes for follow-up experiments.
 
-A change in RNA abundance can indicate a protective response or damage. It does not establish that a gene predicts survival or causes greater resilience. The current public findings are study-level expression results; cross-study pooling and scoring are demonstrated separately with synthetic data. See the [biological overview](docs/why-this-matters.md) and [guide to reading results](docs/methods.md#reading-the-results).
+A change in RNA abundance can indicate a protective response or damage. It does not establish that a gene predicts survival or causes greater resilience. The public findings and comparability-reviewed stratum pools are transcriptional associations; global cross-context candidate scoring is demonstrated separately with synthetic data. See the [biological overview](docs/why-this-matters.md) and [guide to reading results](docs/methods.md#reading-the-results).
 
 ## What Is Runnable Now
 
@@ -25,7 +25,7 @@ Website counts distinguish public BioProjects from registered study contrasts: o
 - Study registration validation against JSON Schema.
 - Registry ingestion from YAML into `registry/study_registry.csv`.
 - Processed-result harmonization for RNA-seq, methylation, proteomics, and metabolomics-style tables.
-- Demo cross-study random-effects meta-analysis.
+- Covariance-aware random-effects meta-analysis (DerSimonian-Laird and REML with shared-control block GLS, cross-checked against R `metafor`) and comparability-reviewed real synthesis (`aree synthesize-real`).
 - Transparent biomarker candidate scoring.
 - Markdown evidence-card generation.
 - An in-browser website query page over all harmonized evidence (DuckDB-WASM reading a build-generated Parquet; requires the `site` extra at build time).
@@ -80,7 +80,7 @@ aree score-candidates --evidence data/harmonized --output results/candidate_scor
 aree build-evidence-cards --evidence data/harmonized --scores results/candidate_scores.tsv --output-dir results/evidence_cards
 ```
 
-Before pooling real evidence, review biological comparability and shared samples: the engine does not model covariance from shared controls. The primary website presents study-level results without pooled effects or a global score.
+Before pooling real evidence, review biological comparability and shared samples: by default `meta-analyze` fails closed on shared controls unless `--shared-control-rho` is supplied to model block covariance. The primary website publishes comparability-reviewed per-stratum synthesis without a global cross-context biomarker score.
 
 Scoring recomputes heterogeneity from the evidence it scores, so `meta_analysis.tsv` is for inspection only and a filtered or stale copy cannot change the ranking. Effects are pooled and summarized only within one `effect_size_type`; candidates remain one row per feature so cross-context and multi-omics convergence still count. Use `--phenotype`/`--stressor` on `score-candidates` for a context-specific ranking.
 
@@ -158,8 +158,8 @@ The meta-analysis engine retains correlated feature/context groups as `dependent
 | Study schema validation | Complete and runnable. |
 | Demo registry and synthetic processed results | Complete and runnable. |
 | Processed-result harmonization | Complete for MVP input schemas; production importers need assay-specific expansion. |
-| Meta-analysis | Complete MVP random-effects implementation; should be cross-checked with R `metafor` for production. |
-| Candidate scoring | Complete transparent MVP; weights should be reviewed by domain experts. |
+| Meta-analysis | Complete DL and REML with shared-control block-GLS covariance, cross-checked against R `metafor`. |
+| Candidate scoring | Complete transparent framework, audited across weight perturbations. |
 | Evidence cards | Complete Markdown output; plots are textual summaries in MVP. |
 | Streamlit app | Complete lightweight browser with Real public studies (study-level guardrails) and Synthetic demo modes. |
 | Raw RNA-seq Nextflow pipeline | Runnable; tested end to end on synthetic reads in CI. Other assays enter as processed results. |

@@ -71,10 +71,9 @@ python "$SCRIPT_DIR/summarize_salmon_qc.py" --quant-dir "$QUANT_DIR" \
 # left out of the sample sheets, giving 25 v 25.
 #
 # PC1 of the unadjusted model is male gametogenesis, which is active in far more control
-# than acidified oysters. That run is kept as a sensitivity analysis; the primary model
-# blocks on the gametogenesis call. This remains exploratory: oysters within a tank
-# are subsamples, and this model does not account for tank clustering. Its p-values
-# and FDR values must not be used as tank-level inference.
+# than acidified oysters. That run is kept as a sensitivity analysis; the gametogenesis call
+# feeds the primary tank-aware mixed model (~ gametogenesis + condition + (1 | tank)) via
+# limma-voom + variancePartition::dream with Satterthwaite degrees of freedom.
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$DESIGN_SHEET" "$TX2GENE" "$UNADJUSTED_DIR" \
   --test=acidified --replicates=0 \
   "--ma-title=Juveniles at pHT 6.5-6.8 versus 7.4-7.8 (23 days), unadjusted"
@@ -83,3 +82,7 @@ python "$SCRIPT_DIR/score_prjna735889_gametogenesis.py" --unadjusted "$UNADJUSTE
 Rscript "$SCRIPT_DIR/run_salmon_tximport_deseq2.R" "$QUANT_DIR" "$ANALYSIS_ROOT/deseq2_samplesheet_gametogenesis.csv" \
   "$TX2GENE" "$RESULTS_DIR" --test=acidified --replicates=0 --covariate=gametogenesis \
   "--ma-title=Juveniles at pHT 6.5-6.8 versus 7.4-7.8 (23 days), blocked on gametogenesis"
+Rscript "$SCRIPT_DIR/run_prjna735889_tank_mixed_model.R" "$QUANT_DIR" \
+  "$ANALYSIS_ROOT/deseq2_samplesheet_gametogenesis.csv" "$TX2GENE" "$ANALYSIS_ROOT/dream_tank" \
+  --threads="$THREADS" --orig-dds="$RESULTS_DIR/acidified_vs_control_dds.rds" \
+  --orig-results="$RESULTS_DIR/acidified_vs_control_deseq2_all_genes.tsv"
